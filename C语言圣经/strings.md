@@ -67,7 +67,7 @@ int main() {
 
 我们在定义一个指向包含3个字符指针的数组后，准备开始进行字符串排序。
 
-![image-20260217171853169](.gitbook/assets/book-images/typora/image-20260217171853169.png)
+![image-20260217171853169](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/book-images/typora/image-20260217171853169.png)
 
 在`printArr()`函数中，传参`const char* arr[]`会退化为二级指针的形式`const char** arr`，`arr[i]`变为`arr + i`，打印时对其解引用，将打印指针指向的内容。
 

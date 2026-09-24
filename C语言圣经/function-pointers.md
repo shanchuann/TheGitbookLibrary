@@ -49,7 +49,7 @@ int inc(int a) {
 
 在C语言的表达中，add和&add表达的意思完全相同，表示函数的地址。
 
-![image-20260225111430698](.gitbook/assets/book-images/typora/image-20260225111430698.png)
+![image-20260225111430698](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/book-images/typora/image-20260225111430698.png)
 
 我们都知道在C语言程序编译链接的可执行文件由代码和数据两部分构成，数据部分保留的是全局变量的数据。当函数运行后将分配四个区域：代码区、数据区、堆区和栈区。在代码运行中，主函数在栈区开辟的栈帧用于存放局部变量，funptr分别指向两个函数。
 
@@ -216,7 +216,7 @@ PFUN arr[4] = { add, sub, mul, div }; // 更为直观
 
 这样只需要在主函数中传入索引，即可将函数指针指向对应的函数。
 
-![image-20260303132149637](.gitbook/assets/book-images/typora/image-20260303132149637.png)
+![image-20260303132149637](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/book-images/typora/image-20260303132149637.png)
 
 ```c
 // typedef int (*PFUN)(int, int); // 定义一个函数指针类型，指向有两个int参数和一个int返回值的函数

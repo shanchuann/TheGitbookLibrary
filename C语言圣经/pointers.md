@@ -618,7 +618,7 @@ int main()
 
 与一级指针相同，`*s = *&p1 = p1`，因此我们对`*s`的操作实际上就是对`p1`指针的操作。同样的，`**s = *p1 = *&a = a`。当`s`指向`p2`后，`*s = *&p2 = p2`，`**s = *p2 = *&b = b`，最终修改的是`b`的数据。
 
-![image-20260214181013850](.gitbook/assets/book-images/typora/image-20260214181013850.png)
+![image-20260214181013850](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/book-images/typora/image-20260214181013850.png)
 
 #### 与数组的应用
 
@@ -635,7 +635,7 @@ int** s = &p1;
 
 当我们在不同的位置进行加一的操作时，会有什么变化呢？
 
-![image-20260214184024653](.gitbook/assets/book-images/typora/image-20260214184024653.png)
+![image-20260214184024653](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/book-images/typora/image-20260214184024653.png)
 
 |           | 变化     | 类型  |
 | --------- | -------- | ----- |
@@ -668,7 +668,7 @@ s + 1; // s + (sizeof typename*) * 1;
 
 对于二维数组，`int**s`在进行`s + 1`加一操作时，只能进行`sizeof(typename*) * 1`大小的位移，无法实现`ar0`在加一后跳转到`ar1`。
 
-![image-20260215112802559](.gitbook/assets/book-images/typora/image-20260215112802559.png)
+![image-20260215112802559](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/book-images/typora/image-20260215112802559.png)
 
 因此我们需要一个新的指针形态：`int (*s)[4];`，从右向左进行解释，遇见括号先解释括号里的，`s`是指针变量，开辟4字节大小空间，这个指针可以存放开辟4个空间数组的地址，每个空间存放整型元素。
 
@@ -680,6 +680,6 @@ s + 1; // s + (sizeof typename*) * 1;
 
 对于数组的访问有两种形式，一种是指针，即刚才介绍的方式，另一种是下标。当本书将`*(*(s + 2) + 3) = 100;`中的`*(s + 2)`封装为下标方式`s[2]`，而对于 `*(s[2] + 3)` 我们又可以进行再次封装，将其变为`s[2][3]`。
 
-![image-20260215121901977](.gitbook/assets/book-images/typora/image-20260215121901977.png)
+![image-20260215121901977](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/book-images/typora/image-20260215121901977.png)
 
 对于`int *p[4];`和`int (*s)[4];`，z这是两个不同的概念，`int (*s)[4];`表示可以存放由4个存储空间构成的数组的地址，`int *p[4];`表示将开辟一个4个存储空间，用于存放指针变量的数组。

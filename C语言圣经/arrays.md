@@ -73,11 +73,11 @@ int Get_Day_ARR(int year,int month)
 
 在不使用二维数组的情况下该如何打印杨辉三角呢？我们能注意到杨辉三角的特性很符合数组的递推更新，并且当我们从后向前进行更新时，可以很好的避免前一个值被覆盖的情况。因此可以利用前一行的数据，对下一行进行更新。
 
-![image-20260219121951980](.gitbook/assets/book-images/typora/image-20260219121951980.png)
+![image-20260219121951980](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/book-images/typora/image-20260219121951980.png)
 
 我们通过设定`arr[i] = 1`来保证每一层的结尾都为1，然后判断是否应该向前进行下一步，如果`i - 1>0`则说明前方仍有数据则进行覆盖若没有则退出二层循环，进行数据的打印，将下一个空间设置为1，重复判断是否应该从后向前覆盖，按同样的规则继续。
 
-![image-20260219121918719](.gitbook/assets/book-images/typora/image-20260219121918719.png)
+![image-20260219121918719](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/book-images/typora/image-20260219121918719.png)
 
 ```c
 #define N 20
@@ -104,7 +104,7 @@ int main() {
 
 二分查找主要操作是**每次都砍掉一半的查找范围**，在**有序**数组中，先取数组中间位置的元素和目标值比较，如果中间元素等于目标值则直接找到；如果目标值更小，就只在数组左半部分继续重复这个 “找中间、做比较、缩范围” 的操作；如果目标值更大，就只在右半部分重复，直到找到目标值。当查找范围缩小到空则说明目标值不存在，这种方式时间复杂度为 O (log n)，快于直接遍历。
 
-![image-20260219123637233](.gitbook/assets/book-images/typora/image-20260219123637233.png)
+![image-20260219123637233](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/book-images/typora/image-20260219123637233.png)
 
 ```c
 int binarySearch(const int* arr, int n, int val) {
@@ -254,7 +254,7 @@ K大于n（左移n+2）：2 3 4 5 6 7 8 9 10 1
 
 以右移3位为例：
 
-![image-20260219151101499](.gitbook/assets/book-images/typora/image-20260219151101499.png)
+![image-20260219151101499](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/book-images/typora/image-20260219151101499.png)
 
 左移则是：
 
@@ -396,7 +396,7 @@ int main()
 
 他的逻辑表示相当于一个n*m的表格：
 
-![image-20260215161140080](.gitbook/assets/book-images/typora/image-20260215161140080.png)
+![image-20260215161140080](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/book-images/typora/image-20260215161140080.png)
 
 二维数组在本质上由多个一维数组构成(每个一维数的大小必须相同)。如定义`int ar[3][4]`的二维数组，它是由3个一维数组组成，每个一维数组的大小是4个整型元素。
 
@@ -411,10 +411,10 @@ int main() {
 }
 ```
 
-![image-20260215163510987](.gitbook/assets/book-images/typora/image-20260215163510987.png)
+![image-20260215163510987](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/book-images/typora/image-20260215163510987.png)
 在C语言中，二维数组存放形式是按行优先存储，也就是物理表现形式如图：
 
-![image-20260215195306920](.gitbook/assets/book-images/typora/image-20260215195306920.png)
+![image-20260215195306920](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/book-images/typora/image-20260215195306920.png)
 
 | 元素       | 起始地址   | 占用的字节地址范围      | 十进制地址范围      |
 | ---------- | ---------- | ----------------------- | ------------------- |
@@ -508,7 +508,7 @@ int main()
 
 这里的printf会打印哪两个数字呢？
 
-![image-20260215210435109](.gitbook/assets/book-images/typora/image-20260215210435109.png)
+![image-20260215210435109](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/book-images/typora/image-20260215210435109.png)
 
 可以看见，本书将下标访问转化为指针访问的形式之后，第一个数字将输出8。
 

@@ -143,7 +143,7 @@ int main(void)                 //主函数 程序入口
 
 如下例子所示，103小于128，则在表示128的二进制位置0，转向下一位。当103减去64，在二进制位置1后，接着用余下的39进行后续操作，以此类推直到来到0。
 
-<figure><img src=".gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
 
 当转换为八进制时，可先将十进制数转为二进制，再对二进制数从右向左每 3 位划分为一组，若最左侧分组不足 3 位则在左侧进行补 0；每组二进制数对应的一个八进制数（0-7），拼接后即可得到结果。例如十进制103的二进制 **1100111** 可分为 **001**、**100**、**111** 三组，分别对应 1、4、7，即八进制 147。
 
@@ -152,4 +152,3 @@ int main(void)                 //主函数 程序入口
 通过本章节的学习，相比大家对C语言的基本内容已经了然于胸，那么接下来就将进入真正的C语言的世界。
 
 下一章，我们将开始对数据类型做出介绍，希望一路走来我们皆有所获！
-

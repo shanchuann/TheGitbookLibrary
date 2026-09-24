@@ -50,7 +50,7 @@ flowchart LR
 
 对于数据类型的表示范围，可以看作为一个循环。以char类型为例，当数值从0（0000 0000）增加到127（0111 1111）后，继续加一会引起符号位改变，数据位置零，从而让数值变为-128（1000 0000），随着数值继续增长，当达到-1（1111 1111）时又因为加一变为1 0000 0000，又因为char类型为1字节8位，因此数据变为0（0000 0000）。
 
-![image-20260305210357541](.gitbook/assets/book-images/typora/image-20260305210357541.png)
+![image-20260305210357541](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/book-images/typora/image-20260305210357541.png)
 
 ```c
 // 危险：死循环！
@@ -102,9 +102,9 @@ int main() {
 }
 ```
 
-![image-20260305122639080](.gitbook/assets/book-images/typora/image-20260305122639080.png)
+![image-20260305122639080](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/book-images/typora/image-20260305122639080.png)
 
-![image-20260305123429848](.gitbook/assets/book-images/typora/image-20260305123429848.png)
+![image-20260305123429848](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/book-images/typora/image-20260305123429848.png)
 
 示例代码中的 2 字节 short 类型、4 字节 int 类型变量，就有存储顺序的问题，按照不同的存储顺序，可以将其分为大端字节序存储和小端字节序存储。
 
@@ -218,7 +218,7 @@ int main() {
 }
 ```
 
-![image-20260305232315202](.gitbook/assets/book-images/typora/image-20260305232315202.png)
+![image-20260305232315202](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/book-images/typora/image-20260305232315202.png)
 
 **显式强制转换**：无论是扩充还是截取，都可以通过`(目标类型)数据`的方式显式执行强制类型转换，效果与隐式转换一致，同时可以消除编译器的类型转换警告。
 
@@ -306,4 +306,4 @@ int nearly_equal(double a, double b, double eps) {
 
 不要用 `a == b` 判断两个计算结果是否“数学上相等”，除非你明确知道它们来自同一条无舍入误差的路径。金额、计数和文件大小优先使用整数；浮点数适合测量值、几何计算和统计结果。
 
-![在 /home/shanchuan/CStudy 中运行的示例](.gitbook/assets/c-language/wsl-cstudy-run.png)
+![在 /home/shanchuan/CStudy 中运行的示例](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/c-language/wsl-cstudy-run.png)

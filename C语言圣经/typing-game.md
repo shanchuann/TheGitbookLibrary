@@ -272,7 +272,7 @@ int main() {
 }
 ```
 
-![image-20260304131550146](.gitbook/assets/book-images/typora/image-20260304131550146.png)
+![image-20260304131550146](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/book-images/typora/image-20260304131550146.png)
 
 ### 打字母v2.0
 

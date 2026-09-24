@@ -201,7 +201,7 @@ int main(void){
 五、表格汇总
 32个关键字如下：
 
-![关键字](.gitbook/assets/book-images/c-learning/c-learning-08.png)
+![关键字](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/book-images/c-learning/c-learning-08.png)
 
 ### 预处理器：宏、断言与条件编译
 

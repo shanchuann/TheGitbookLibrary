@@ -252,4 +252,4 @@ sequenceDiagram
 
 下面的截图来自本机 WSL2 的 `/home/shanchuan/CStudy`，命令和输出均为实际运行结果：
 
-![本机 WSL2 终端运行结果](.gitbook/assets/c-language/wsl-cstudy-run.png)
+![本机 WSL2 终端运行结果](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/c-language/wsl-cstudy-run.png)
