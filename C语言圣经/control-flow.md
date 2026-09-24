@@ -544,11 +544,11 @@ int main()
 ​	rand() 会随机生成一个位于 0 ~ RAND_MAX 之间的整数。
 ​	RAND_MAX 是 <stdlib.h> 头文件中的一个宏，它用来指明 rand( ) 所能返回的随机数的最大值。C语言标准并没有规定 RAND_MAX 的具体数值，只是规定它的值至少为 32767。在实际编程中，我们也不需要知道 RAND_MAX 的具体值，把它当做一个很大的数来对待即可。
 
-![在这里插入图片描述](.gitbook/assets/book-images/c-learning/随机数.png)
+![在这里插入图片描述](.gitbook/assets/book-images/c-learning/c-learning-12.png)
 
 ​	再运行几次，会发现每次产生的随机数都一样
 
-![在这里插入图片描述](.gitbook/assets/book-images/c-learning/随机数2.png)
+![在这里插入图片描述](.gitbook/assets/book-images/c-learning/c-learning-13.png)
 
 ​	实际上，rand() 函数产生的随机数是伪随机数，是根据一个数值按照某个公式推算出来的，这个数值我们称之为“种子”。种子和随机数之间的关系是一种正态分布。
 
@@ -575,7 +575,7 @@ int main() {
 }
 ```
 
-![在这里插入图片描述](.gitbook/assets/book-images/c-learning/结果.png)	
+![在这里插入图片描述](.gitbook/assets/book-images/c-learning/c-learning-07.png)
 
 多次运行程序，会发现每次生成的随机数都不一样了。但是，这些随机数会有逐渐增大或者逐渐减小的趋势，这是因为我们以时间为种子，时间是逐渐增大的，结合上面的正态分布图，很容易推断出随机数也会逐渐增大或者减小。
 

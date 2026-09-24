@@ -2,9 +2,7 @@
 
 * [书籍介绍](README.md)
 * [引言](yin-yan.md)
-* [C语言编译链接过程](compile.md)
-* [C程序](c-program.md)
-* [进制转换](number-systems.md)
+* [C语言基础](c-language-basics.md)
 * [数据类型](data-types.md)
 * [标识符,变量](identifiers-variables.md)
 * [C语言输入输出](io.md)

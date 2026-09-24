@@ -73,7 +73,7 @@ int arr[len] = {1,2,3,4,5,6,7,8,9,10};//c语言不支持,c++支持
 //C语言中,const后可以不初始化,c++不行
 ```
 
-![ERROR](.gitbook/assets/book-images/c-learning/常变量error.png)
+![ERROR](.gitbook/assets/book-images/c-learning/c-learning-01.png)
 
 ### 枚举常量
 

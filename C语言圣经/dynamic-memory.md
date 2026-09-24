@@ -43,4 +43,4 @@ gcc -std=c17 -g -fsanitize=address,undefined main.c -o main
 ```
 
 
-![内存](.gitbook/assets/book-images/c-learning/屏幕截图 2024-08-06 115119.png)
+![内存](.gitbook/assets/book-images/c-learning/c-learning-09.png)

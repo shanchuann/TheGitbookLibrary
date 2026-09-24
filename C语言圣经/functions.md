@@ -52,7 +52,7 @@ flowchart LR
 
 值传递
 
-![屏幕截图 2024-08-15 135940](.gitbook/assets/book-images/c-learning/屏幕截图 2024-08-15 135940.png)
+![屏幕截图 2024-08-15 135940](.gitbook/assets/book-images/c-learning/c-learning-10.png)
 
 传地址
 
