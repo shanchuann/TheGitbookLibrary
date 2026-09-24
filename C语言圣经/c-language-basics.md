@@ -5,7 +5,7 @@ icon: code
 
 # C语言基础
 
-### C 语言编译与链接过程
+## C 语言编译与链接过程
 
 一个 C 程序从源代码到可执行文件，通常会经历预处理、编译、汇编和链接四个阶段。
 
@@ -19,13 +19,13 @@ flowchart LR
     F --> G["加载为进程并执行"]
 ```
 
-#### 过程概览
+### 过程概览
 
 <table><thead><tr><th width="115.4000244140625">阶段</th><th width="175.39990234375">输入</th><th width="177.5999755859375">输出</th><th>常用命令</th></tr></thead><tbody><tr><td>预处理</td><td><code>.c</code>、<code>.h</code></td><td><code>.i</code></td><td><code>gcc -E main.c -o main.i</code></td></tr><tr><td>编译</td><td><code>.i</code></td><td><code>.s</code></td><td><code>gcc -S main.i -o main.s</code></td></tr><tr><td>汇编</td><td><code>.s</code></td><td><code>.o</code></td><td><code>gcc -c main.s -o main.o</code></td></tr><tr><td>链接</td><td>一个或多个 <code>.o</code></td><td>可执行文件</td><td><code>gcc main.o -o main</code></td></tr></tbody></table>
 
 在 Linux 中，可执行文件通常命名为 `main`；在 Windows 中，常见名称是 `main.exe`。
 
-#### 预处理
+### 预处理
 
 预处理是编译器正式分析 C 代码之前的阶段。它处理以 `#` 开头的预处理指令，主要包括：
 
@@ -42,7 +42,7 @@ gcc -E main.c -o main.i
 
 预处理器主要进行文本处理，不进行完整的类型检查。宏展开成功，并不代表展开后的代码一定正确。
 
-#### 宏展开
+### 宏展开
 
 宏使用 `#define` 定义：
 
@@ -84,7 +84,7 @@ flowchart LR
     D --> E["交给编译器"]
 ```
 
-#### 头文件展开
+### 头文件展开
 
 `#include` 会把头文件的内容插入当前源文件。它本身不是函数调用，也不会在运行时执行。
 
@@ -117,7 +117,7 @@ flowchart LR
 #endif
 ```
 
-#### C 源程序
+## C 源程序
 
 一个最小的 C 程序如下：
 
@@ -142,7 +142,7 @@ gcc -std=c17 -Wall -Wextra -Wpedantic main.c -o main
 Hello, C!
 ```
 
-#### C 源程序的结构
+### C 源程序的结构
 
 一个 C 程序可以由一个或多个源文件组成：
 
@@ -209,9 +209,9 @@ gcc -std=c17 -Wall -Wextra -Wpedantic \
 
 链接器会把 `main.c` 和 `math_utils.c` 生成的目标代码合并，并解析函数和变量之间的引用关系。
 
-### 进制转换
+## 进制转换
 
-#### 基本规则
+### 基本规则
 
 在 `X` 进制中，每当某一位达到 `X`，就向更高位进一：
 
@@ -231,7 +231,7 @@ gcc -std=c17 -Wall -Wextra -Wpedantic \
 | 十进制  | 无前缀         | `10`     |
 | 十六进制 | `0x` 或 `0X` | `0xA`    |
 
-#### 其他进制转换为十进制
+### 其他进制转换为十进制
 
 把每一位乘以对应的位权，再求和。
 
@@ -253,7 +253,7 @@ $$
 128 64 32 16 8 4 2 1
 ```
 
-#### 十进制转换为二进制
+### 十进制转换为二进制
 
 常用方法是“除 2 取余，逆序排列”：
 
@@ -283,7 +283,7 @@ flowchart TD
 (13)₁₀ = (1101)₂
 ```
 
-#### 二进制与八进制
+### 二进制与八进制
 
 二进制转换为八进制时，从右向左每三位分成一组，不足三位时在左侧补 `0`：
 
@@ -299,7 +299,7 @@ flowchart TD
 (1100111)₂ = (147)₈
 ```
 
-#### 二进制与十六进制
+### 二进制与十六进制
 
 二进制转换为十六进制时，从右向左每四位分成一组：
 

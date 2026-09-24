@@ -5,7 +5,7 @@ icon: code
 
 # 常量
 
-### 字面常量
+## 字面常量
 
 字面常量也叫字面量。它没有名字，直接写在源代码中，看到它的写法通常就能判断它表示的值。
 
@@ -52,7 +52,7 @@ int total = count + 20;
 * `"a"` 是字符串字面量，实际类型是包含两个元素的字符数组：`{'a', '\0'}`；
 * C 语言没有内置的 `string` 字符串类型，字符串通常使用字符数组表示。
 
-### 宏常量
+## 宏常量
 
 宏常量使用 `#define` 定义：
 
@@ -88,7 +88,7 @@ int main(void)
 
 宏通常使用大写字母命名，以便与普通变量区分。
 
-#### 宏的作用范围
+### 宏的作用范围
 
 宏从定义位置开始生效，只对后面的代码有效：
 
@@ -153,7 +153,7 @@ static inline int square_int(int x)
 
 重新定义宏时，建议明确取消旧定义，避免不同头文件中的宏发生冲突。
 
-### `const` 常量
+## `const` 常量
 
 使用 `const` 修饰的对象称为只读对象，也常被称为常变量：
 
@@ -191,7 +191,7 @@ value = 200;       // 合法
 ```
 {% endcode %}
 
-#### `const` 与数组长度
+### `const` 与数组长度
 
 在 C 语言中，`const int` 变量通常不是编译期常量表达式：
 
@@ -236,7 +236,7 @@ int array[ARRAY_SIZE];
 int array[ARRAY_SIZE];
 ```
 
-#### `const` 变量必须初始化吗？
+### `const` 变量必须初始化吗？
 
 在 C 语言中，`const` 对象可以不在定义时初始化：
 
@@ -250,7 +250,7 @@ const int value;
 const int value = 10;
 ```
 
-### 枚举常量
+## 枚举常量
 
 枚举用于把一组相关的整数常量组织在一起。关键字 `enum` 的本意就是“逐一列举”。
 
@@ -310,7 +310,7 @@ enum day
 
 枚举变量的类型是枚举类型，枚举成员本身表示整数常量。
 
-### **字符常量和字符串常量**
+## **字符常量和字符串常量**
 
 字符常量使用一对单引号括起来：
 
@@ -385,7 +385,7 @@ char ch = 'a';
 7    // 整数 7
 ```
 
-#### ASCII码表（部分，详见附件）
+### ASCII码表（部分，详见附件）
 
 ASCII (American Standard Code for Information Interchange)是美国信息交换标准代码，基于拉丁字母的一套电脑编码系统，主要用于显示现代英语和其他西欧语言。它是最通用的信息交换标准，并等同于国际标准 ISO/IEC 646。ASCII第一次以规范标准的类型发表是在1967年，最后一次更新则是在1986年，到目前为止共定义了128个字符。
 
@@ -393,7 +393,7 @@ ASCII (American Standard Code for Information Interchange)是美国信息交换�
 
 <table><thead><tr><th width="112">Bin(二进制)</th><th width="100.2000732421875">Oct(八进制)</th><th width="99.199951171875">Dec(十进制)</th><th width="112">Hex(十六进制)</th><th width="156.5999755859375">缩写/字符</th><th>解释</th></tr></thead><tbody><tr><td>0000 0000</td><td>00</td><td><strong>0</strong></td><td>0x00</td><td>NUL(null)</td><td>空字符</td></tr><tr><td>0000 0001</td><td>01</td><td>1</td><td>0x01</td><td>SOH(start of headline)</td><td>标题开始</td></tr><tr><td>0000 0011</td><td>03</td><td>3</td><td>0x03</td><td>ETX (end of text)</td><td>正文结束</td></tr><tr><td>……</td><td>……</td><td>……</td><td>……</td><td>……</td><td>……</td></tr><tr><td>0100 0000</td><td>0100</td><td>64</td><td>0x40</td><td>@</td><td>电子邮件符号</td></tr><tr><td>0100 0001</td><td>0101</td><td><strong>65</strong></td><td>0x41</td><td>A</td><td>大写字母A</td></tr><tr><td>0100 0100</td><td>0104</td><td>68</td><td>0x44</td><td>D</td><td>大写字母D</td></tr><tr><td>……</td><td>……</td><td>……</td><td>……</td><td>……</td><td>……</td></tr><tr><td>0101 1011</td><td>0133</td><td>91</td><td>0x5B</td><td>[</td><td>开方括号</td></tr><tr><td>0101 1100</td><td>0134</td><td>92</td><td>0x5C</td><td>\</td><td>反斜杠</td></tr><tr><td>0110 0001</td><td>0141</td><td><strong>97</strong></td><td>0x61</td><td>a</td><td>小写字母a</td></tr><tr><td>……</td><td>……</td><td>…………</td><td>……</td><td>……</td><td>……</td></tr></tbody></table>
 
-#### 转义字符
+### 转义字符
 
 字母前加" \ "来表示常见的那些不能显示的ASCII字符，如 `\0`，`\t`，`\n`等，因为后面的字符都不是它本来的ASCII字符意思,称为转义字符
 
