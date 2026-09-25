@@ -356,12 +356,184 @@ valgrind --leak-check=full ./dynamic_memory
 
 这些工具不能替代边界设计和所有权约定，但能把许多“运行一会儿才崩”的问题提前暴露出来。
 
-## 练习建议
+## 从 malloc 到操作系统
 
-1. 编写一个动态数组，实现追加元素的 push 操作。
-2. 使用 realloc 将数组容量扩大一倍，并处理申请失败。
-3. 编写一个函数，返回动态生成的字符串，并设计对应的释放函数。
-4. 分别实现连续二维数组和分行二维数组，比较它们的访问和释放方式。
-5. 故意制造一次越界写入，用 AddressSanitizer 观察诊断信息。
+malloc、calloc、realloc 和 free 是 C 标准库接口。它们通常由用户态的内存分配器实现，分配器再向操作系统申请更大的虚拟内存区域。因此，一次 malloc 不一定对应一次系统调用：
 
-动态内存给了程序更多空间，也把释放责任交给了程序员。申请很容易，正确地管理生存期才是这部分真正的练习。
+```
+C 程序
+  |
+  v
+malloc / calloc / realloc / free
+  |
+  v
+C 运行库中的分配器
+  |
+  +--> brk / sbrk       管理传统数据段末端
+  |
+  +--> mmap / munmap    映射或解除映射虚拟内存
+  |
+  v
+操作系统虚拟内存管理
+```
+
+分配器会在已经取得的大块区域中切分小块，记录空闲块、大小和对齐信息。这样可以减少系统调用，但也会带来内部碎片和外部碎片。free 通常先把内存归还给分配器，不一定立即归还给操作系统。
+
+### brk 与 sbrk
+
+在 Unix 系统中，程序有一个称为 program break 的位置，传统堆空间位于数据段末端附近。brk 和 sbrk 可以调整这个位置：
+
+| 接口              | 作用                             |
+| --------------- | ------------------------------ |
+| brk(address)    | 把 program break 设置为指定地址        |
+| sbrk(increment) | 按字节数移动 program break，并返回移动前的位置 |
+
+这两个接口属于 Unix/POSIX 系统接口，不是 ISO C 标准的一部分。现代程序通常不应直接调用它们，原因包括：
+
+* 它们可能与 malloc 使用的分配器元数据发生冲突；
+* program break 只能描述一段连续区域，不适合所有分配模式；
+* 不同系统和运行库对它们的支持不同；
+* 直接移动 program break 后，原有 malloc 指针可能全部失效。
+
+示例仅用于观察系统接口，不要与 malloc 混用：
+
+```c
+#define _DEFAULT_SOURCE
+#include <unistd.h>
+#include <stdio.h>
+
+int main(void) {
+    void *old_break = sbrk(0);
+    if (old_break == (void *)-1) {
+        perror("sbrk");
+        return 1;
+    }
+
+    printf("program break: %p\n", old_break);
+    return 0;
+}
+```
+
+sbrk(0) 只查询当前位置。即使在 Linux 上可以调用，也不能据此推断 malloc 的全部内存都来自 program break。
+
+### mmap 与 munmap
+
+mmap 可以把文件或匿名内存映射到进程的虚拟地址空间。Linux 下申请匿名可读写内存的示例：
+
+```c
+#define _GNU_SOURCE
+#include <sys/mman.h>
+#include <stdio.h>
+#include <unistd.h>
+
+int main(void) {
+    size_t page_size = (size_t)sysconf(_SC_PAGESIZE);
+    size_t length = page_size * 2;
+
+    void *memory = mmap(
+        NULL,
+        length,
+        PROT_READ | PROT_WRITE,
+        MAP_PRIVATE | MAP_ANONYMOUS,
+        -1,
+        0
+    );
+
+    if (memory == MAP_FAILED) {
+        perror("mmap");
+        return 1;
+    }
+
+    int *values = memory;
+    values[0] = 42;
+    values[1] = 84;
+    printf("%d %d\n", values[0], values[1]);
+
+    if (munmap(memory, length) != 0) {
+        perror("munmap");
+        return 1;
+    }
+    return 0;
+}
+```
+
+编译：
+
+```bash
+gcc -std=c17 -Wall -Wextra -Wpedantic mmap_demo.c -o mmap_demo
+./mmap_demo
+```
+
+mmap 失败时返回 MAP\_FAILED，而不是 NULL。解除映射必须使用 mmap 返回的起始地址和对应长度，解除映射后不能继续访问该区域。
+
+常用参数：
+
+| 参数             | 含义             |
+| -------------- | -------------- |
+| PROT\_READ     | 页面可读           |
+| PROT\_WRITE    | 页面可写           |
+| PROT\_EXEC     | 页面可执行          |
+| MAP\_PRIVATE   | 写入时使用私有副本      |
+| MAP\_SHARED    | 修改可与其他映射者共享    |
+| MAP\_ANONYMOUS | 不对应磁盘文件，初始内容为零 |
+
+mmap 是 POSIX/Linux 接口，不应写进只要求 ISO C 的通用库接口中。需要跨平台申请普通动态内存时，优先使用 malloc 系列函数。
+
+### 虚拟内存与页面
+
+操作系统以页为单位管理虚拟内存。mmap 通常以页为粒度建立映射，页大小可以通过 sysconf 查询，常见值是 4096 字节，但不能写死。
+
+申请虚拟地址空间和实际占用物理内存是两个概念。操作系统可能采用按需分配：只有程序第一次访问某个页面时，才建立对应的物理映射。Linux 的 overcommit 策略还可能让申请成功和最终可用的物理内存之间存在差异，因此程序仍需限制总申请量并正确处理异常。
+
+可以使用 mprotect 修改已映射页面的访问权限。例如，在分配区域两端设置不可访问的保护页，可以帮助发现越界访问：
+
+```
+可读写页面 | 可读写页面 | 保护页
+           ^
+           越界访问在这里触发异常
+```
+
+保护页和内存映射属于系统级调试与安全技术，具体实现依赖操作系统。
+
+## 对齐与特殊分配
+
+malloc 返回的地址满足普通对象的对齐要求。需要更高对齐要求时，可以使用 aligned\_alloc：
+
+```c
+#include <stdlib.h>
+
+size_t alignment = 64;
+size_t size = 1024;
+
+void *memory = aligned_alloc(alignment, size);
+if (memory == NULL) {
+    return EXIT_FAILURE;
+}
+
+/* 使用满足 64 字节对齐的内存 */
+free(memory);
+```
+
+aligned\_alloc 属于 C11。size 必须是 alignment 的整数倍；不满足时，调用不符合函数要求。Windows 或 POSIX 环境也提供其他对齐接口，但释放方式必须遵循对应平台的规定，不能混用释放函数。
+
+## 分配器边界
+
+动态内存接口必须成对使用：
+
+| 申请方式           | 对应释放方式 |
+| -------------- | ------ |
+| malloc         | free   |
+| calloc         | free   |
+| realloc 返回的地址  | free   |
+| aligned\_alloc | free   |
+| mmap           | munmap |
+
+不要使用 free 释放 mmap 返回的地址，也不要使用 munmap 释放 malloc 返回的地址。它们的内部元数据和生命周期管理完全不同。
+
+从系统角度看，动态内存问题可以分为三层：
+
+1. C 代码的边界、类型和生命周期是否正确；
+2. 分配器是否正确处理空闲块、碎片和并发；
+3. 操作系统是否成功提供虚拟页和物理页。
+
+初学阶段先把第一层做好：检查返回值，记录所有权，避免越界和释放后使用。理解 brk 与 mmap 后，再去观察分配器和操作系统如何完成后两层工作。
