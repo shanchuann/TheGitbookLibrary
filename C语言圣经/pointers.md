@@ -110,9 +110,9 @@ printf("%u\n", bytes[0]);
 
 指针本身保存的是地址，因此同一平台上的对象指针通常具有相同的大小；它与指向的对象类型无关。下面的截图分别展示了 32 位和 64 位环境中的典型结果。具体大小应以 `sizeof` 的实际输出为准，不能把某个平台的结果当成 C 标准的硬性规定。
 
-![32 位环境中的指针大小示例](.gitbook/assets/book-images/external/pointer-size-32.png)
+![32 位环境中的指针大小示例](https://s2.loli.net/2025/10/31/qWnlv5mX9Ko7beG.png)
 
-![64 位环境中的指针大小示例](.gitbook/assets/book-images/external/pointer-size-64.png)
+![64 位环境中的指针大小示例](https://s2.loli.net/2025/10/31/2ftCbQ84FdkgoOU.png)
 
 ### 小端存储
 
@@ -169,7 +169,7 @@ C 语言的参数传递始终是值传递。传入指针时，传递的是地址
 
 先看普通的值传递：函数得到的是实参的副本，函数内部交换的只是副本，调用者的变量不会改变。
 
-![值传递只交换形参副本](.gitbook/assets/book-images/external/pointer-value-pass.png)
+![值传递只交换形参副本](https://s2.loli.net/2025/10/31/PbSc5V64TjNoqLX.png)
 
 ```c
 #include <stdio.h>
@@ -191,15 +191,15 @@ int main(void) {
 
 指针传参仍然是值传递，只是这次复制的值恰好是地址。函数通过地址副本解引用后，修改的就是调用者的对象。
 
-![指针传递通过地址副本修改调用者对象](.gitbook/assets/book-images/external/pointer-pass-1.png)
+![指针传递通过地址副本修改调用者对象](https://s2.loli.net/2025/10/31/cuGrIjYhRnBa3s.png)
 
 下面这张图从栈帧角度展示了同一过程：形参 `a`、`b` 保存的是 `x`、`y` 的地址，交换发生在地址所指向的对象上。
 
-![指针传递的栈帧示意](.gitbook/assets/book-images/external/pointer-pass-2.png)
+![指针传递的栈帧示意](https://s2.loli.net/2025/10/31/cuGrIjYhRnBa3s.png)
 
 函数调用时，实参的数量和类型必须与函数原型匹配。旧式的无原型声明无法可靠地检查参数，现代 C 代码应写出完整原型；下面的截图展示了参数数量不匹配时编译器给出的诊断。
 
-![函数参数不匹配的编译器诊断](.gitbook/assets/book-images/external/pointer-old-prototype-error.png)
+![函数参数不匹配的编译器诊断](https://files.seeusercontent.com/2026/02/12/91Qi/image-20260212135311638.png)
 
 ```mermaid
 flowchart LR
@@ -386,7 +386,7 @@ int main(void) {
 }
 ```
 
-![void 与 void 指针的示例](.gitbook/assets/book-images/external/pointer-void-star.png)
+![void 与 void 指针的示例](https://files.seeusercontent.com/2026/02/12/kSOA/image-20260212121121173.png)
 
 malloc 返回 void \*，在 C 中不需要强制转换：
 
@@ -457,7 +457,7 @@ int main(void) {
 }
 ```
 
-![二级指针逐层解引用示意](.gitbook/assets/book-images/external/pointer-double-pointer.png)
+![二级指针逐层解引用示意](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/book-images/typora/image-20260214181013850.png)
 
 ### 用二级指针修改调用者的指针
 
