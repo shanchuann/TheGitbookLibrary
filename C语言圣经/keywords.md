@@ -7,7 +7,14 @@ icon: code
 
 C语言标准定义的32个关键字可以分为如下四类：
 
-![img](https://i-blog.csdnimg.cn/blog_migrate/38adf54569244ef2a1946d5c5fa1c1ae.png)
+```mermaid
+flowchart LR
+    A["C 语言关键字"] --> B["分类"]
+    B --> C["数据类型关键字 12 个"]
+    B --> D["控制语句关键字 12 个"]
+    B --> E["存储类别关键字 4 个"]
+    B --> F["其他关键字 4 个"]
+```
 
 #### 1. 数据类型关键字
 
@@ -201,7 +208,7 @@ int main(void){
 五、表格汇总
 32个关键字如下：
 
-![关键字](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/book-images/c-learning/c-learning-08.png)
+![C 语言关键字总表](https://github.com/shanchuann/TheGitbookLibrary/raw/refs/heads/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/book-images/c-learning/c-learning-08.png)
 
 ### 预处理器：宏、断言与条件编译
 
