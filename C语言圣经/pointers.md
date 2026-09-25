@@ -108,6 +108,12 @@ printf("%u\n", bytes[0]);
 | int \*    |    sizeof(int)，常见为 4 |
 | double \* | sizeof(double)，常见为 8 |
 
+指针本身保存的是地址，因此同一平台上的对象指针通常具有相同的大小；它与指向的对象类型无关。下面的截图分别展示了 32 位和 64 位环境中的典型结果。具体大小应以 `sizeof` 的实际输出为准，不能把某个平台的结果当成 C 标准的硬性规定。
+
+![32 位环境中的指针大小示例](.gitbook/assets/book-images/external/pointer-size-32.png)
+
+![64 位环境中的指针大小示例](.gitbook/assets/book-images/external/pointer-size-64.png)
+
 ### 小端存储
 
 多字节整数在内存中的排列顺序由平台决定。常见的 x86 平台采用小端存储，低位字节放在低地址处。下面的程序只用于观察对象表示，输出顺序不能当作所有平台都相同。
@@ -161,6 +167,10 @@ int *wrong(void) {
 
 C 语言的参数传递始终是值传递。传入指针时，传递的是地址副本；这个副本仍然可以指向调用者的对象，因此函数能够修改对象内容。
 
+先看普通的值传递：函数得到的是实参的副本，函数内部交换的只是副本，调用者的变量不会改变。
+
+![值传递只交换形参副本](.gitbook/assets/book-images/external/pointer-value-pass.png)
+
 ```c
 #include <stdio.h>
 
@@ -178,6 +188,18 @@ int main(void) {
     return 0;
 }
 ```
+
+指针传参仍然是值传递，只是这次复制的值恰好是地址。函数通过地址副本解引用后，修改的就是调用者的对象。
+
+![指针传递通过地址副本修改调用者对象](.gitbook/assets/book-images/external/pointer-pass-1.png)
+
+下面这张图从栈帧角度展示了同一过程：形参 `a`、`b` 保存的是 `x`、`y` 的地址，交换发生在地址所指向的对象上。
+
+![指针传递的栈帧示意](.gitbook/assets/book-images/external/pointer-pass-2.png)
+
+函数调用时，实参的数量和类型必须与函数原型匹配。旧式的无原型声明无法可靠地检查参数，现代 C 代码应写出完整原型；下面的截图展示了参数数量不匹配时编译器给出的诊断。
+
+![函数参数不匹配的编译器诊断](.gitbook/assets/book-images/external/pointer-old-prototype-error.png)
 
 ```mermaid
 flowchart LR
@@ -345,7 +367,9 @@ writable[0] = 'H';
 
 ## `void *` 通用指针
 
-void \* 可以保存任意对象类型的地址，也可以从其他对象指针隐式转换而来。它不能直接解引用，必须先转换成合适的对象指针：
+void \* 可以保存任意对象类型的地址，也可以从其他对象指针隐式转换而来。它不能直接解引用，必须先转换成合适的对象指针。
+
+`void` 作为函数返回类型表示“不返回值”，作为参数列表中的唯一类型表示“不接收参数”；`void *` 则是对象通用指针。三者含义不同，不能因为都出现了 `void` 就混为一谈：
 
 ```c
 #include <stdio.h>
@@ -361,6 +385,8 @@ int main(void) {
     return 0;
 }
 ```
+
+![void 与 void 指针的示例](.gitbook/assets/book-images/external/pointer-void-star.png)
 
 malloc 返回 void \*，在 C 中不需要强制转换：
 
@@ -380,6 +406,60 @@ values = NULL;
 ```
 
 ## 二级指针
+
+### 基本关系
+
+一级指针变量保存普通对象的地址，例如 `int *p1 = &a`；一级指针本身也是一个对象，也有自己的地址。因此，可以再定义一个指针保存它的地址：这就是二级指针。
+
+```c
+int a = 10;
+int *p1 = &a;       // p1 保存 a 的地址
+int **s = &p1;      // s 保存 p1 的地址
+```
+
+从声明上读：`p1` 是“指向 `int` 的指针”，`s` 是“指向 `int *` 的指针”。`int **` 不是两个连续的 `int`，而是多经过一层地址间接访问。
+
+```mermaid
+flowchart LR
+    A[变量 a: int] -->|&a| B[p1: int *]
+    B -->|&p1| C[s: int **]
+    C -->|*s 得到 p1| B
+    B -->|*p1 得到 a| A
+    C -->|**s 得到 a| A
+```
+
+对 `int **s = &p1` 而言：
+
+- `s` 的值是 `p1` 的地址，即 `s == &p1`；
+- `*s` 访问 `p1` 这个一级指针，因而 `*s == p1`；
+- `**s` 先访问 `p1`，再访问 `p1` 指向的 `a`，因而 `**s == a`。
+
+下面的示例把这三个层次写成可观察的修改：
+
+```c
+#include <stdio.h>
+
+int main(void) {
+    int a = 10;
+    int b = 20;
+    int *p1 = &a;
+    int *p2 = NULL;
+    int **s = &p1;
+
+    **s = 100;       // 等价于 *p1 = 100，修改 a
+    printf("a = %d, **s = %d\\n", a, **s);
+
+    s = &p2;         // 让二级指针改为管理 p2
+    *s = &b;         // 等价于 p2 = &b
+    **s = 200;       // 等价于 *p2 = 200，修改 b
+    printf("b = %d, **s = %d\\n", b, **s);
+    return 0;
+}
+```
+
+![二级指针逐层解引用示意](.gitbook/assets/book-images/external/pointer-double-pointer.png)
+
+### 用二级指针修改调用者的指针
 
 二级指针保存的是一级指针变量的地址。它常用于让函数修改调用者的指针变量：
 
@@ -408,12 +488,26 @@ int main(void) {
 }
 ```
 
+`create_value(&value)` 的调用过程可以拆成三步：`&value` 传入 `value` 的地址；函数中的 `*out = p` 改写调用者的 `value`；函数返回后，调用者才能通过 `value` 访问新对象。失败时函数不应覆盖原指针，也不应泄漏已经申请的内存。
+
 ```mermaid
 flowchart LR
     A[value] -->|&value| B[out]
     B -->|*out = p| A
     C[p 指向动态内存] -->|赋给 *out| A
 ```
+
+### 二级指针与二维数组不是一回事
+
+`int matrix[2][3]` 是连续存放的二维数组，数组名衰减后类型为 `int (*)[3]`；`int **` 通常表示“指向一个 `int *` 变量的指针”。二者的内存布局和指针步长不同，不能互相替代。
+
+```c
+int matrix[2][3] = {{1, 2, 3}, {4, 5, 6}};
+int (*row)[3] = matrix;  // 正确：指向一行
+// int **wrong = matrix; // 类型不匹配，不能这样写
+```
+
+如果确实需要 `int **`，就必须先为指针数组和每一行分别分配空间，并按相反顺序释放；这属于另一种“分行存储”的数据结构。
 
 `int **` 不是“两个连续的整数”，而是“指向 `int *` 变量的指针”。
 
