@@ -5,8 +5,6 @@ icon: code
 
 # 关键字
 
-C语言标准定义的32个关键字可以分为如下四类：
-
 ```mermaid
 flowchart LR
     A["C 语言关键字"] --> B["分类"]
@@ -16,232 +14,830 @@ flowchart LR
     B --> F["其他关键字 4 个"]
 ```
 
-#### 1. 数据类型关键字
+| 序号 | 关键字      | 说明                   |
+| -- | -------- | -------------------- |
+| 1  | char     | 声明字符变量               |
+| 2  | double   | 声明双精度变量              |
+| 3  | float    | 声明浮点型变量              |
+| 4  | int      | 声明整型变量               |
+| 5  | short    | 声明短整型变量              |
+| 6  | long     | 声明长整型变量              |
+| 7  | unsigned | 声明无符号类型变量            |
+| 8  | signed   | 声明有符号类型变量            |
+| 9  | struct   | 声明结构体变量              |
+| 10 | union    | 声明共用体或联合数据类型         |
+| 11 | void     | 声明函数无返回值或无参数，声明无类型指针 |
+| 12 | enum     | 声明枚举类型               |
 
-| 序号 | 关键字 | 说明 |
-| -------- |--------- |--------- |
-| 1	| char |	声明字符变量 |
-| 2  | double |	声明双精度变量 |
-| 3	| float |	声明浮点型变量| 
-| 4 | int |	声明整型变量 |
-| 5	| short |	声明短整型变量 |
-| 6	| long |	声明长整型变量 |
-| 7	| unsigned |	声明无符号类型变量 |
-| 8	| signed |	声明有符号类型变量 |
-| 9	| struct |	声明结构体变量 |
-| 10 | union |	声明共用体或联合数据类型 |
-| 11 | void	|声明函数无返回值或无参数，声明无类型指针  |
-| 12 | enum |	声明枚举类型 |
+| 序号 | 关键字      | 说明            |
+| -- | -------- | ------------- |
+| 1  | for      | 遍历循环          |
+| 2  | do       | 其后紧跟循环体       |
+| 3  | while    | 条件循环或死循环      |
+| 4  | break    | 跳出当前循环        |
+| 5  | continue | 终止本次循环，开始下次循环 |
+| 6  | if       | 条件语句          |
+| 7  | else     | 条件语句否定分支      |
+| 8  | goto     | 无条件跳转语句       |
+| 9  | switch   | 用于多条件判断语句     |
+| 10 | case     | 多条件判断语句分支     |
+| 11 | default  | 开关语句的其它分支     |
+| 12 | return   | 函数返回语         |
 
-**重点说明：**
-1、**chart、short、int、long、float、double**
-有一个常被提及的问题：int类型究竟占多少个字节？一般默认为4个字节，而有一点功底的人都知道它的大小是跟机器有关的，感兴趣的可以查看其它文章。int具体大小可用sizeof（unsigned int）关键字查看，代码如下：
+| 序号 | 关键字      | 说明           |
+| -- | -------- | ------------ |
+| 1  | auto     | 声明自动变量       |
+| 2  | extern   | 声明变量是在其他文件定义 |
+| 3  | register | 声明寄存器变量      |
+| 4  | static   | 声明静态变量       |
+
+| 序号 | 关键字      | 说明             |
+| -- | -------- | -------------- |
+| 1  | const    | 声明只读变量         |
+| 2  | sizeof   | 计算数据类型长度（字节数）  |
+| 3  | typedef  | 给数据类型取别名       |
+| 4  | volatile | 所修饰的对象不能被编译器优化 |
+
+关键字是 C 语言保留的单词，具有固定含义，不能用作变量名、函数名或结构体成员名。
+
+例如，下面的写法会产生冲突：
 
 ```c
-# include <stdio.h>
-void main()
-{
-	printf("char类型变量大小为%d字节\n",sizeof(char));
-	printf("short类型变量大小为%d字节\n",sizeof(short));
-	printf("int类型变量大小为%d字节\n",sizeof(int));
-	printf("long类型变量大小为%d字节\n",sizeof(long));
-	printf("float类型变量大小为%d字节\n",sizeof(float));
-	printf("double类型变量大小为%d字节\n",sizeof(double));	
-}
+int int = 10;       // 错误：int 是关键字
+int return = 0;     // 错误：return 是关键字
 ```
 
-运行结果：
+C90 标准定义了 32 个关键字。后续标准又增加了新的关键字，因此实际数量取决于使用的 C 语言标准版本。
 
-![img](https://i-blog.csdnimg.cn/blog_migrate/9dd15044b62e83979e4ed1aeba19e066.png)
+## 关键字分类
 
-2、signed、unsigned
-signed和nsigned用于修饰整数类型。默认的int、short、long为有符号数，如signed int 等价于 int(其它类推)。
+<table><thead><tr><th width="263.7999267578125">类别</th><th>主要关键字</th></tr></thead><tbody><tr><td>类型关键字</td><td><code>char</code>、<code>short</code>、<code>int</code>、<code>long</code>、<code>float</code>、<code>double</code>、<code>void</code>、<code>signed</code>、<code>unsigned</code>、<code>struct</code>、<code>union</code>、<code>enum</code></td></tr><tr><td>控制语句关键字</td><td><code>if</code>、<code>else</code>、<code>switch</code>、<code>case</code>、<code>default</code>、<code>for</code>、<code>while</code>、<code>do</code>、<code>break</code>、<code>continue</code>、<code>goto</code>、<code>return</code></td></tr><tr><td>存储类别关键字</td><td><code>auto</code>、<code>extern</code>、<code>static</code>、<code>register</code></td></tr><tr><td>类型修饰与其他关键字</td><td><code>const</code>、<code>sizeof</code>、<code>typedef</code>、<code>volatile</code></td></tr></tbody></table>
 
-另外，char共有三种不同的类型：char、signed char、unsigned char。char类型是真正的字符类型，用来声明字符；而signed char和unsigned char是用来声明数值的。因此不要将三者混用。
+C99、C11 和更高版本还增加了 `_Bool`、`inline`、`restrict`、`_Alignas`、`_Alignof`、`_Atomic`、`_Generic`、`_Static_assert`、`_Thread_local` 等关键字。
 
-数值范围如下：
-signed char表示范围：[-128, 128)；
-unsigned char表示范围：[0, 256)；
+## 类型关键字
 
-3、struct
-在实际问题中，一组数据往往具有不同的数据类型。struct关键字就可以将这些不同数据类型的数据打包成一种构造数据类型。这种构造类型由多个成员组成，每一个成员可以是一个基本数据类型或者另一个构造类型。一般情况下，结构体所占内存大小是其成员所占内存之和。但空结构体的内存大小在不同编译器里有0有1，读者可以试一试。
+### 基本数据类型
 
-4、union
-union关键字用法与struct非常相似，但也有区别。struct中的所有数据成员是共存的，不管有没有调用，编译器都会分配内存；而union中的数据成员是互斥的，它只配置一个足够大的空间来容纳最大长度的数据成员。即union中所有数据成员共用一个空间，同一时间只能存储其中一个数据成员，所有数据成员具有相同起始地址。
+| 关键字        | 含义             |
+| ---------- | -------------- |
+| `char`     | 字符类型，也可用于保存小整数 |
+| `short`    | 短整型            |
+| `int`      | 整型             |
+| `long`     | 长整型            |
+| `float`    | 单精度浮点型         |
+| `double`   | 双精度浮点型         |
+| `void`     | 无类型或无返回值       |
+| `signed`   | 有符号类型修饰符       |
+| `unsigned` | 无符号类型修饰符       |
 
-5、void
-void的作用是对函数返回值的限定、对函数参数的限定和声明空类型指针。如果定义函数时不加返回类型限定，则编译器会作为返回整型处理，而不是void, 用void声明的函数表示该函数无返回值；同理，当函数无参数时，可以给无参数函数传送任意类型的参数而不影响程序执行，只有用void指明函数参数时，给无参函数传入参数时编译器才会报错。
-另外，不同数据类型的指针必须经过类型强制转换后才能相互赋值，而void指针可以接受来自任意数据类型的指针赋值，但void指针不能在没有强制类型转换下直接赋值给其它类型的指针。
-
-#### 2. 控制语句关键字
-
-1、循环语句类型关键字（5个）
-
-| 序号 | 关键字   | 说明                       |
-| ---- | -------- | -------------------------- |
-| 1    | for      | 遍历循环                   |
-| 2    | do       | 其后紧跟循环体             |
-| 3    | while    | 条件循环或死循环           |
-| 4    | break    | 跳出当前循环               |
-| 5    | continue | 终止本次循环，开始下次循环 |
-
-2、条件语句类型关键字（3个）
-
-| 序号 | 关键字 | 说明             |
-| ---- | ------ | ---------------- |
-| 6    | if     | 条件语句         |
-| 7    | else   | 条件语句否定分支 |
-| 8    | goto   | 无条件跳转语句   |
-
-**重点说明：**
-goto语句，有人主张禁用，有人主张慎用，个人认为用来跳出多重循环还是可以的。
-
-3、开关语句类型关键字 （3个）
-
-| 序号 | 关键字  | 说明               |
-| ---- | ------- | ------------------ |
-| 9    | switch  | 用于多条件判断语句 |
-| 10   | case    | 多条件判断语句分支 |
-| 11   | default | 开关语句的其它分支 |
-
-重点说明：
-switch、case组合语句可以看作为if、else语句的加强版。后者适用于二分支或嵌套较少的分支，前者则在面对多分支情况时有更高的效率。
-case语句需要注意的点很多，如：
-为了避免多个分支重叠，需要在case结尾加上break;
-不要忘了default语句；
-case语句的排序问题等。
-
-4、返回语句类型关键字（1个）
-
-| 序号 | 关键字 | 说明       |
-| ---- | ------ | ---------- |
-| 12   | return | 函数返回语 |
-
-**重点说明：**
-return用于终止一个函数，并返回其后面跟着的值。
-
-#### 3. 存储类型关键字
-
-| 序号 | 关键字   | 说明                     |
-| ---- | -------- | ------------------------ |
-| 1    | auto     | 声明自动变量             |
-| 2    | extern   | 声明变量是在其他文件定义 |
-| 3    | register | 声明寄存器变量           |
-| 4    | static   | 声明静态变量             |
-
-重点说明
-
-在 C 语言里，auto、static、extern、register 这四个关键字主要用来修饰变量或函数，分别影响它们的存储方式、作用域、生命周期或是可见性
-
-1. **auto** 关键字:它用来声明自动变量，也是编译器默认的变量存储类别 —— 就算你不写 auto，普通局部变量默认就是 auto 的。这种变量的内存是编译器自动分配的，存在栈区里，生命周期只限于它所在的代码块，比如函数、循环或者 if 语句块，代码块执行完，变量内存就会自动释放。不过要注意，auto 变量如果没初始化，里面的值是随机的，用之前最好显式赋值。
-
-2. **static** 关键字:它的作用主要是限制作用域和延长生命周期，能修饰变量也能修饰函数。先看修饰变量的情况：如果在函数里用 static 修饰局部变量，这个变量的作用域还是只在函数内部，但生命周期会变成整个程序运行期间 —— 就算函数调用结束，它的值也不会丢，下次调用函数还能接着用，而且它的内存存在静态区，不是栈区，初始化也只在程序编译时做一次，之后不会重复初始化。如果用 static 修饰全局变量，那这个变量的作用域就仅限于定义它的文件，哪怕其他文件用 extern 声明也没法用它，能避免不同文件间的变量名冲突。再看修饰函数，给函数加 static 后，这个函数就只能在当前文件里被调用，其他文件看不到也用不了，同样是为了防止多文件下的函数名重复。
-
-3. **extern** 关键字:它的作用很明确，就是声明某个变量或函数的定义在其他文件里，现在只是要在当前文件里用它。比如你在 A 文件里定义了一个全局变量 int num，想在 B 文件里用，就在 B 文件里写 extern int num，这样编译器链接的时候就会去其他文件找 num 的定义。要注意的是，extern 只能做声明，不能定义变量 —— 比如 extern int num; 是声明，而 extern int num=10; 就变成定义了，这不符合它的用法。
-
-4. **register** 关键字:它是请求编译器尽量把变量存到 CPU 的内部寄存器里，而不是普通内存。因为 CPU 访问寄存器比访问内存快得多，所以这种变量用起来效率更高，适合那些频繁被使用的变量，比如循环里的计数变量。不过这只是个 “请求”，编译器可能不会满足 —— 如果寄存器满了，变量还是会存在内存里。另外，因为寄存器不是内存，所以不能用 & 符号取 register 变量的地址，这是它的一个重要限制。
-
-​	这四个关键字的核心区别在于影响的维度不同：auto 主要管默认的存储和生命周期，static 管作用域和生命周期，extern 管跨文件的声明引用，register 管高效存储。
-
-> 寄存器其实就是一块一块小的存储空间，只不过其存储数据要比内存快得多。
-
-四、其它关键字
-
-| 序号 | 关键字   | 说明                         |
-| ---- | -------- | ---------------------------- |
-| 1    | const    | 声明只读变量                 |
-| 2    | sizeof   | 计算数据类型长度（字节数）   |
-| 3    | typedef  | 给数据类型取别名             |
-| 4    | volatile | 所修饰的对象不能被编译器优化 |
-
-重点说明：
-1、const修饰只读变量，变量一旦赋初值就不能被修改。编译器不为只读变量分配内存，这使得它的效率也很高。
-2、sizeof后面常跟这一对括号，但它绝对不是函数，它可以计算数据类型的大小，单位为字节。
-3、typedef的意思是给一个已经存在的数据类型取一个别名，而不是定义新的数据类型。尤其是结构体之类的自定义数据类型，常常需要取一个适用于实际情况的别名。如：
+数据类型占用的字节数由实现决定，不能把某个平台上的结果当成 C 标准的统一规定。可以使用 `sizeof` 查看当前编译器中的实际大小：
 
 ```c
-typedef struct Student
-{
-int a;
-}Stu;
-//这里的Stu实际上就是struct Student的别名
-stu x; 
-----------------------------------
-struct Student
-{
-	int a;
-};
-typedef struct Student GYStud;//struct Student GYStud;全局结构体变量
-typedef struct Student PStud;
-typedef int Arr[10];
-typedef int* PINT;
-typedef unsigned int UINT;
-int main(void){
-    struct Student stu;//无typedef
-    GYStud x,y;
-    PStud s,p;
-    Arr a,b = {1,2,3,};
-    UNIT a,b = 10;
-    PINT p = NULL,s;
-    return 0;
-}
-//struct Student Student;编译通过
-//类型名不是关键字,变量命可以同名
-
---------------------------------
 #include <stdio.h>
-#define SINT int *
-typedef int* PINT;
-int main(void){
-	SINT a,b;
-  //int *a,b;
-    PINT p,s;
+
+int main(void) {
+    printf("char:   %zu bytes\n", sizeof(char));
+    printf("short:  %zu bytes\n", sizeof(short));
+    printf("int:    %zu bytes\n", sizeof(int));
+    printf("long:   %zu bytes\n", sizeof(long));
+    printf("float:  %zu bytes\n", sizeof(float));
+    printf("double: %zu bytes\n", sizeof(double));
     return 0;
 }
 ```
 
-4、volatile是一种类型修饰符，编译器会对它修饰的变量进行特殊地址的稳定访问而不进行代码上的优化。那这里的优化具体指的是什么意思呢？
+`sizeof` 的结果类型是 `size_t`，输出时通常使用 `%zu`，而不是 `%d`。
 
-比如你想要吃苹果，这时你有两种选择，去苹果园（特殊地址）摘和去商店买，商店里的苹果来自苹果园。所谓的优化实际上是一种“偷懒”行为，当你每次吃苹果都只是去商店买而不去苹果园摘，就是一种优化行为。volatile关键字就是要你每次吃苹果时都只能去苹果园摘而不能去商店买，这就是特殊地址的稳定访问。因为商店里的苹果可能是坏的，已经改变的，而苹果园里的苹果一直都是新鲜的，完好的。
+运行结果会因平台和编译器不同而不同：
 
-回到程序里一想，如果你需要某个变量的值稳定，而它又可能在程序执行过程中移到其它地方（商店）时发生改变，为了防止编译器“偷懒”，故你需要在这个关键字前用volatile修饰。
-五、表格汇总
-32个关键字如下：
+![基本数据类型大小](https://i-blog.csdnimg.cn/blog_migrate/9dd15044b62e83979e4ed1aeba19e066.png)
 
-![C 语言关键字总表](./.gitbook/assets/book-images/c-learning/c-learning-08.png)
+### signed、unsigned 与 char
 
-### 预处理器：宏、断言与条件编译
+默认情况下，`int`、`short` 和 `long` 都是有符号类型：
 
-预处理器在真正编译前处理 `#include`、宏和条件编译。宏参数必须加括号，否则调用者的运算符优先级可能改变结果：
+```c
+signed int a = -10;
+int b = -20;                // 与 signed int 等价
+unsigned int c = 20u;
+```
+
+`char`、`signed char` 和 `unsigned char` 是三种不同的类型：
+
+```c
+char ch = 'A';
+signed char value1 = -10;
+unsigned char value2 = 250;
+```
+
+普通 `char` 是否带符号由实现决定。如果需要明确表示范围，应使用 `signed char` 或 `unsigned char`。
+
+不要手写范围，使用 `<limits.h>` 中的宏更加可靠：
+
+```c
+#include <limits.h>
+#include <stdio.h>
+
+int main(void) {
+    printf("CHAR_MIN = %d\n", CHAR_MIN);
+    printf("CHAR_MAX = %d\n", CHAR_MAX);
+    printf("UCHAR_MAX = %u\n", UCHAR_MAX);
+    return 0;
+}
+```
+
+`unsigned` 类型只保存非负数，发生超出范围的运算时会按该类型的模进行转换。涉及大小比较时，应特别注意有符号数和无符号数混合运算可能产生意外结果。
+
+### struct
+
+`struct` 用于定义结构体，把多个成员组织成一个对象：
+
+```c
+struct Student {
+    char id[10];
+    char name[20];
+    int age;
+};
+
+int main(void) {
+    struct Student student = {"09001", "Zhang San", 20};
+    return student.age == 20 ? 0 : 1;
+}
+```
+
+结构体成员可以是不同类型。成员按声明顺序排列，但成员之间可能存在对齐填充，因此：
+
+```c
+sizeof(struct Student)
+```
+
+不一定等于所有成员大小之和。
+
+### union
+
+`union` 用于定义联合体。所有成员共享同一段存储空间，同一时刻通常只读取当前写入的成员：
+
+```c
+union Number {
+    int i;
+    float f;
+};
+
+int main(void) {
+    union Number number;
+
+    number.i = 42;
+    printf("%d\n", number.i);
+
+    number.f = 3.14f;
+    printf("%.2f\n", number.f);
+    return 0;
+}
+```
+
+联合体的大小至少能够容纳最大的成员，但联合体本身不会记录当前哪个成员有效。实际使用时，通常配合枚举标签：
+
+```c
+enum ValueKind {
+    VALUE_INT,
+    VALUE_DOUBLE
+};
+
+struct Value {
+    enum ValueKind kind;
+    union {
+        int i;
+        double d;
+    } data;
+};
+```
+
+读取联合体成员时，必须遵守标签所记录的类型。否则，程序可能按错误的方式解释同一段内存。
+
+### enum
+
+`enum` 用于定义一组相关的整数常量：
+
+```c
+enum Color {
+    COLOR_RED,
+    COLOR_GREEN,
+    COLOR_BLUE
+};
+
+int main(void) {
+    enum Color color = COLOR_GREEN;
+    return color == COLOR_GREEN ? 0 : 1;
+}
+```
+
+默认情况下，枚举成员从 `0` 开始递增，也可以显式指定值：
+
+```c
+enum HttpStatus {
+    STATUS_OK = 200,
+    STATUS_NOT_FOUND = 404,
+    STATUS_ERROR = 500
+};
+```
+
+枚举常量比直接写数字更容易阅读：
+
+```c
+enum Direction {
+    DIRECTION_UP,
+    DIRECTION_DOWN,
+    DIRECTION_LEFT,
+    DIRECTION_RIGHT
+};
+```
+
+从文件、网络或用户输入得到整数后，不能直接假定它属于某个枚举集合，使用前应检查范围：
+
+```c
+int value = 2;
+
+if (value >= DIRECTION_UP && value <= DIRECTION_RIGHT) {
+    enum Direction direction = (enum Direction)value;
+}
+```
+
+枚举类型的底层表示由实现决定，不应依赖它一定是某种固定宽度的整数。
+
+### void
+
+`void` 表示“无类型”或“无返回值”。
+
+无返回值函数：
+
+```c
+void print_message(void) {
+    puts("hello");
+}
+```
+
+明确表示函数没有参数：
+
+```c
+int main(void) {
+    return 0;
+}
+```
+
+这里的 `void` 和省略参数列表不同：
+
+```c
+int old_style();       // 没有说明参数信息
+int modern_style(void); // 明确表示没有参数
+```
+
+`void *` 是通用对象指针，可以保存任意对象的地址，但不能直接解引用：
+
+```c
+void print_int(const void *data) {
+    const int *value = data;
+    printf("%d\n", *value);
+}
+```
+
+## 控制语句关键字
+
+### 条件语句
+
+| 关键字    | 含义               |
+| ------ | ---------------- |
+| `if`   | 根据条件决定是否执行语句     |
+| `else` | `if` 条件不成立时执行的分支 |
+
+```c
+if (score >= 60) {
+    puts("及格");
+} else {
+    puts("需要继续练习");
+}
+```
+
+### 循环语句
+
+| 关键字     | 含义              |
+| ------- | --------------- |
+| `for`   | 适合次数明确或有计数变量的循环 |
+| `while` | 条件成立时重复执行       |
+| `do`    | 先执行一次循环体，再判断条件  |
+
+```c
+for (int i = 0; i < 3; ++i) {
+    printf("%d\n", i);
+}
+
+int n = 3;
+while (n > 0) {
+    --n;
+}
+
+do {
+    puts("至少执行一次");
+} while (0);
+```
+
+### break 与 continue
+
+| 关键字        | 含义                 |
+| ---------- | ------------------ |
+| `break`    | 立即结束当前循环或 `switch` |
+| `continue` | 跳过本轮剩余语句，进入下一轮循环   |
+
+```c
+for (int i = 0; i < 10; ++i) {
+    if (i == 3) {
+        continue;
+    }
+    if (i == 7) {
+        break;
+    }
+    printf("%d\n", i);
+}
+```
+
+`break` 只结束当前所在的循环或 `switch`，不会一次跳出多层循环。
+
+### switch、case 与 default
+
+| 关键字       | 含义                |
+| --------- | ----------------- |
+| `switch`  | 根据表达式的值选择分支       |
+| `case`    | 一个具体的匹配分支         |
+| `default` | 没有任何 `case` 匹配时执行 |
+
+```c
+int command = 2;
+
+switch (command) {
+    case 1:
+        puts("start");
+        break;
+    case 2:
+        puts("stop");
+        break;
+    default:
+        puts("unknown command");
+        break;
+}
+```
+
+`case` 不会自动结束执行流程。如果不写 `break`，程序会继续执行后面的分支，这种行为称为贯穿：
+
+```c
+switch (value) {
+    case 1:
+    case 2:
+        puts("value is 1 or 2");
+        break;
+    default:
+        puts("other value");
+        break;
+}
+```
+
+`switch` 的表达式通常是整数、字符或枚举类型，不能直接使用浮点数或字符串。
+
+### goto
+
+`goto` 用于跳转到同一个函数中的标签：
+
+```c
+int result = 0;
+
+if (failed) {
+    goto cleanup;
+}
+
+result = 1;
+
+cleanup:
+    return result;
+```
+
+`goto` 不会跳转到其他函数，也不能跳入另一个函数的代码块。简单逻辑中优先使用循环、条件语句和函数；在统一清理资源或跳出多层嵌套时，`goto` 可以减少重复代码。
+
+### return
+
+`return` 用于结束当前函数，并可向调用者返回一个值：
+
+```c
+int add(int a, int b) {
+    return a + b;
+}
+
+void stop(void) {
+    return;
+}
+```
+
+`main` 返回 `0` 通常表示程序正常结束，非零值通常表示发生了错误：
+
+```c
+int main(void) {
+    return 0;
+}
+```
+
+## 存储类别关键字
+
+| 关键字        | 主要作用              |
+| ---------- | ----------------- |
+| `auto`     | 声明自动存储期的局部变量      |
+| `static`   | 控制链接属性或延长局部变量的存储期 |
+| `extern`   | 声明其他位置定义的对象或函数    |
+| `register` | 请求编译器优先使用寄存器保存对象  |
+
+### auto
+
+普通函数内部定义的局部变量默认具有自动存储期，通常不需要显式写 `auto`：
+
+```c
+void function(void) {
+    int value = 10;
+    auto int count = 0;
+}
+```
+
+自动变量在进入所在代码块时创建，离开代码块时结束生存期。未初始化的自动变量值是不确定的，使用前必须初始化。
+
+不要把“自动变量一定在栈上”当作 C 标准保证。具体存储位置由编译器和优化策略决定。
+
+### static
+
+`static` 的含义取决于使用位置。
+
+#### **修饰局部变量**
+
+```c
+#include <stdio.h>
+
+void counter(void) {
+    static int count = 0;
+    ++count;
+    printf("%d\n", count);
+}
+
+int main(void) {
+    counter();
+    counter();
+    counter();
+    return 0;
+}
+```
+
+输出：
+
+```
+1
+2
+3
+```
+
+局部静态变量的作用域仍然是所在函数或代码块，但存储期贯穿整个程序运行过程，函数返回后值不会消失。
+
+#### **修饰文件作用域变量**
+
+```c
+static int file_count = 0;
+```
+
+文件作用域的静态变量只在当前源文件中可见，其他源文件不能通过 `extern` 使用它。
+
+#### **修饰函数**
+
+```c
+static void helper(void) {
+    puts("only this source file can call me");
+}
+```
+
+静态函数具有内部链接，只能在当前源文件中调用，适合隐藏模块内部实现。
+
+#### extern
+
+`extern` 用于声明在其他位置定义的对象或函数：
+
+```c
+/* config.c */
+int max_connections = 100;
+```
+
+```c
+/* main.c */
+extern int max_connections;
+
+int main(void) {
+    return max_connections > 0 ? 0 : 1;
+}
+```
+
+`extern int max_connections;` 是声明，不分配新的对象。
+
+下面这句带初始化器，因此是定义：
+
+```c
+extern int max_connections = 100;
+```
+
+它语法上合法，但通常不需要这样写。跨文件共享对象时，应在一个源文件中定义，在其他源文件中使用 `extern` 声明。
+
+#### register
+
+`register` 是给编译器的优化建议：
+
+```c
+register int i;
+```
+
+现代编译器会自行决定变量是否放入寄存器，因此 `register` 通常不会带来明显收益。
+
+`register` 变量不能使用取地址运算符：
+
+```c
+register int value = 10;
+// int *p = &value;  // 错误
+```
+
+## 其他关键字
+
+| 关键字        | 作用                    |
+| ---------- | --------------------- |
+| `const`    | 通过当前访问路径限制对象修改        |
+| `sizeof`   | 计算类型或表达式的大小           |
+| `typedef`  | 为已有类型创建别名             |
+| `volatile` | 告知编译器对象值可能在程序控制之外发生变化 |
+
+### const
+
+`const` 用于限制通过某个名字或指针修改对象：
+
+```c
+const int value = 10;
+// value = 20;       // 错误
+```
+
+常量指针和指向常量的指针含义不同：
+
+```c
+const int *p1;   // 不能通过 p1 修改目标对象
+int *const p2;   // p2 不能改变指向
+```
+
+C 语言中的 `const` 变量不一定是编译期常量，也不一定不占用内存。需要编译期数组长度时，可以使用宏或枚举常量：
+
+```c
+enum { BUFFER_SIZE = 128 };
+int buffer[BUFFER_SIZE];
+```
+
+### sizeof
+
+`sizeof` 不是函数，而是一元运算符：
+
+```c
+int values[4];
+
+printf("%zu\n", sizeof values);
+printf("%zu\n", sizeof values / sizeof values[0]);
+```
+
+数组在 `sizeof` 中不会转换为指针，因此可以计算数组总大小。但数组作为函数参数时会调整为指针：
+
+```c
+void print_values(int values[]) {
+    sizeof(values);  // 得到的是指针大小，不是数组大小
+}
+```
+
+### typedef
+
+`typedef` 为已有类型创建别名：
+
+```c
+typedef int Score;
+typedef int Numbers[10];
+typedef int *IntPointer;
+
+Score score = 100;
+Numbers values = {0};
+IntPointer pointer = NULL;
+```
+
+使用结构体时，`typedef` 可以简化类型名称：
+
+```c
+typedef struct Student {
+    char name[20];
+    int age;
+} Student;
+
+Student student = {"Zhang San", 20};
+```
+
+`typedef` 不会创建新的运行时类型，也不会改变对象的存储布局。
+
+需要注意宏与 `typedef` 的区别：
+
+```c
+#define SINT int *
+typedef int *PINT;
+
+SINT a, b;  // 展开为 int *a, b，只有 a 是指针
+PINT p, q;  // p 和 q 都是 int *
+```
+
+涉及指针类型时，`typedef` 往往更容易读懂，但也不要滥用别名隐藏指针层级。
+
+### volatile
+
+`volatile` 用于告诉编译器：对象的值可能被程序之外的因素改变，每次访问都必须按照源代码要求执行：
+
+```c
+volatile int device_status;
+```
+
+典型场景包括：
+
+* 内存映射硬件寄存器；
+* 信号处理程序可能访问的对象；
+* 某些嵌入式系统共享状态。
+
+`volatile` 不等于线程安全，也不提供原子性，不等于内存屏障。多线程同步应使用 `<stdatomic.h>` 中的原子类型或线程库提供的同步工具。
+
+## C99、C11 及更高版本的关键字
+
+### C99
+
+| 关键字          | 含义                       |
+| ------------ | ------------------------ |
+| `inline`     | 建议编译器考虑内联函数              |
+| `restrict`   | 承诺某个指针访问的对象不会通过其他不相关指针访问 |
+| `_Bool`      | 布尔类型                     |
+| `_Complex`   | 复数类型                     |
+| `_Imaginary` | 虚数类型，实际支持情况取决于实现         |
+
+### C11
+
+| 关键字              | 含义          |
+| ---------------- | ----------- |
+| `_Alignas`       | 指定对象的对齐要求   |
+| `_Alignof`       | 查询类型的对齐要求   |
+| `_Atomic`        | 声明原子类型      |
+| `_Generic`       | 根据表达式类型选择结果 |
+| `_Noreturn`      | 声明函数不会返回    |
+| `_Static_assert` | 编译期断言       |
+| `_Thread_local`  | 声明线程存储期对象   |
+
+示例：
+
+```c
+#include <stdio.h>
+#include <stdalign.h>
+
+struct Data {
+    char ch;
+    int value;
+};
+
+int main(void) {
+    printf("alignment = %zu\n", alignof(struct Data));
+    _Static_assert(sizeof(int) >= 2, "int is too small");
+    return 0;
+}
+```
+
+## 预处理器：宏、断言与条件编译
+
+预处理器在正式编译前处理 `#include`、宏和条件编译。
+
+宏参数应加括号：
 
 ```c
 #define SQUARE(x) ((x) * (x))
 ```
 
-即使写对了括号，`SQUARE(i++)` 仍会把 `i++` 求值两次。需要单次求值时，优先使用 `static inline` 函数；需要按类型选择实现时，可以使用 C11 `_Generic`。
+即使宏写对了括号，下面的调用仍然会让 `i++` 求值两次：
 
 ```c
-static inline int abs_int(int x) { return x < 0 ? -x : x; }
-#define ABS(x) _Generic((x), int: abs_int)(x)
+#define SQUARE(x) ((x) * (x))
+
+int i = 3;
+int value = SQUARE(i++);
 ```
 
-头文件应有保护宏，避免同一个声明被展开多次：
+需要保证参数只求值一次时，优先使用 `static inline` 函数：
+
+```c
+static inline int square_int(int x) {
+    return x * x;
+}
+```
+
+头文件通常使用保护宏：
 
 ```c
 #ifndef CONFIG_H
 #define CONFIG_H
-/* 类型、常量和函数声明 */
+
+#define BUFFER_SIZE 128
+
 #endif
 ```
 
-`assert` 用来检查程序员的内部假设，不应替代用户输入校验。定义 `NDEBUG` 后，断言会被移除，所以断言表达式里不要放必须执行的副作用。
-
-预定义宏可以帮助定位错误：
+`assert` 用于检查程序员的内部假设，不应替代用户输入校验：
 
 ```c
-#define CHECK(expr) \\
-    do { if (!(expr)) fprintf(stderr, "%s:%d: %s\\n", \\
-            __FILE__, __LINE__, #expr); } while (0)
+#include <assert.h>
+
+int divide(int a, int b) {
+    assert(b != 0);
+    return a / b;
+}
 ```
 
-怀疑宏展开结果时，用 `gcc -E source.c` 生成预处理后的源码再看；编译器不会替你猜宏作者的本意。
+定义 `NDEBUG` 后，断言会被移除，因此不要把必须执行的副作用放进断言表达式。
+
+预处理器宏可以帮助定位错误：
+
+```c
+#include <stdio.h>
+
+#define CHECK(expr) \
+    do { \
+        if (!(expr)) { \
+            fprintf(stderr, "%s:%d: %s\n", \
+                    __FILE__, __LINE__, #expr); \
+        } \
+    } while (0)
+```
+
+怀疑宏展开结果时，可以使用下面的命令查看预处理后的源码：
+
+```bash
+gcc -E source.c -o source.i
+```
+
+## 关键字速查表
+
+| 关键字        | 关键字        | 关键字        | 关键字      |
+| ---------- | ---------- | ---------- | -------- |
+| `auto`     | `break`    | `case`     | `char`   |
+| `const`    | `continue` | `default`  | `do`     |
+| `double`   | `else`     | `enum`     | `extern` |
+| `float`    | `for`      | `goto`     | `if`     |
+| `int`      | `long`     | `register` | `return` |
+| `short`    | `signed`   | `sizeof`   | `static` |
+| `struct`   | `switch`   | `typedef`  | `union`  |
+| `unsigned` | `void`     | `volatile` | `while`  |
+
+| 标准版本    | 关键字              | 分类    | 说明                      |
+| ------- | ---------------- | ----- | ----------------------- |
+| C89/C90 | `auto`           | 存储类别  | 声明自动存储期的局部变量            |
+| C89/C90 | `break`          | 控制流   | 结束当前循环或 `switch`        |
+| C89/C90 | `case`           | 控制流   | 定义 `switch` 的匹配分支       |
+| C89/C90 | `char`           | 基本类型  | 声明字符类型                  |
+| C89/C90 | `const`          | 类型限定符 | 限制通过当前访问路径修改对象          |
+| C89/C90 | `continue`       | 控制流   | 跳过本轮循环的剩余语句             |
+| C89/C90 | `default`        | 控制流   | `switch` 中没有匹配项时执行      |
+| C89/C90 | `do`             | 控制流   | 定义至少执行一次的循环             |
+| C89/C90 | `double`         | 基本类型  | 声明双精度浮点类型               |
+| C89/C90 | `else`           | 控制流   | `if` 条件不成立时执行的分支        |
+| C89/C90 | `enum`           | 构造类型  | 定义枚举类型                  |
+| C89/C90 | `extern`         | 存储类别  | 声明其他位置定义的对象或函数          |
+| C89/C90 | `float`          | 基本类型  | 声明单精度浮点类型               |
+| C89/C90 | `for`            | 控制流   | 定义 `for` 循环             |
+| C89/C90 | `goto`           | 控制流   | 跳转到当前函数中的指定标签           |
+| C89/C90 | `if`             | 控制流   | 根据条件选择是否执行语句            |
+| C89/C90 | `int`            | 基本类型  | 声明整型                    |
+| C89/C90 | `long`           | 类型修饰符 | 声明长整型或扩展其他整数类型          |
+| C89/C90 | `register`       | 存储类别  | 请求编译器优先使用寄存器保存对象        |
+| C89/C90 | `return`         | 控制流   | 结束函数并返回结果               |
+| C89/C90 | `short`          | 类型修饰符 | 声明短整型或修饰其他整数类型          |
+| C89/C90 | `signed`         | 类型修饰符 | 声明有符号整数类型               |
+| C89/C90 | `sizeof`         | 运算符   | 计算类型或表达式的大小             |
+| C89/C90 | `static`         | 存储类别  | 控制链接属性或延长局部对象的存储期       |
+| C89/C90 | `struct`         | 构造类型  | 定义结构体类型                 |
+| C89/C90 | `switch`         | 控制流   | 根据整数或枚举值选择分支            |
+| C89/C90 | `typedef`        | 类型定义  | 为已有类型创建别名               |
+| C89/C90 | `union`          | 构造类型  | 定义共享存储空间的联合体            |
+| C89/C90 | `unsigned`       | 类型修饰符 | 声明无符号整数类型               |
+| C89/C90 | `void`           | 基本类型  | 表示无类型、无参数或无返回值          |
+| C89/C90 | `volatile`       | 类型限定符 | 告知编译器对象的值可能被外部因素改变      |
+| C89/C90 | `while`          | 控制流   | 定义条件循环                  |
+| C99     | `inline`         | 函数说明  | 建议编译器考虑内联函数，编译器可以忽略     |
+| C99     | `restrict`       | 类型限定符 | 承诺指针是访问目标对象的主要途径，便于优化   |
+| C99     | `_Bool`          | 基本类型  | C 语言内置布尔类型，值为 `0` 或 `1` |
+| C99     | `_Complex`       | 基本类型  | 声明复数类型                  |
+| C99     | `_Imaginary`     | 基本类型  | 声明纯虚数类型，实际支持取决于实现       |
+| C11     | `_Alignas`       | 对齐控制  | 指定对象或类型的对齐要求            |
+| C11     | `_Alignof`       | 对齐查询  | 查询类型的对齐要求               |
+| C11     | `_Atomic`        | 原子类型  | 声明原子类型或原子类型限定符          |
+| C11     | `_Generic`       | 类型选择  | 根据表达式类型选择对应结果           |
+| C11     | `_Noreturn`      | 函数说明  | 声明函数不会返回到调用者            |
+| C11     | `_Static_assert` | 编译期检查 | 在编译阶段检查条件是否成立           |
+| C11     | `_Thread_local`  | 存储类别  | 声明线程局部存储期对象             |
