@@ -487,12 +487,12 @@ int main() {
 	size_t size = sizeof(dx);	// int, row col
 	int (*s)[3][4] = &dx;	// int row col
 	int (*p)[4] = dx;		//首元素地址
-	printf("%d \n", sizeof(p));		// 4
-	printf("%d \n",sizeof(*p));		// 16
-	printf("%d \n",sizeof(s));		// 4
-	printf ("%d \n",sizeof (*s));	// 48
-	printf("%d \n", sizeof(**s));	// 16
-    printf("%d \n", sizeof(***s));	// 4
+	printf("%zu\n", sizeof(p));
+	printf("%zu\n", sizeof(*p));
+	printf("%zu\n", sizeof(s));
+	printf("%zu\n", sizeof(*s));
+	printf("%zu\n", sizeof(**s));
+    printf("%zu\n", sizeof(***s));
 	return 0;
 }
 ```
