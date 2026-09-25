@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1760" viewBox="0 0 1400 1760">
+  <rect width="1400" height="1760" fill="#f7f8fa"/>
+  <text x="70" y="80" font-family="sans-serif" font-size="38" font-weight="700" fill="#1f2937">C 语言运算符优先级（高 → 低）</text>
+  <text x="70" y="122" font-family="sans-serif" font-size="20" fill="#4b5563">括号可以明确意图；不要把复杂表达式交给记忆力处理。</text>
+  <g font-family="sans-serif" font-size="20">
+    <rect x="60" y="155" width="1280" height="62" fill="#1f4e79"/>
+    <text x="90" y="195" fill="white">级别</text><text x="190" y="195" fill="white">运算符</text><text x="520" y="195" fill="white">名称</text><text x="910" y="195" fill="white">结合性</text><text x="1100" y="195" fill="white">说明</text>
+  </g>
+  <g font-family="sans-serif" font-size="19" fill="#111827" stroke="#cbd5e1">
+    <g fill="#eef4fb"><rect x="60" y="217" width="1280" height="86"/><rect x="60" y="303" width="1280" height="110"/><rect x="60" y="413" width="1280" height="110"/><rect x="60" y="523" width="1280" height="86"/><rect x="60" y="609" width="1280" height="86"/><rect x="60" y="695" width="1280" height="86"/><rect x="60" y="781" width="1280" height="86"/><rect x="60" y="867" width="1280" height="86"/><rect x="60" y="953" width="1280" height="86"/><rect x="60" y="1039" width="1280" height="86"/><rect x="60" y="1125" width="1280" height="86"/><rect x="60" y="1211" width="1280" height="86"/><rect x="60" y="1297" width="1280" height="86"/><rect x="60" y="1383" width="1280" height="86"/><rect x="60" y="1469" width="1280" height="86"/></g>
+    <g stroke="#94a3b8" fill="none"><path d="M160 155v1400M490 155v1400M890 155v1400M1080 155v1400M60 155h1280v1400H60zM60 217h1280M60 303h1280M60 413h1280M60 523h1280M60 609h1280M60 695h1280M60 781h1280M60 867h1280M60 953h1280M60 1039h1280M60 1125h1280M60 1211h1280M60 1297h1280M60 1383h1280M60 1469h1280"/></g>
+    <g stroke="none">
+      <text x="105" y="270">1</text><text x="190" y="250">[]  ()  .  -&gt;</text><text x="520" y="250">下标、调用、成员访问</text><text x="910" y="250">左 → 右</text><text x="1100" y="250">后缀运算符</text>
+      <text x="105" y="370">2</text><text x="190" y="345">++  --  +  -  !  ~</text><text x="520" y="345">一元运算、取地址、解引用</text><text x="910" y="345">右 → 左</text><text x="1100" y="345">包括 sizeof、类型转换</text><text x="190" y="385">*  &amp;  sizeof  (类型)</text>
+      <text x="105" y="480">3</text><text x="190" y="480">*  /  %</text><text x="520" y="480">乘、除、取余</text><text x="910" y="480">左 → 右</text>
+      <text x="105" y="575">4</text><text x="190" y="575">+  -</text><text x="520" y="575">加、减</text><text x="910" y="575">左 → 右</text>
+      <text x="105" y="660">5</text><text x="190" y="660">&lt;&lt;  &gt;&gt;</text><text x="520" y="660">位移</text><text x="910" y="660">左 → 右</text>
+      <text x="105" y="746">6</text><text x="190" y="746">&lt;  &lt;=  &gt;  &gt;=</text><text x="520" y="746">关系比较</text><text x="910" y="746">左 → 右</text>
+      <text x="105" y="832">7</text><text x="190" y="832">==  !=</text><text x="520" y="832">相等比较</text><text x="910" y="832">左 → 右</text>
+      <text x="105" y="918">8</text><text x="190" y="918">&amp;</text><text x="520" y="918">按位与</text><text x="910" y="918">左 → 右</text>
+      <text x="105" y="1004">9</text><text x="190" y="1004">^</text><text x="520" y="1004">按位异或</text><text x="910" y="1004">左 → 右</text>
+      <text x="105" y="1090">10</text><text x="190" y="1090">|</text><text x="520" y="1090">按位或</text><text x="910" y="1090">左 → 右</text>
+      <text x="105" y="1176">11</text><text x="190" y="1176">&amp;&amp;</text><text x="520" y="1176">逻辑与</text><text x="910" y="1176">左 → 右</text><text x="1100" y="1176">短路求值</text>
+      <text x="105" y="1262">12</text><text x="190" y="1262">||</text><text x="520" y="1262">逻辑或</text><text x="910" y="1262">左 → 右</text><text x="1100" y="1262">短路求值</text>
+      <text x="105" y="1348">13</text><text x="190" y="1348">?:</text><text x="520" y="1348">条件运算符</text><text x="910" y="1348">右 → 左</text><text x="1100" y="1348">唯一三元运算符</text>
+      <text x="105" y="1434">14</text><text x="190" y="1434">=  +=  -=  *=  /=  %=</text><text x="520" y="1434">赋值及复合赋值</text><text x="910" y="1434">右 → 左</text>
+      <text x="105" y="1520">15</text><text x="190" y="1520">,</text><text x="520" y="1520">逗号运算符</text><text x="910" y="1520">左 → 右</text><text x="1100" y="1520">优先级最低</text>
+    </g>
+  </g>
+  <text x="70" y="1640" font-family="sans-serif" font-size="20" fill="#374151">注：优先级只决定分组，不决定所有操作数的求值顺序。涉及副作用时请拆成多条语句。</text>
+</svg>
