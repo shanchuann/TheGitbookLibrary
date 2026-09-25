@@ -5,6 +5,8 @@ icon: code
 
 # 指针
 
+> **学习路径**：指针把变量、数组、函数参数和动态内存统一到“地址与生存期”这条主线上。先掌握一级指针和安全解引用，再进入函数指针、结构体指针以及动态内存管理。
+
 指针是 C 语言中保存地址的变量。它本身也占用内存，但保存的不是普通数据，而是另一个对象的位置编号。掌握指针后，数组、字符串、函数参数和动态内存会连成一条线；没掌握时，程序通常会用一次崩溃提醒你检查边界。
 
 ## 什么是指针
@@ -548,6 +550,14 @@ void print_matrix_fixed(size_t rows, int matrix[][3]) {
 ```
 
 参数中的第一维可以省略，但后续维度必须让编译器知道，否则编译器无法计算 `matrix[r][c]` 的地址。若使用 `int **`，每次加一的步长是一个指针大小，与二维数组行的实际步长不匹配。
+
+原稿还给出了数组指针、指针数组和二级指针的对照图。阅读这些图时先看声明中的括号，再判断“指针指向什么”以及“加一时跨过多少字节”：
+
+![二级指针与数组关系图](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/book-images/typora/image-20260214184024653.png)
+
+![数组指针示意图](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/book-images/typora/image-20260215112802559.png)
+
+![指针数组与数组指针对照图](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/book-images/typora/image-20260215121901977.png)
 
 ## 结构体指针
 
