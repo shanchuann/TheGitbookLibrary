@@ -528,8 +528,8 @@ char str3[] = "apicot";
 char str4[] = "app";
 
 printf("%d\n", strcmp(str1, str2)); // 0
-printf("%d\n", strcmp(str1, str3)); // -1
-printf("%d\n", strcmp(str1, str4)); // 1
+printf("%d\n", strcmp(str1, str3)); // 小于 0
+printf("%d\n", strcmp(str1, str4)); // 大于 0
 ```
 
 `strcmp`（string compare）是 C 语言标准库中用于**比较两个字符串**的函数，定义在 `<string.h>` 头文件中。它的核心逻辑是**逐字符比较两个字符串的 ASCII 值**，直到遇到不同字符或字符串结束符 `'\0'`，最终返回一个整数表示比较结果。
