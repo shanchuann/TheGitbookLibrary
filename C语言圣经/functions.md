@@ -402,3 +402,25 @@ gcc -std=c17 -Wall -Wextra -Wpedantic functions_demo.c -o functions_demo
 下面的截图展示了该目录中的函数示例编译命令和运行输出。图片文件已放入 GitHub 仓库，因此 GitBook 同步后可以直接显示。
 
 ![函数示例在 WSL2 中运行](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/book-images/c-learning/functions-demo.png)
+
+## 函数接口的契约
+
+函数接口不仅是函数名和参数类型，还应说明所有权、有效输入、错误表示和副作用。例如：
+
+```c
+/*
+ * 返回 0 表示成功，-1 表示失败。
+ * out_sum 不能为 NULL；调用者负责提供可写的 int 对象。
+ */
+int parse_sum(const char *text, int *out_sum);
+```
+
+设计接口时应明确：
+
+1. 指针参数是否允许为空；
+2. 数组参数对应的元素个数由哪个参数提供；
+3. 返回的指针由谁释放；
+4. 失败时对象是否保持不变；
+5. 函数是否修改全局状态或静态状态。
+
+这种契约能把“能不能调用”变成可检查的规则，也能减少函数之间的隐式约定。

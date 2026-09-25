@@ -480,9 +480,11 @@ dx[i][j] == *(*(dx + i) + j)
 ```
 
 ```c
+#include <stddef.h>
+
 int main() {
 	int dx[3][4] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 }; 
-	int size = sizeof(dx);	// int, row col
+	size_t size = sizeof(dx);	// int, row col
 	int (*s)[3][4] = &dx;	// int row col
 	int (*p)[4] = dx;		//首元素地址
 	printf("%d \n", sizeof(p));		// 4
@@ -495,7 +497,7 @@ int main() {
 }
 ```
 
-需要注意`sizeof(s)`表示这是一个指针变量，大小为4，而`sizeof(***s)`表示这是一个int型数据，这两个并不是同样的含义。
+需要注意，`sizeof(s)`表示指针变量的大小，具体数值由平台决定；`sizeof(***s)`表示一个 `int` 对象的大小。这两个表达式的含义并不相同。
 
 经过以上内容的学习，想必对于以下内容已经胸有成竹了吧。
 

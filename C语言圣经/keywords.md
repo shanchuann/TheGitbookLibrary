@@ -111,8 +111,6 @@ int main(void) {
 
 运行结果会因平台和编译器不同而不同：
 
-![基本数据类型大小](https://i-blog.csdnimg.cn/blog_migrate/9dd15044b62e83979e4ed1aeba19e066.png)
-
 ### signed、unsigned 与 char
 
 默认情况下，`int`、`short` 和 `long` 都是有符号类型：
@@ -841,3 +839,15 @@ gcc -E source.c -o source.i
 | C11     | `_Noreturn`      | 函数说明  | 声明函数不会返回到调用者            |
 | C11     | `_Static_assert` | 编译期检查 | 在编译阶段检查条件是否成立           |
 | C11     | `_Thread_local`  | 存储类别  | 声明线程局部存储期对象             |
+
+## C90 到 C17 关键字总表
+
+下表按标准版本列出常用的 44 个关键字。编译器是否默认启用某个版本，取决于编译选项；阅读代码时应先确认 `-std=` 设置。
+
+| 标准      | 关键字                                                                                                                                                                                                                                                                   |
+| ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| C90/C89 | `auto`、`break`、`case`、`char`、`const`、`continue`、`default`、`do`、`double`、`else`、`enum`、`extern`、`float`、`for`、`goto`、`if`、`int`、`long`、`register`、`return`、`short`、`signed`、`sizeof`、`static`、`struct`、`switch`、`typedef`、`union`、`unsigned`、`void`、`volatile`、`while` |
+| C99 新增  | `_Bool`、`_Complex`、`_Imaginary`、`inline`、`restrict`                                                                                                                                                                                                                   |
+| C11 新增  | `_Alignas`、`_Alignof`、`_Atomic`、`_Generic`、`_Noreturn`、`_Static_assert`、`_Thread_local`                                                                                                                                                                               |
+
+`_Imaginary` 在不同编译器上的支持程度并不一致；使用复数和虚数类型时，应查阅目标编译器文档。C23 又引入了新的语法和关键字，不能把 C17 的 44 个关键字表当成所有标准版本的最终列表。

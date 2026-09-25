@@ -293,3 +293,17 @@ gcc -std=c17 -Wall -Wextra -Wpedantic triangle_area.c -o triangle_area -lm
 ```
 
 这里使用 `double` 而不是 `float`，是因为面积计算包含多次浮点运算，`double` 通常能够提供更高的精度。在简单示例中，`float` 也可以完成计算；但在连续计算中，多保留一些有效数字通常更稳妥。
+
+## 输入校验与错误处理
+
+`scanf` 的返回值表示成功转换的项目数，不应忽略：
+
+```c
+int age;
+if (scanf("%d", &age) != 1) {
+    fprintf(stderr, "invalid integer\n");
+    return 1;
+}
+```
+
+面向整行文本的交互通常更适合使用 `fgets`，再用 `strtol` 解析。这样可以控制最大读入长度，也能保留并检查多余字符。任何来自用户、文件或网络的数据都应视为不可信输入，不能只依赖格式字符串“碰巧匹配”。

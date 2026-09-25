@@ -252,16 +252,12 @@ int main() {
 
 字符串常量通常存储在内存.data区的**只读数据段（.rodata）**，因此**不允许被修改**。
 
-![image-20251108150009795](https://s2.loli.net/2025/11/08/Hvo9GiUOm6MeTrj.png)
-
 编译器会对相同的字符串常量进行 “合并”，即多个相同的字符串常量在内存中只存储一份。因此两个指针指向的为同一处地址`00577B38`,所以打印`1`。同时，指针 `ptra` 指向的是只读内存中的字符串，此时修改 `ptra[0] = 'x'` 会导致写入访问权限冲突。
 
 ```c
 char ch = ptra[0]; // *(ptra+0)
 //ptra[0] = 'W';
 ```
-
-![image-20251108151127701](https://s2.loli.net/2025/11/08/8rIk2otA1JLKYV7.png)
 
 字符串常量通常被赋值给`char*`类型的指针（如`char *p = "hello";`）。从语法上看，`char*`指针是允许修改指向的内容的（因为早期C语言并没有引入const关键字），但实际上字符串常量存储在只读内存段（如`.rodata`），**物理上不允许修改**。
 
@@ -279,6 +275,8 @@ return 0;
 ### 字符串排序
 
 #### 指针数组的排序
+
+> 兼容性说明：本节旧式示例使用 `gets_s`。它不是所有 GCC/Linux 环境都提供的 ISO C 通用接口；跨平台代码应使用带容量参数的 `fgets`，并处理读入行末的换行符。Windows/MSVC 项目可以使用 `gets_s`，但应明确标注其实现范围。
 
 ```c
 #define LEN 3
@@ -361,6 +359,8 @@ str3 -> Math
 ```
 
 #### 二维数组的排序
+
+> 读入二维字符数组时，优先使用 `fgets(buffer, sizeof buffer, stdin)`，不要使用没有长度限制的 `gets`。
 
 指针数组对于数据的存储并不友好，当我们想通过scanf来写入数据时，会因为指针并未初始化，指向的空间无效而导致失败。而二维数组则完全没有这类烦恼。因为当我们开辟空间之后地址已经确定，因此可以使用scanf等函数来进行数据的写入和修改。
 
@@ -544,8 +544,8 @@ printf("%d\n", strcmp(str1, str4)); // 1
 返回值判定：
 
 * 若两字符串**完全相同**（所有字符一致且同时结束）：返回 0（如 `str1` 与 `str2` 比较）；
-* 若 `s1` 在第一处不同位置的字符 ASCII 值**小于** `s2`：返回-1；
-* 若 `s1` 在第一处不同位置的字符 ASCII 值**大于** `s2`：返回1。
+* 若 `s1` 在第一处不同位置的字符 ASCII 值**小于** `s2`：返回小于 0 的值；
+* 若 `s1` 在第一处不同位置的字符 ASCII 值**大于** `s2`：返回大于 0 的值。
 * 当遇见`\0`时,认为`\0`为ASCII值最小的字符,按上两条的判定方法返回
 
 #### 自定义`strcmp`
@@ -840,6 +840,8 @@ char* mystrstr(const char* str, const char* substr) {
 > ```
 
 #### `strcpy`
+
+`strcpy_s` 属于 C11 Annex K 的可选边界检查接口，并非所有编译器都实现。Linux/GCC 示例应优先使用容量明确的复制逻辑或 `snprintf`；如果展示 `strcpy_s`，请注明它主要用于支持该扩展的实现（例如部分 MSVC 环境）。
 
 `char* strcpy( char* dest, const char* src );`
 
@@ -1561,3 +1563,36 @@ int main() {
 > * (可选) 整数（大于零），指定最大字段宽度，即函数在执行当前转换说明指定的转换时允许消耗的最大字符数。请注意，如果未提供宽度，`%s` 和 `%[` 可能会导致缓冲区溢出。
 > * (可选) 长度修饰符，指定接收参数的大小，即实际目标类型。这会影响转换精度和溢出规则。每个转换类型的默认目标类型不同,[见表格](https://cppreference.cn/w/c/io/fscanf)。
 > * 转换格式说明符。
+
+## 用 `strtol` 安全解析整数
+
+`atoi` 遇到无效输入时无法区分“输入为 0”和“转换失败”，发生范围溢出时也不能提供可靠的错误报告。需要处理用户输入时，应优先使用 `strtol`：
+
+```c
+#include <errno.h>
+#include <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+int parse_int(const char *text, int *out) {
+    char *end = NULL;
+    long value;
+
+    if (text == NULL || out == NULL) {
+        return -1;
+    }
+
+    errno = 0;
+    value = strtol(text, &end, 10);
+
+    if (end == text || *end != '\0' ||
+        errno == ERANGE || value < INT_MIN || value > INT_MAX) {
+        return -1;
+    }
+
+    *out = (int)value;
+    return 0;
+}
+```
+
+解析函数应同时检查是否读到数字、是否还有未处理字符以及是否发生范围错误。字符串函数只按字节工作；UTF-8 中一个人类字符可能由多个字节组成，因此 `strlen` 得到的是字节数，不是字符数。

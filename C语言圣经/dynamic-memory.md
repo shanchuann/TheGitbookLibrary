@@ -537,3 +537,23 @@ aligned\_alloc 属于 C11。size 必须是 alignment 的整数倍；不满足时
 3. 操作系统是否成功提供虚拟页和物理页。
 
 初学阶段先把第一层做好：检查返回值，记录所有权，避免越界和释放后使用。理解 brk 与 mmap 后，再去观察分配器和操作系统如何完成后两层工作。
+
+## 分配大小的溢出检查
+
+动态分配前必须确认元素个数乘以元素大小没有溢出：
+
+```c
+#include <stdint.h>
+#include <stdlib.h>
+
+void *array_alloc(size_t count, size_t size) {
+    if (size != 0 && count > SIZE_MAX / size) {
+        return NULL;
+    }
+    return malloc(count * size);
+}
+```
+
+`malloc(0)` 的行为允许返回空指针，也允许返回一个不能解引用但可以传给 `free` 的特殊指针。实际接口应避免把零长度申请当作普通对象使用。
+
+`brk/sbrk` 是传统进程堆边界接口，`mmap/munmap` 以虚拟内存区域为单位管理映射。应用程序通常不直接调用它们，而是通过 C 运行库分配器获得内存；分配器可能从堆或匿名映射取得更大的区域，再切分给调用者。

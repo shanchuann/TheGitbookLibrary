@@ -293,3 +293,23 @@ int nearly_equal(double a, double b, double eps) {
 不要用 `a == b` 判断两个计算结果是否“数学上相等”，除非你明确知道它们来自同一条无舍入误差的路径。金额、计数和文件大小优先使用整数；浮点数适合测量值、几何计算和统计结果。
 
 ![在 /home/shanchuan/CStudy 中运行的示例](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/c-language/wsl-cstudy-run.png)
+
+## 固定宽度类型与对象表示
+
+`int`、`long` 等基本类型的宽度由实现决定。需要固定宽度时，应使用：
+
+```c
+#include <stdint.h>
+#include <inttypes.h>
+#include <stdio.h>
+
+int main(void) {
+    uint32_t value = UINT32_C(0x12345678);
+    printf("value = %" PRIx32 "\n", value);
+    return 0;
+}
+```
+
+对象在内存中的表示由字节序、对齐和实现共同决定。把结构体或整数直接写入文件，可能把填充字节和平台字节序一并写入，换一台机器后就无法正确读取。可移植格式应逐字段编码，并明确整数宽度和字节序。
+
+有符号整数溢出属于未定义行为；无符号整数超出范围时按模运算处理。不要依赖溢出后的结果来实现业务逻辑，计算数组长度或分配大小时要先检查乘法是否会溢出。
