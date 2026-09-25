@@ -9,7 +9,7 @@ icon: code
 
 **整形**
 
-<table><thead><tr><th width="362.8001708984375">数据类型</th><th width="385.4000244140625">数据大小</th></tr></thead><tbody><tr><td>char</td><td>1</td></tr><tr><td>short</td><td>2</td></tr><tr><td>int</td><td>4</td></tr><tr><td>long int</td><td>4</td></tr><tr><td>iong long</td><td>8</td></tr></tbody></table>
+<table data-search="false"><thead><tr><th width="411.60009765625">数据类型</th><th width="344.5999755859375">数据大小</th></tr></thead><tbody><tr><td>char</td><td>1</td></tr><tr><td>short</td><td>2</td></tr><tr><td>int</td><td>4</td></tr><tr><td>long int</td><td>4</td></tr><tr><td>iong long</td><td>8</td></tr></tbody></table>
 
 如果没有注明，则默认为有符号整型，若是声明为 unsigned 则表示为无符号整型，只能表示大于0的数据。
 

@@ -11,7 +11,7 @@
 * [数组](arrays.md)
 * [函数](functions.md)
 * [可见性和生存期](scope-lifetime.md)
-* [运算符](operators.md)
+* [运算符与表达式](operators.md)
 * [指针](pointers.md)
 * [函数指针](function-pointers.md)
 * [结构体](structs.md)
