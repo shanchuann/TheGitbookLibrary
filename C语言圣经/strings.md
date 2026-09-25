@@ -5,6 +5,236 @@ icon: code
 
 # 字符串
 
+## 字符串的本质
+
+C 语言没有内置的 string 类型。C 字符串通常是以字符数组保存、并以空字符 \0 结尾的一段字符序列：
+
+```
+['h']['e']['l']['l']['o']['\0']
+  <------ strlen = 5 ------>
+  <--------- sizeof = 6 --------->
+```
+
+因此，字符串的长度和存储容量不是一回事：
+
+| 概念    | 含义                  |
+| ----- | ------------------- |
+| 字符串长度 | 从首字符到 \0 之前的字符数量    |
+| 数组容量  | 数组能够容纳的全部字节数        |
+| 终止符   | \0，占用一个字节，用于标记字符串结束 |
+
+没有 \0 终止符的字符数组不能直接传给 printf 的 %s、strlen、strcmp 等字符串函数。它们会继续读取后续内存，直到偶然遇到 \0，结果属于未定义行为。
+
+## 字符数组、字符指针与字符串字面量
+
+字符数组会保存字符串字面量的可修改副本：
+
+```c
+char text[] = "hello";
+text[0] = 'H';
+puts(text);
+```
+
+字符串字面量本身不能修改，指针应声明为指向常量的指针：
+
+```c
+const char *message = "hello";
+// message[0] = 'H';  // 错误：不能修改字符串字面量
+```
+
+下面两种对象的含义不同：
+
+| 写法                          | 含义                      |
+| --------------------------- | ----------------------- |
+| char text\[] = "hello"      | 创建一个字符数组，并复制字符串内容       |
+| const char \*text = "hello" | 指针指向字符串字面量，不拥有可写存储      |
+| char \*text = "hello"       | 老式写法，修改字面量仍是未定义行为，不建议使用 |
+
+相同字符串字面量是否共享地址由编译器决定，不能依赖指针相等判断字符串相等：
+
+```c
+const char *a = "hello";
+const char *b = "hello";
+
+/* a == b 的结果没有可移植的语义 */
+if (strcmp(a, b) == 0) {
+    puts("内容相同");
+}
+```
+
+字符串内容比较使用 strcmp、strncmp 等函数；指针比较只是在比较地址。
+
+## strlen、sizeof 与容量
+
+strlen 需要从指针指向的位置开始扫描，直到遇到 \0，时间复杂度为 O(n)：
+
+```c
+char text[16] = "hello";
+
+printf("length = %zu\n", strlen(text));
+printf("capacity = %zu\n", sizeof text);
+```
+
+在数组仍然保留数组类型的作用域内，sizeof 可以得到整个数组的容量；数组作为函数参数后会调整为指针：
+
+```c
+void print_text(const char text[]) {
+    printf("%zu\n", sizeof text);
+}
+```
+
+因此，函数通常需要同时接收指针和容量：
+
+```c
+void print_bytes(const char *data, size_t capacity) {
+    for (size_t i = 0; i < capacity; ++i) {
+        putchar(data[i]);
+    }
+}
+```
+
+## 安全读取字符串
+
+不要使用没有长度限制的 gets。它无法知道目标数组容量，已经从 C 标准中删除。
+
+读取一行文本时，优先使用 fgets：
+
+```c
+#include <stdio.h>
+#include <string.h>
+
+int main(void) {
+    char line[128];
+
+    if (fgets(line, sizeof line, stdin) == NULL) {
+        return 1;
+    }
+
+    line[strcspn(line, "\n")] = '\0';
+    printf("输入内容：%s\n", line);
+    return 0;
+}
+```
+
+fgets 可能保留换行符，上面的 strcspn 用来找到换行位置并将其替换为 \0。
+
+使用 scanf 读取单词时，必须限制最大宽度，并为终止符预留空间：
+
+```c
+char word[16];
+
+if (scanf("%15s", word) == 1) {
+    printf("%s\n", word);
+}
+```
+
+scanf 的 %s 会在空白处停止，不能读取带空格的整行文本。整行输入应使用 fgets，再根据需要解析。
+
+## 字符串复制、拼接与内存移动
+
+strcpy、strcat 和 sprintf 都要求调用者保证目标空间足够。目标数组容量不足时，行为未定义。
+
+```c
+char destination[32];
+const char *source = "hello";
+
+if (snprintf(destination, sizeof destination, "%s", source)
+        >= (int)sizeof destination) {
+    fprintf(stderr, "string was truncated\n");
+}
+```
+
+snprintf 会限制写入长度，并始终在容量大于零时写入终止符。它的返回值是本来需要写入的字符数，可以据此判断是否发生截断。
+
+处理原始字节时，使用 memcpy 或 memmove：
+
+| 函数      | 适用场景         |
+| ------- | ------------ |
+| memcpy  | 源区域和目标区域不能重叠 |
+| memmove | 源区域和目标区域可以重叠 |
+| memset  | 用同一个字节值填充内存  |
+
+```c
+char text[16] = "abcdef";
+
+memmove(text + 2, text, 4);
+text[6] = '\0';
+puts(text);
+```
+
+不要用 memcpy 处理可能重叠的区域，否则结果未定义。memset(text, 0, sizeof text) 可以清零字节，但不能把任意整数数组可靠地初始化为某个非零整数值。
+
+## 动态字符串
+
+当字符串长度在运行时才知道，可以使用 malloc 和 realloc 管理容量：
+
+```c
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int append_text(char **buffer, size_t *length, size_t *capacity,
+                const char *suffix) {
+    size_t suffix_length = strlen(suffix);
+
+    if (suffix_length > SIZE_MAX - *length - 1) {
+        return 0;
+    }
+
+    size_t required = *length + suffix_length + 1;
+    if (required > *capacity) {
+        size_t new_capacity = *capacity ? *capacity : 16;
+        while (new_capacity < required) {
+            if (new_capacity > SIZE_MAX / 2) {
+                new_capacity = required;
+                break;
+            }
+            new_capacity *= 2;
+        }
+
+        char *tmp = realloc(*buffer, new_capacity);
+        if (tmp == NULL) {
+            return 0;
+        }
+        *buffer = tmp;
+        *capacity = new_capacity;
+    }
+
+    memcpy(*buffer + *length, suffix, suffix_length + 1);
+    *length += suffix_length;
+    return 1;
+}
+```
+
+调用者负责初始化 length 和 capacity，并在最后调用 free。扩容时先保存 realloc 的返回值，避免申请失败后丢失原指针。
+
+## 字符编码
+
+char 保存的是一个字节，不等于一个完整的人类字符。ASCII 字符通常占一个字节；UTF-8 中一个字符可能占用多个字节。
+
+因此：
+
+* strlen 统计的是字节数，不一定是用户看到的字符数；
+* text\[i] 访问的是一个字节，不一定得到完整字符；
+* 中文、表情等文本需要按照 UTF-8 或其他编码规则解析；
+* 需要处理用户可见字符数量时，应使用支持对应编码的库。
+
+C 字符串函数通常只关心字节，不会自动理解 UTF-8 的字符边界。
+
+## 字符串安全检查清单
+
+| 检查项        | 要求                                       |
+| ---------- | ---------------------------------------- |
+| 是否有 \0 终止符 | 传给字符串函数前必须确认                             |
+| 目标空间是否足够   | 计算内容长度时额外预留 1 个字节                        |
+| 输入是否限制长度   | 使用 fgets 或带宽度的 scanf                     |
+| 是否可能发生整数溢出 | 乘法、拼接和扩容前检查                              |
+| 是否修改字符串字面量 | 字面量只能通过 const char \* 读取                 |
+| 是否存在重叠复制   | 重叠区域使用 memmove                           |
+| 是否检查返回值    | 检查 fgets、scanf、malloc、realloc 和 snprintf |
+| 是否明确释放责任   | 动态字符串最终必须由所有者 free                       |
+
 ### 字符串常量
 
 ```c
@@ -170,6 +400,7 @@ void initArr(char (*arr)[LEN],int row,int cal){
 ```
 
 在初始化时需要cal，让长度并不会超过cal，打印时则不需要：
+
 ```c
 void printArr(char (*arr)[LEN], int row) {
 	assert(arr != NULL);
@@ -230,8 +461,6 @@ noglues
 somethingfornothing
 thegathering
 ```
-
-
 
 ### 字符串函数与其的自定义
 
@@ -314,10 +543,10 @@ printf("%d\n", strcmp(str1, str4)); // 1
 
 返回值判定：
 
-- 若两字符串**完全相同**（所有字符一致且同时结束）：返回 0（如 `str1` 与 `str2` 比较）；
-- 若 `s1` 在第一处不同位置的字符 ASCII 值**小于** `s2`：返回-1；
-- 若 `s1` 在第一处不同位置的字符 ASCII 值**大于** `s2`：返回1。
-- 当遇见`\0`时,认为`\0`为ASCII值最小的字符,按上两条的判定方法返回
+* 若两字符串**完全相同**（所有字符一致且同时结束）：返回 0（如 `str1` 与 `str2` 比较）；
+* 若 `s1` 在第一处不同位置的字符 ASCII 值**小于** `s2`：返回-1；
+* 若 `s1` 在第一处不同位置的字符 ASCII 值**大于** `s2`：返回1。
+* 当遇见`\0`时,认为`\0`为ASCII值最小的字符,按上两条的判定方法返回
 
 #### 自定义`strcmp`
 
@@ -423,16 +652,12 @@ printf("%d\n", mystrncmp(str1, str3, 1));  //7
 
 #### `strchr`
 
-定义于头文件<string.h> `char *strchr( const char *str, int ch );`
-在 `str` 指向的以空字符结尾的字节字符串中查找 `ch` 的第一次出现（在转换为 `char` 后，如同通过 `(char)ch` ）。终止空字符被认为是字符串的一部分，可以在搜索 `'\0'` 时找到。
-`strchr`的参数
+定义于头文件\<string.h> `char *strchr( const char *str, int ch );` 在 `str` 指向的以空字符结尾的字节字符串中查找 `ch` 的第一次出现（在转换为 `char` 后，如同通过 `(char)ch` ）。终止空字符被认为是字符串的一部分，可以在搜索 `'\0'` 时找到。 `strchr`的参数
 
-- str指向待分析的空终止字节字符串的指针
+* str指向待分析的空终止字节字符串的指针
+* ch要搜索的字符
 
-- ch要搜索的字符
-
-返回值
-指向str找到的字符的指针，若未找到该字符则为空指针。
+返回值 指向str找到的字符的指针，若未找到该字符则为空指针。
 
 ```c
 int main() {
@@ -490,7 +715,7 @@ int main() {
 
 #### `strrchr`
 
-`char* strrchr( const char* str, int ch ); `
+`char* strrchr( const char* str, int ch );`
 
 与`strchr`类似，唯一区别是该函数查找为最后一次出现的字符。
 
@@ -534,7 +759,7 @@ char* mystrrchr(const char* str, char ch) {
 
 查找在 null 结尾的字节字符串 str 中，首次出现的 null 结尾的字节字符串 substr。不比较终止 null 字符。
 
-str指向要检查的 null 结尾的字节字符串的指针，substr指向要搜索的 null 结尾的字节字符串的指针 
+str指向要检查的 null 结尾的字节字符串的指针，substr指向要搜索的 null 结尾的字节字符串的指针
 
 返回值为指向 str 中找到的子字符串的第一个字符的指针，如果未找到此类子字符串，则为 null 指针。如果 substr 指向空字符串，则返回 str。
 
@@ -622,7 +847,7 @@ char* mystrstr(const char* str, const char* substr) {
 
 其中dest指向要写入的字符数组的指针，src指向要复制的以空字符结尾的字节字符串的指针。
 
-函数将返回 dest 的副本。成功时返回零，错误时返回非零。还，在错误时，将零写入 dest[0]（除非 dest 是空指针）。
+函数将返回 dest 的副本。成功时返回零，错误时返回非零。还，在错误时，将零写入 dest\[0]（除非 dest 是空指针）。
 
 ```c
 int main() {
@@ -635,12 +860,12 @@ int main() {
 // Copied string: Hello, World!
 ```
 
-> 在visual Studio中，直接使用`strcpy`会提示“ 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details. ”，通常可以使用 `#define _CRT_SECURE_NO_WARNINGS` 来保证程序正常运行，但更好的方法是使用`strcpy_s`来代替(`errno_t strcpy_s( char* restrict dest, rsize_t destsz, const char* restrict src );`) ，它与`strcpy`相同，但它可能会用未指定的值覆盖目标数组的其余部分，并且以下错误会在运行时检测到并调用当前安装的 [约束处理函数](https://cppreference.cn/w/c/error/set_constraint_handler_s):
+> 在visual Studio中，直接使用`strcpy`会提示“ 'strcpy': This function or variable may be unsafe. Consider using strcpy\_s instead. To disable deprecation, use \_CRT\_SECURE\_NO\_WARNINGS. See online help for details. ”，通常可以使用 `#define _CRT_SECURE_NO_WARNINGS` 来保证程序正常运行，但更好的方法是使用`strcpy_s`来代替(`errno_t strcpy_s( char* restrict dest, rsize_t destsz, const char* restrict src );`) ，它与`strcpy`相同，但它可能会用未指定的值覆盖目标数组的其余部分，并且以下错误会在运行时检测到并调用当前安装的 [约束处理函数](https://cppreference.cn/w/c/error/set_constraint_handler_s):
 >
-> - src 或 dest 是空指针
-> - destsz 为零或大于 RSIZE_MAX
-> - destsz 小于或等于 strnlen_s(src, destsz)；换句话说，将发生截断
-> - 源字符串和目标字符串之间会发生重叠
+> * src 或 dest 是空指针
+> * destsz 为零或大于 RSIZE\_MAX
+> * destsz 小于或等于 strnlen\_s(src, destsz)；换句话说，将发生截断
+> * 源字符串和目标字符串之间会发生重叠
 >
 > 如果 dest 指向的字符数组的大小 `<=` `strnlen_s(src, destsz)` `<` `destsz`，则行为未定义；换句话说，`destsz` 的错误值不会暴露即将发生的缓冲区溢出。
 >
@@ -674,7 +899,7 @@ Copied string: Hello, World!
 
 其中，dest指向要复制到的字符数组的指针，src指向要复制来源的字符数组的指针，count表示要复制的最大字符数。
 
-函数将返回 `dest` 的副本。成功时返回零，错误时返回非零。还，在错误时，将零写入 dest[0]（除非 `dest` 是空指针），并且可能会用未指定的值覆盖目标数组的其余部分。
+函数将返回 `dest` 的副本。成功时返回零，错误时返回非零。还，在错误时，将零写入 dest\[0]（除非 `dest` 是空指针），并且可能会用未指定的值覆盖目标数组的其余部分。
 
 > 需要注意的是，根据 C11 后 DR 468 的修正，`strncpy_s`与 `strcpy_s`不同，只允许在发生错误时覆盖目标数组的其余部分。
 >
@@ -722,7 +947,7 @@ char* mystrncpy(char* dest, const char* src, size_t n) {
 
 其中，dest指向要追加的以空字符结尾的字节字符串的指针，src 指向要复制的以空字符结尾的字节字符串的指针。
 
-函数返回 `dest` 的副本。成功时返回零，错误时返回非零。还，在错误时，将零写入 dest[0]（除非 `dest` 是空指针）。
+函数返回 `dest` 的副本。成功时返回零，错误时返回非零。还，在错误时，将零写入 dest\[0]（除非 `dest` 是空指针）。
 
 ```c
 int main() {
@@ -761,13 +986,13 @@ char* mystrcat(char* dest, const char* src) {
 
 与`strcpy`和`strncpy`之间的关系一样，`strncat`相较于`strcat`多出“最多 `count` 个字符”的指定形式参数。
 
-该函数将最多 `count` 个字符从 `src` 指向的字符数组追加到 `dest` 指向的以空字符结尾的字节字符串的末尾，如果在 `src` 中遇到空字符则停止。字符 src[0] 替换 `dest` 末尾的空终止符。终止空字符始终附加在末尾（因此函数最多可以写入 count+1 个字节）。
+该函数将最多 `count` 个字符从 `src` 指向的字符数组追加到 `dest` 指向的以空字符结尾的字节字符串的末尾，如果在 `src` 中遇到空字符则停止。字符 src\[0] 替换 `dest` 末尾的空终止符。终止空字符始终附加在末尾（因此函数最多可以写入 count+1 个字节）。
 
 如果目标数组没有足够的空间容纳 `dest` 的内容和 `src` 的前 `count` 个字符，以及终止空字符，则行为是未定义的。如果源对象和目标对象重叠，则行为是未定义的。如果 `dest` 不是指向以空字符结尾的字节字符串的指针，或者 `src` 不是指向字符数组的指针，则行为是未定义的。
 
 dest指向要追加的以空字符结尾的字节字符串的指针，src 指向要复制的字符数组的指针，count表示要复制的最大字符数
 
-函数将返回 `dest` 的副本。成功时返回零，错误时返回非零。还，在错误时，将零写入 dest[0]（除非 `dest` 是空指针）。
+函数将返回 `dest` 的副本。成功时返回零，错误时返回非零。还，在错误时，将零写入 dest\[0]（除非 `dest` 是空指针）。
 
 ```c
 int main() {
@@ -834,17 +1059,17 @@ char* mystrdup(const char* s) {
 
 #### `atoi`, `atol`, `atoll`
 
-| `int atoi ( const char* str );`       | (1)  |          |
-| ------------------------------------- | ---- | -------- |
-| `long atol ( const char* str );`      | (2)  |          |
-| `long long atoll( const char* str );` | (3)  | (C99 起) |
+| `int atoi ( const char* str );`       | (1) |         |
+| ------------------------------------- | --- | ------- |
+| `long atol ( const char* str );`      | (2) |         |
+| `long long atoll( const char* str );` | (3) | (C99 起) |
 
-由 str 指向的字节字符串中的整数值。隐含的基数总是 *10*。
+由 str 指向的字节字符串中的整数值。隐含的基数总是 _10_。
 
 丢弃所有空白字符，直到找到第一个非空白字符，然后尽可能多地获取字符以形成有效的整数数字表示，并将其转换为整数值。有效的整数值包含以下部分
 
-- (可选) 加号或减号
-- 数字
+* (可选) 加号或减号
+* 数字
 
 如果结果的值不能表示，即转换后的值超出相应返回类型的范围，则行为未定义。
 
@@ -1079,7 +1304,7 @@ int myatoi_oct(const char* str) { // 八进制转换
 4. 第二步识别并处理开头的`+`/`-`符号：更新`sign`值后，将字符串指针后移跳过符号字符；
 5. 第三步循环解析对应进制的有效数字，**每一步先判断溢出再更新数值**（避免计算后溢出产生未定义行为），最后返回`sign * num`作为最终结果。
 
-##### 十进制转换函数`myatoi_dec`
+**十进制转换函数`myatoi_dec`**
 
 通过`isdigit((unsigned char)*str)`判断 0-9 的十进制数字字符，通过`*str - '0'`将字符转换为对应整数；
 
@@ -1091,13 +1316,12 @@ int myatoi_oct(const char* str) { // 八进制转换
 
 代码`if (sign == 1 && (num > INT_MAX / base || (num == INT_MAX / base && digit > INT_MAX % base)))`的作用是：
 
-- 当`num > INT_MAX / 10`时，`num * 10`必然超过`INT_MAX`（如`214748365 * 10 = 2147483650 > 2147483647`）；
-
-- 当`num == INT_MAX / 10`（即 214748364）时，若后续数字`digit > 7`（`INT_MAX % 10 = 7`），则`214748364 * 10 + 8 = 2147483648 > 2147483647`，触发溢出。
+* 当`num > INT_MAX / 10`时，`num * 10`必然超过`INT_MAX`（如`214748365 * 10 = 2147483650 > 2147483647`）；
+* 当`num == INT_MAX / 10`（即 214748364）时，若后续数字`digit > 7`（`INT_MAX % 10 = 7`），则`214748364 * 10 + 8 = 2147483648 > 2147483647`，触发溢出。
 
 负数溢出判断同理，通过反向校验`INT_MIN` 边界避免溢出。
 
-##### 十六进制转换函数`myatoi_hex`
+**十六进制转换函数`myatoi_hex`**
 
 通过`isxdigit((unsigned char)*str)`判断十六进制有效字符（0-9、a-f/A-F）；数字字符直接用`*str - '0'`转换，字母字符先通过`tolower((unsigned char)*str)`转为小写，再用`- 'a' + 10`转换为 10-15 的数值；
 
@@ -1105,7 +1329,7 @@ int myatoi_oct(const char* str) { // 八进制转换
 
 通过`num = num * base + digit`逐位累加十六进制数值。
 
-##### 八进制转换函数`myatoi_oct`
+**八进制转换函数`myatoi_oct`**
 
 直接通过`*str >= '0' && *str <= '7'`判断 0-7 的八进制有效数字字符，通过`*str - '0'`转换为对应整数；
 
@@ -1191,7 +1415,7 @@ int main() {
 }
 ```
 
-在编译器中无法直接使用`itoa`，“'itoa': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _itoa. See online help for details.”提示我们要使用`_itoa`,POSIX 标准已明确弃用`itoa`这个名称，MSVC 为了符合规范，将原`itoa`标记为 “过时”，改用前缀下划线的`_itoa`,除了`_itoa`，MSVC 还提供了更安全的`_itoa_s`（带缓冲区大小检查），进一步规避缓冲区溢出风险。
+在编译器中无法直接使用`itoa`，“'itoa': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: \_itoa. See online help for details.”提示我们要使用`_itoa`,POSIX 标准已明确弃用`itoa`这个名称，MSVC 为了符合规范，将原`itoa`标记为 “过时”，改用前缀下划线的`_itoa`,除了`_itoa`，MSVC 还提供了更安全的`_itoa_s`（带缓冲区大小检查），进一步规避缓冲区溢出风险。
 
 函数能做的事情通过`sprintf`均可实现，在这里只做提及，有兴趣的可以继续阅读。
 
@@ -1332,8 +1556,8 @@ int main() {
 >
 > 转换说明符。每个转换说明符具有以下格式：
 >
-> - 开头的 `%` 字符。
-> - (可选) 赋值抑制字符 `*`。如果此选项存在，函数不会将转换结果赋值给任何接收参数。
-> - (可选) 整数（大于零），指定最大字段宽度，即函数在执行当前转换说明指定的转换时允许消耗的最大字符数。请注意，如果未提供宽度，`%s` 和 `%[` 可能会导致缓冲区溢出。
-> - (可选) 长度修饰符，指定接收参数的大小，即实际目标类型。这会影响转换精度和溢出规则。每个转换类型的默认目标类型不同,[见表格](https://cppreference.cn/w/c/io/fscanf)。
-> - 转换格式说明符。
+> * 开头的 `%` 字符。
+> * (可选) 赋值抑制字符 `*`。如果此选项存在，函数不会将转换结果赋值给任何接收参数。
+> * (可选) 整数（大于零），指定最大字段宽度，即函数在执行当前转换说明指定的转换时允许消耗的最大字符数。请注意，如果未提供宽度，`%s` 和 `%[` 可能会导致缓冲区溢出。
+> * (可选) 长度修饰符，指定接收参数的大小，即实际目标类型。这会影响转换精度和溢出规则。每个转换类型的默认目标类型不同,[见表格](https://cppreference.cn/w/c/io/fscanf)。
+> * 转换格式说明符。
