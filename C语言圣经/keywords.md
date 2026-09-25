@@ -851,3 +851,5 @@ gcc -E source.c -o source.i
 | C11 新增  | `_Alignas`、`_Alignof`、`_Atomic`、`_Generic`、`_Noreturn`、`_Static_assert`、`_Thread_local`                                                                                                                                                                               |
 
 `_Imaginary` 在不同编译器上的支持程度并不一致；使用复数和虚数类型时，应查阅目标编译器文档。C23 又引入了新的语法和关键字，不能把 C17 的 44 个关键字表当成所有标准版本的最终列表。
+
+## 原稿图示

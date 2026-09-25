@@ -1010,17 +1010,17 @@ int main(void)
 
 `RAND_MAX` 是 `<stdlib.h>` 中定义的宏。C 标准只规定它至少为 `32767`，具体值由编译器实现决定。
 
-<figure><img src=".gitbook/assets/book-images/c-learning/c-learning-12.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="https://4206100218-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FiIram6CHOgNuznbPzIVm%2Fuploads%2Fgit-blob-9c343815ae1fe1cd132a6e96b624a30c412bd0b9%2Fc-learning-12.png?alt=media" alt=""><figcaption></figcaption></figure>
 
 ​ 再运行几次，会发现每次产生的随机数都一样
 
-<figure><img src=".gitbook/assets/book-images/c-learning/c-learning-13.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="https://4206100218-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FiIram6CHOgNuznbPzIVm%2Fuploads%2Fgit-blob-b63512cc4303a8b06f639e25c6417ac85cf86bf9%2Fc-learning-13.png?alt=media" alt=""><figcaption></figcaption></figure>
 
 ​实际上，`rand()` 生成的是伪随机数，而不是真正意义上的随机数。它根据一个初始种子，通过确定的算法生成数字序列。如果每次运行程序时种子相同，就会得到相同的数字序列。这种可重复性有时反而很有用，例如调试程序或编写测试代码。
 
 ​种子在每次启动计算机时是随机的，但是一旦计算机启动以后它就不再变化了；也就是说，每次启动计算机以后，种子就是定值了，所以根据公式推算出来的结果（也就是生成的随机数）就是固定的。
 
-### **`srand()` 函数**&#x20;
+### **`srand()` 函数**
 
 `srand` 通常使用当前时间作为种子，用于给 `rand()`函数设定种子。
 
@@ -1045,7 +1045,7 @@ int main() {
 }
 ```
 
-<figure><img src=".gitbook/assets/book-images/c-learning/c-learning-07.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="https://4206100218-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FiIram6CHOgNuznbPzIVm%2Fuploads%2Fgit-blob-da39f7a62900f2df0df7ae8df358f20e8b7d85b0%2Fc-learning-07.png?alt=media" alt=""><figcaption></figcaption></figure>
 
 多次运行程序，会发现每次生成的随机数都不一样了。但是，这些随机数会有逐渐增大或者逐渐减小的趋势，这是因为我们以时间为种子，时间是逐渐增大的，结合上面的正态分布图，很容易推断出随机数也会逐渐增大或者减小。
 
@@ -1094,3 +1094,5 @@ int main(){
     return 0;
 }
 ```
+
+## 原稿图示
