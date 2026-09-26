@@ -1,11 +1,9 @@
 ---
 description: 字面量、宏常量、枚举和字符串常量。
-icon: code
+icon: plane-landing-gear
 ---
 
 # 常量
-
-> **学习路径**：本章按“编译前替换、编译期约束、运行时对象”区分几类常量。它们会在条件判断、循环和数组边界中反复出现，因此下一章将把这些值放进控制流，让程序真正做出决策。
 
 ## 字面常量
 
@@ -20,20 +18,16 @@ icon: code
 
 ```c
 #include <stdio.h>
-
 int main(void)
 {
     10;                 // 整数字面量
     3.14;               // 浮点数字面量
     'c';                // 字符字面量
     "Hello world!";     // 字符串字面量
-
     int sum = 10 + 20;  // 10 和 20 都是字面量
     int value = 10;
-
     printf("%d\n", sum);
     printf("%d\n", value);
-
     return 0;
 }
 ```
@@ -64,8 +58,6 @@ int total = count + 20;
 #define PI 3.1415926
 #define MAX_SIZE 128
 ```
-
-![常量错误示例](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/book-images/c-learning/c-learning-01.png)
 
 使用宏时，预处理器会在编译前进行文本替换：
 
@@ -127,6 +119,8 @@ int main(void)
 
 宏本质上是预处理阶段的文本替换，不是变量，也不是函数。宏名在预处理完成后通常不会作为独立符号保留。
 
+_为了加深印象，所以这里再提及一遍。_
+
 ```c
 #define SQUARE(x) ((x) * (x))
 ```
@@ -171,13 +165,10 @@ const int max_size = 128;
 
 ```c
 #include <stdio.h>
-​
 int main(void)
 {
     const int limit = 100;
-​
     // limit = 200;  // 错误：不能直接修改 const 对象
-​
     printf("%d\n", limit);
     return 0;
 }
@@ -191,7 +182,6 @@ int main(void)
 ```c
 int value = 100;
 const int *ptr = &value;
-
 value = 200;       // 合法
 // *ptr = 300;     // 错误：不能通过 ptr 修改 value
 ```
@@ -262,7 +252,6 @@ const int value = 10;
 
 ```c
 #include <stdio.h>
-​
 enum color
 {
     YELLOW,
@@ -270,13 +259,10 @@ enum color
     GREEN,
     ORANGE
 };
-​
 int main(void)
 {
     enum color current_color = YELLOW;
-​
     printf("%d\n", current_color);
-​
     return 0;
 }
 ```
@@ -393,27 +379,25 @@ char ch = 'a';
 
 ### ASCII码表（部分，详见附件）
 
-ASCII (American Standard Code for Information Interchange)是美国信息交换标准代码，基于拉丁字母的一套电脑编码系统，主要用于显示现代英语和其他西欧语言。它是最通用的信息交换标准，并等同于国际标准 ISO/IEC 646。ASCII第一次以规范标准的类型发表是在1967年，最后一次更新则是在1986年，到目前为止共定义了128个字符。
+ASCII (American Standard Code for Information Interchange) 是美国信息交换标准代码，基于拉丁字母的一套电脑编码系统，主要用于显示现代英语和其他西欧语言。它是最通用的信息交换标准，并等同于国际标准 ISO/IEC 646。ASCII 第一次以规范标准的类型发表是在1967年，最后一次更新则是在 1986 年，到目前为止共定义了 128 个字符。
 
-其中**0～31及127(共33个)是控制字符或通信专用字符（其余为可显示字符）**，如控制符LF(换行)、CR(回车)、FF(换页)、DEL(删除)、BS(退格)、BEL(响铃)等；又如通信专用字符SOH（文头）、EOT（文尾）、ACK（确认）等；
+其中 **0～31 及 127 (共33个) 是控制字符或通信专用字符（其余为可显示字符）**，如控制符 LF (换行)、CR(回车)、FF(换页)、DEL(删除)、BS(退格)、BEL(响铃)等；又如通信专用字符SOH（文头）、EOT（文尾）、ACK（确认）等；
 
-<table><thead><tr><th width="112">Bin(二进制)</th><th width="100.2000732421875">Oct(八进制)</th><th width="99.199951171875">Dec(十进制)</th><th width="112">Hex(十六进制)</th><th width="156.5999755859375">缩写/字符</th><th>解释</th></tr></thead><tbody><tr><td>0000 0000</td><td>00</td><td><strong>0</strong></td><td>0x00</td><td>NUL(null)</td><td>空字符</td></tr><tr><td>0000 0001</td><td>01</td><td>1</td><td>0x01</td><td>SOH(start of headline)</td><td>标题开始</td></tr><tr><td>0000 0011</td><td>03</td><td>3</td><td>0x03</td><td>ETX (end of text)</td><td>正文结束</td></tr><tr><td>……</td><td>……</td><td>……</td><td>……</td><td>……</td><td>……</td></tr><tr><td>0100 0000</td><td>0100</td><td>64</td><td>0x40</td><td>@</td><td>电子邮件符号</td></tr><tr><td>0100 0001</td><td>0101</td><td><strong>65</strong></td><td>0x41</td><td>A</td><td>大写字母A</td></tr><tr><td>0100 0100</td><td>0104</td><td>68</td><td>0x44</td><td>D</td><td>大写字母D</td></tr><tr><td>……</td><td>……</td><td>……</td><td>……</td><td>……</td><td>……</td></tr><tr><td>0101 1011</td><td>0133</td><td>91</td><td>0x5B</td><td>[</td><td>开方括号</td></tr><tr><td>0101 1100</td><td>0134</td><td>92</td><td>0x5C</td><td>\</td><td>反斜杠</td></tr><tr><td>0110 0001</td><td>0141</td><td><strong>97</strong></td><td>0x61</td><td>a</td><td>小写字母a</td></tr><tr><td>……</td><td>……</td><td>…………</td><td>……</td><td>……</td><td>……</td></tr></tbody></table>
+<table><thead><tr><th width="124.800048828125">Bin(二进制)</th><th width="105">Oct(八进制)</th><th width="99.199951171875">Dec(十进制)</th><th width="112">Hex(十六进制)</th><th width="156.5999755859375">缩写/字符</th><th>解释</th></tr></thead><tbody><tr><td>0000 0000</td><td>00</td><td><strong>0</strong></td><td>0x00</td><td>NUL(null)</td><td>空字符</td></tr><tr><td>0000 0001</td><td>01</td><td>1</td><td>0x01</td><td>SOH(start of headline)</td><td>标题开始</td></tr><tr><td>0000 0011</td><td>03</td><td>3</td><td>0x03</td><td>ETX (end of text)</td><td>正文结束</td></tr><tr><td>……</td><td>……</td><td>……</td><td>……</td><td>……</td><td>……</td></tr><tr><td>0100 0000</td><td>0100</td><td>64</td><td>0x40</td><td>@</td><td>电子邮件符号</td></tr><tr><td>0100 0001</td><td>0101</td><td><strong>65</strong></td><td>0x41</td><td>A</td><td>大写字母A</td></tr><tr><td>0100 0100</td><td>0104</td><td>68</td><td>0x44</td><td>D</td><td>大写字母D</td></tr><tr><td>……</td><td>……</td><td>……</td><td>……</td><td>……</td><td>……</td></tr><tr><td>0101 1011</td><td>0133</td><td>91</td><td>0x5B</td><td>[</td><td>开方括号</td></tr><tr><td>0101 1100</td><td>0134</td><td>92</td><td>0x5C</td><td>\</td><td>反斜杠</td></tr><tr><td>0110 0001</td><td>0141</td><td><strong>97</strong></td><td>0x61</td><td>a</td><td>小写字母a</td></tr><tr><td>……</td><td>……</td><td>…………</td><td>……</td><td>……</td><td>……</td></tr></tbody></table>
 
 ### 转义字符
 
-字母前加" \ "来表示常见的那些不能显示的ASCII字符，如 `\0`，`\t`，`\n`等，因为后面的字符都不是它本来的ASCII字符意思,称为转义字符
+字母前加 `\` 来表示常见的那些不能显示的 ASCII 字符，如 `\0`，`\t`，`\n` 等，因为后面的字符都不是它本来的 ASCII 字符意思,称为转义字符
 
-<table><thead><tr><th width="160">转义字符</th><th width="346.2000732421875">意义</th><th>ASCII码值（十进制）</th></tr></thead><tbody><tr><td><code>\a</code></td><td>响铃(BEL)</td><td>007</td></tr><tr><td><code>\b</code></td><td>退格(BS) ，将当前位置移到前一列</td><td>008</td></tr><tr><td><code>\f</code></td><td>换页(FF)，将当前位置移到下页开头</td><td>012</td></tr><tr><td><code>\n</code></td><td>换行(LF) ，将当前位置移到下一行开头</td><td>010</td></tr><tr><td><code>\r</code></td><td>回车(CR) ，将当前位置移到本行开头</td><td>013</td></tr><tr><td><code>\t</code></td><td>水平制表(HT) （跳到下一个TAB位置）</td><td>009</td></tr><tr><td><code>\v</code></td><td>垂直制表(VT)</td><td>011</td></tr><tr><td><code>\\</code></td><td>代表一个反斜线字符" \ "</td><td>092</td></tr><tr><td><code>\'</code></td><td>代表一个单引号（撇号）字符</td><td>039</td></tr><tr><td><code>\"</code></td><td>代表一个双引号字符</td><td>034</td></tr><tr><td><code>?</code></td><td>代表一个问号</td><td>063</td></tr><tr><td><code>\0</code></td><td>空字符(NUL)</td><td>000</td></tr><tr><td><code>\ddd</code></td><td>1到3位八进制数所代表的任意字符</td><td>三位八进制</td></tr><tr><td><code>\xhh</code></td><td>十六进制所代表的任意字符</td><td>十六进制</td></tr></tbody></table>
+<table><thead><tr><th width="160">转义字符</th><th width="346.2000732421875">意义</th><th>ASCII码值（十进制）</th></tr></thead><tbody><tr><td><code>\a</code></td><td>响铃(BEL)</td><td>007</td></tr><tr><td><code>\b</code></td><td>退格(BS) ，将当前位置移到前一列</td><td>008</td></tr><tr><td><code>\f</code></td><td>换页(FF)，将当前位置移到下页开头</td><td>012</td></tr><tr><td><code>\n</code></td><td>换行(LF) ，将当前位置移到下一行开头</td><td>010</td></tr><tr><td><code>\r</code></td><td>回车(CR) ，将当前位置移到本行开头</td><td>013</td></tr><tr><td><code>\t</code></td><td>水平制表(HT) （跳到下一个TAB位置）</td><td>009</td></tr><tr><td><code>\v</code></td><td>垂直制表(VT)</td><td>011</td></tr><tr><td><code>\\</code></td><td>代表一个反斜线字符 <code>\</code></td><td>092</td></tr><tr><td><code>\'</code></td><td>代表一个单引号（撇号）字符</td><td>039</td></tr><tr><td><code>\"</code></td><td>代表一个双引号字符</td><td>034</td></tr><tr><td><code>?</code></td><td>代表一个问号</td><td>063</td></tr><tr><td><code>\0</code></td><td>空字符(NUL)</td><td>000</td></tr><tr><td><code>\ddd</code></td><td>1到3位八进制数所代表的任意字符</td><td>三位八进制</td></tr><tr><td><code>\xhh</code></td><td>十六进制所代表的任意字符</td><td>十六进制</td></tr></tbody></table>
 
 ```c
 #include <stdio.h>
-​
 int main(void)
 {
     printf("第一行\n第二行\n");
     printf("姓名\t年龄\n");
     printf("他说：\"Hello\"\n");
-​
     return 0;
 }
 ```
@@ -487,10 +471,6 @@ int main(void)
 * `strlen(str)` 的结果是 `5`；
 * `sizeof(str)` 的结果是 `6`，因为还包括字符串结尾的 `'\0'`。
 
-字符串必须以 `'\0'` 结尾，否则许多字符串函数无法判断字符串在哪里结束。少了这个字符，程序可能会继续读取后面的内存，结果就不再是“字符串”，而是一场小型的内存探险。
+字符串必须以 `'\0'` 结尾，否则许多字符串函数无法判断字符串在哪里结束。少了这个字符，程序可能会继续读取后面的内存，结果就不再是“字符串”，而是一场灾难性的内存超车。
 
-## 原稿图示
-
-## 本章小结
-
-字面量、宏、`const` 和枚举都能让代码少写魔法数字，但它们的生效阶段不同：宏在预处理阶段替换，`const` 是编译器检查的只读访问约束，枚举提供一组相关的整型常量。选择时先问清楚需要的是文本替换、类型检查，还是一组有名称的状态值。
+字面量、宏、`const` 和枚举都能让代码少写，但它们的生效阶段不同：宏在预处理阶段替换，`const` 是编译器检查的只读访问约束，枚举提供一组相关的整型常量。选择时先想明白需要的是文本替换、类型检查，还是一组有名称的状态值。

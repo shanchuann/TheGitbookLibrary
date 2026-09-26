@@ -9,7 +9,7 @@ icon: code
 
 下面的示例在 WSL2 `/home/shanchuan/CStudy/book_examples/preprocessor_demo.c` 中编译运行：
 
-![预处理器示例运行结果](assets/examples/preprocessor_demo.png)
+![预处理器示例运行结果](.gitbook/assets/preprocessor_demo.png)
 
 ```mermaid
 flowchart LR
@@ -177,8 +177,8 @@ gcc -std=c11 -Wall -Wextra -Wpedantic preprocessor_demo.c -o preprocessor_demo
 
 ## 练习方向
 
-- 使用 `gcc -E` 观察宏展开。
-- 修复一个存在优先级错误的宏。
-- 写一个带 `DEBUG` 开关的日志宏。
-- 用 `__FILE__` 和 `__LINE__` 输出错误位置。
-- 用 `_Generic` 实现整数和浮点数的统一打印接口。
+* 使用 `gcc -E` 观察宏展开。
+* 修复一个存在优先级错误的宏。
+* 写一个带 `DEBUG` 开关的日志宏。
+* 用 `__FILE__` 和 `__LINE__` 输出错误位置。
+* 用 `_Generic` 实现整数和浮点数的统一打印接口。

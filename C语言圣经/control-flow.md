@@ -1,22 +1,20 @@
 ---
 description: 条件、循环、跳转和随机数。
-icon: code
+icon: cloud-hail-mixed
 ---
 
 # 控制语句，随机数
 
-> **学习路径**：条件、循环和跳转决定程序执行哪条路径，随机数则提供一个可重复或不可预测的输入源。掌握控制流后，下一章把“一个值”扩展成“同类值的集合”，进入数组。
+C 语言常见的控制流语句包括：
 
-C 语言常见的控制流结构包括：
-
-* 顺序结构：按照代码书写顺序执行；
-* 选择结构：根据条件选择执行路径；
-* 循环结构：重复执行一段代码；
+* 顺序语句：按照代码书写顺序执行；
+* 选择语句：根据条件选择执行路径；
+* 循环语句：重复执行一段代码；
 * 跳转语句：直接跳转到指定位置。
 
-## 顺序结构
+## 顺序语句
 
-顺序结构是最基本的执行方式。程序从上到下依次执行每条语句：
+顺序语句是最基本的执行方式。程序从上到下依次执行每条语句：
 
 ```c
 #include <stdio.h>
@@ -51,26 +49,22 @@ flowchart TD
 ;
 ```
 
-空语句不执行任何操作，但它仍然是一条完整的 C 语句。有时它用于表示“这里故意什么也不做”，但更多时候是多写了一个分号。
+空语句不执行任何操作，但它仍然是一条完整的 C 语句。有时它用于表示“这里故意什么也不做”，但更多时候是因为手误多打了一个分号。
 
 ### 多余分号导致的错误
 
 ```c
 #include <stdio.h>
-
 int main(void)
 {
     int age = 20;
     double salary = 5000.0;
 
-    if (age >= 60);  // 这个分号已经结束了 if 语句
-
+    if (age >= 60);  // 注意！这个分号已经结束了 if 语句
     {
         salary *= 1.2;
     }
-
     printf("%.2f\n", salary);
-
     return 0;
 }
 ```
@@ -88,7 +82,7 @@ salary *= 1.2;
 
 因此，无论 `age` 是否达到 60 岁，`salary *= 1.2` 都会执行。
 
-正确写法：
+正确写法应当是：
 
 ```c
 if (age >= 60)
@@ -124,8 +118,6 @@ if (1)
 
 #### 单分支 `if`
 
-语法：
-
 ```c
 if (表达式)
 {
@@ -137,31 +129,24 @@ if (表达式)
 
 ```c
 #include <stdio.h>
-
 int main(void)
 {
     int age;
-
     printf("请输入你的年龄：");
-
     if (scanf("%d", &age) != 1)
     {
         printf("输入格式错误。\n");
         return 1;
     }
-
     if (age >= 18)
     {
         printf("你已经成年。\n");
     }
-
     return 0;
 }
 ```
 
 #### 双分支 `if...else`
-
-语法：
 
 ```c
 if (表达式)
@@ -178,19 +163,15 @@ else
 
 ```c
 #include <stdio.h>
-
 int main(void)
 {
     int age;
-
     printf("请输入你的年龄：");
-
     if (scanf("%d", &age) != 1)
     {
         printf("输入格式错误。\n");
         return 1;
     }
-
     if (age >= 18)
     {
         printf("成年\n");
@@ -199,14 +180,11 @@ int main(void)
     {
         printf("未成年\n");
     }
-
     return 0;
 }
 ```
 
 #### 多分支 `if...else if...else`
-
-语法：
 
 ```c
 if (表达式 1)
@@ -227,19 +205,15 @@ else
 
 ```c
 #include <stdio.h>
-
 int main(void)
 {
     int age;
-
     printf("请输入年龄：");
-
     if (scanf("%d", &age) != 1)
     {
         printf("输入格式错误。\n");
         return 1;
     }
-
     if (age < 0)
     {
         printf("年龄不能为负数。\n");
@@ -260,14 +234,13 @@ int main(void)
     {
         printf("老年\n");
     }
-
     return 0;
 }
 ```
 
 #### `if` 中的赋值错误
 
-下面的代码很容易写错：
+需要注意，下面的代码很容易写错：
 
 ```c
 if (value = 1)
@@ -276,9 +249,7 @@ if (value = 1)
 }
 ```
 
-这里的 `=` 是赋值运算符，代码会先把 `1` 赋给 `value`，然后使用表达式结果 `1` 作为条件，因此条件总是成立。
-
-如果要进行比较，应使用 `==`：
+这里的 `=` 是赋值运算符，代码会先把 `1` 赋给 `value`，然后使用表达式结果 `1` 作为条件，因此条件总是成立，如果要进行比较，应使用 `==`：
 
 ```c
 if (value == 1)
@@ -296,8 +267,6 @@ gcc -Wall -Wextra -Wpedantic main.c -o main
 ### `switch` 语句
 
 当一个表达式需要与多个固定整数值进行比较时，可以使用 `switch`。
-
-语法：
 
 ```c
 switch (整数表达式)
@@ -396,7 +365,7 @@ int main(void)
     {
     case 1:
         printf("优秀\n");
-
+        // 注意此处省略了break
     case 2:
         printf("良好\n");
         break;
@@ -418,7 +387,6 @@ int main(void)
 case 1:
     printf("优秀\n");
     /* 继续执行 case 2 */
-
 case 2:
     printf("良好\n");
     break;
@@ -487,11 +455,15 @@ int main(void)
 }
 ```
 
-输出：
-
 ```
 单词数量：4
 ```
+
+**`enum State { OUT_WORD, IN_WORD }`** 有两个状态，实际取值 0 和 1。用 enum 而不是 `int` / `bool`，是为了让 `state == OUT_WORD` 自解释。**`const char text[]`** 字符数组，`const` 表示只读。循环条件 `text[i] != '\0'` 靠结尾的空字符停下。
+
+**`isalpha((unsigned char)text[i])`** 是最容易看漏的一行， `isalpha` 的参数必须是"能表示为 `unsigned char` 的值或 `EOF`"。若 `char` 是有符号的（x86 上就是），`text[i]` 取到 `0x80` 以上会变成负数，直接传进去是**未定义行为**（常见表现是越界访问 ctype 的内部表）。这个强制转换是标准要求的写法，不是多此一举。
+
+**两个分支** `isalpha` 为真且 `state == OUT_WORD` 表示新单词开始，计数并转入 `IN_WORD`。 否则一律 `state = OUT_WORD`。这个 `else` 覆盖了空格、标点、数字等**所有**非字母字符。
 
 使用 `isalpha` 时，建议将字符转换为 `unsigned char`，这样可以避免某些平台上负值字符导致未定义行为。
 
@@ -506,8 +478,6 @@ int main(void)
 * `do...while`
 
 ### `for` 循环
-
-语法：
 
 ```c
 for (初始化表达式; 条件表达式; 迭代表达式)
@@ -555,8 +525,6 @@ int main(void)
 }
 ```
 
-输出：
-
 ```
 1 2 3 4 5
 ```
@@ -595,8 +563,6 @@ int main(void)
 }
 ```
 
-输出：
-
 ```
 1 2 3 4
 ```
@@ -626,8 +592,6 @@ int main(void)
 }
 ```
 
-输出：
-
 ```
 1 2 3 4 6 7 8 9 10
 ```
@@ -635,8 +599,6 @@ int main(void)
 在 `for` 循环中，执行 `continue` 后会先执行迭代表达式，再判断下一轮条件。
 
 ### `while` 循环
-
-语法：
 
 ```c
 while (条件表达式)
@@ -712,8 +674,6 @@ int main(void)
 }
 ```
 
-输出：
-
 ```
 1 2 3 4
 ```
@@ -767,8 +727,6 @@ int main(void)
 ```
 
 ### `do...while` 循环
-
-语法：
 
 ```c
 do
@@ -834,8 +792,6 @@ int main(void)
 }
 ```
 
-输出：
-
 ```
 1 2 3 4
 ```
@@ -894,8 +850,6 @@ int main(void)
 
 `goto` 可以无条件跳转到当前函数中的指定标签。
 
-语法：
-
 ```c
 goto 标签;
 
@@ -904,8 +858,6 @@ goto 标签;
 标签:
     语句;
 ```
-
-示例：
 
 ```c
 #include <stdio.h>
@@ -1097,8 +1049,284 @@ int main(){
 }
 ```
 
-## 原稿图示
+## 安全随机数
 
-## 控制流的验证
+`rand()` 和 `srand()` 适合模拟、游戏和测试，不适合生成密码、令牌、会话标识符、验证码或密钥。它们的状态和算法通常可以预测，只要攻击者知道种子或观察到足够多的输出，就可能推算后续结果。
 
-为循环写代码时，先写出初始化、继续条件和每次迭代的变化量。对 `break`、`continue` 和 `goto`，应说明它们离开或跳过的范围。随机数示例只用于模拟和练习；涉及密码、令牌或安全抽样时，应使用操作系统提供的安全随机源。
+安全随机数应由操作系统提供。应用程序不应自行收集中断时间、鼠标位置或网络延迟来拼接“随机数”，也不应把 `rand()` 的输出再经过哈希就当作安全随机源。
+
+### 操作系统如何产生安全随机数
+
+内核会收集多个来源的不可预测时序信息，例如：
+
+* 中断到达的时间；
+* 磁盘 I/O 完成的时间；
+* 键盘、鼠标等输入事件；
+* 网络数据包到达的间隔；
+* 硬件随机数发生器提供的数据。
+
+现代处理器还可能提供 `RDRAND` 或 `RDSEED` 指令。硬件随机指令可以作为熵来源，但应用程序通常不应直接依赖它；操作系统会负责组合多个来源、初始化熵池，并对外提供统一接口。
+
+内核通常会把收集到的熵用于初始化确定性随机数发生器（DRBG）。Linux 内核使用 ChaCha20 等密码学算法扩展随机输出。初始化完成后，系统可以持续生成随机字节；初始化完成之前，安全接口可能阻塞等待。
+
+#### Linux：`getrandom`
+
+Linux 程序优先使用 `getrandom`，它不需要手动打开 `/dev/urandom`，也不会受到文件描述符管理的影响。
+
+```c
+#define _GNU_SOURCE
+​
+#include <errno.h>
+#include <stddef.h>
+#include <sys/random.h>
+​
+int secure_random(void *buffer, size_t size) {
+    unsigned char *bytes = buffer;
+    size_t offset = 0;
+​
+    while (offset < size) {
+        ssize_t result = getrandom(bytes + offset, size - offset, 0);
+​
+        if (result > 0) {
+            offset += (size_t)result;
+            continue;
+        }
+​
+        if (result < 0 && errno == EINTR) {
+            continue;
+        }
+​
+        return -1;
+    }
+​
+    return 0;
+}
+```
+
+调用示例：
+
+```c
+#include <stdio.h>
+#include <stdint.h>
+​
+int main(void) {
+    uint8_t token[16];
+​
+    if (secure_random(token, sizeof token) != 0) {
+        fprintf(stderr, "secure random source failed\n");
+        return 1;
+    }
+​
+    for (size_t i = 0; i < sizeof token; ++i) {
+        printf("%02x", token[i]);
+    }
+    putchar('\n');
+​
+    return 0;
+}
+```
+
+编译：
+
+```bash
+gcc -std=c11 -Wall -Wextra -Wpedantic secure_random.c -o secure_random
+```
+
+`getrandom` 的重要规则：
+
+| 选项              | 作用                           |
+| --------------- | ---------------------------- |
+| `0`             | 使用已经初始化的系统随机源                |
+| `GRND_NONBLOCK` | 熵池未初始化时返回 `EAGAIN`，不等待       |
+| `GRND_RANDOM`   | 保留旧的 `/dev/random` 语义，一般不应使用 |
+| `GRND_INSECURE` | 允许在初始化完成前返回数据，不能用于密钥、令牌或密码   |
+
+程序应检查返回值。`getrandom` 可能只返回部分数据，也可能因为信号中断而返回 `EINTR`，因此可靠代码需要循环读取，直到缓冲区填满。
+
+#### `/dev/random` 和 `/dev/urandom`
+
+Linux 5.6 之后，系统初始化完成时，`/dev/random` 和 `/dev/urandom` 都使用内核的安全随机生成机制。两者主要区别在于早期启动阶段的行为：
+
+* `/dev/random` 在系统随机源尚未初始化时可能阻塞；
+* `/dev/urandom` 在初始化完成后可以持续输出；
+* 初始化完成后，正常应用通常应使用 `getrandom` 或 `/dev/urandom`；
+* “`/dev/random` 一定比 `/dev/urandom` 安全”是过时的说法。
+
+真正需要注意的是开机早期：内核还没有收集到足够的熵时，安全随机接口可能等待初始化完成。服务器程序如果不希望无限等待，可以使用 `GRND_NONBLOCK`，并明确处理 `EAGAIN`，但不能为了避免阻塞而直接使用 `GRND_INSECURE` 生成密钥。
+
+如果必须读取 `/dev/urandom`，不能假设一次 `read` 就能读满：
+
+```c
+#include <errno.h>
+#include <fcntl.h>
+#include <stddef.h>
+#include <unistd.h>
+​
+int read_urandom(void *buffer, size_t size) {
+    int fd = open("/dev/urandom", O_RDONLY);
+    if (fd < 0) {
+        return -1;
+    }
+​
+    unsigned char *bytes = buffer;
+    size_t offset = 0;
+​
+    while (offset < size) {
+        ssize_t result = read(fd, bytes + offset, size - offset);
+​
+        if (result > 0) {
+            offset += (size_t)result;
+            continue;
+        }
+​
+        if (result < 0 && errno == EINTR) {
+            continue;
+        }
+​
+        close(fd);
+        return -1;
+    }
+​
+    return close(fd) == 0 ? 0 : -1;
+}
+```
+
+#### Linux：`getentropy`
+
+`getentropy` 是另一个系统随机接口。它一次最多请求 256 字节：
+
+```c
+#include <stddef.h>
+#include <unistd.h>
+​
+int make_token(void *buffer, size_t size) {
+    if (size > 256) {
+        return -1;
+    }
+​
+    return getentropy(buffer, size);
+}
+```
+
+使用时应注意：
+
+* `size` 不能超过 256；
+* 成功返回时，整个缓冲区都已经填充；
+* 失败必须停止使用缓冲区中的内容；
+* 系统随机源未初始化时，它可能等待；
+* 对大于 256 字节的数据，应分批调用，或使用 `getrandom`。
+
+#### Windows：`BCryptGenRandom`
+
+Windows 可以使用 CNG API `BCryptGenRandom`：
+
+```c
+#include <bcrypt.h>
+#include <stdio.h>
+#include <windows.h>
+​
+#pragma comment(lib, "bcrypt.lib")
+​
+int main(void) {
+    unsigned char buffer[16];
+​
+    NTSTATUS status = BCryptGenRandom(
+        NULL,
+        buffer,
+        (ULONG)sizeof buffer,
+        BCRYPT_USE_SYSTEM_PREFERRED_RNG
+    );
+​
+    if (!BCRYPT_SUCCESS(status)) {
+        fprintf(stderr, "BCryptGenRandom failed: 0x%08lx\n",
+                (unsigned long)status);
+        return 1;
+    }
+​
+    for (size_t i = 0; i < sizeof buffer; ++i) {
+        printf("%02x", buffer[i]);
+    }
+    putchar('\n');
+​
+    return 0;
+}
+```
+
+使用 MinGW-w64 编译时，通常需要链接 `bcrypt`：
+
+```bash
+gcc -std=c11 -Wall -Wextra -Wpedantic secure_random_windows.c \
+    -lbcrypt -o secure_random_windows.exe
+```
+
+`BCryptGenRandom` 返回失败时，缓冲区内容不能继续使用。不要只检查缓冲区是否“看起来有数据”。
+
+#### macOS 和 BSD
+
+macOS、FreeBSD 和其他 BSD 系统通常提供 `arc4random_buf`：
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+    unsigned char token[16];
+
+    arc4random_buf(token, sizeof token);
+
+    for (size_t i = 0; i < sizeof token; ++i) {
+        printf("%02x", token[i]);
+    }
+    putchar('\n');
+
+    return 0;
+}
+```
+
+该接口不需要调用者手动初始化种子，也不需要自己管理文件描述符。
+
+### `std::random_device` 的边界
+
+C++ 的 `std::random_device` 是否使用操作系统安全随机源，取决于实现。某些编译器或运行库可能退化为伪随机实现，因此不能只看类名就假定它一定安全。
+
+如果项目要求生成密钥或认证令牌，应确认目标平台的实现文档和测试结果。历史版本的 MinGW-w64 曾出现过 `random_device` 实现问题，导致连续调用得到重复结果；即使编译器修复了问题，也不应把“输出看起来随机”当作安全性证明。
+
+### 不应使用的做法
+
+下面这些方法不能替代操作系统安全随机源：
+
+```c
+srand((unsigned)time(NULL));
+int token = rand();
+```
+
+也不要使用以下数据拼接随机值：
+
+* 当前时间；
+* 进程 ID；
+* 指针地址；
+* 鼠标坐标；
+* 网络延迟；
+* 多次 `rand()` 的结果；
+* 未经验证的硬件随机指令。
+
+这些值最多可以作为普通模拟的输入，不能直接生成密码、密钥或登录令牌。
+
+使用安全随机数时，至少确认：
+
+1. 使用的是操作系统 API，而不是 `rand()`；
+2. 已处理 API 的返回值和错误码；
+3. 处理了短读、`EINTR` 和早期启动阻塞；
+4. 失败时没有继续使用未初始化的缓冲区；
+5. 随机字节的长度符合安全需求；
+6. 不把随机字节直接当作有偏的范围值。
+
+例如，把随机字节直接对 `n` 取模：
+
+```c
+value = random_byte % n;
+```
+
+会产生模偏差。当 `n` 不能整除 256 时，某些结果出现的概率更高。需要均匀随机整数时，应使用拒绝采样，或使用经过验证的密码学库提供的范围随机函数。
+
+安全随机源只负责提供不可预测的随机字节。密钥派生、密码存储、数字签名和令牌格式仍应使用经过审查的密码学库，不能只靠几行随机数代码自行实现完整安全协议。

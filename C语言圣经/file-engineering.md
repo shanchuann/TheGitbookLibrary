@@ -9,7 +9,7 @@ icon: code
 
 下面的示例在 WSL2 `/home/shanchuan/CStudy/book_examples/file_copy_demo.c` 中编译运行：
 
-![二进制文件拷贝示例](assets/examples/file_copy_demo.png)
+![二进制文件拷贝示例](.gitbook/assets/file_copy_demo.png)
 
 ```mermaid
 flowchart LR

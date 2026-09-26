@@ -1,0 +1,8 @@
+- tag: c
+  label: C
+  icon: vscode
+  color: blue
+- tag: exercise
+  label: EXERCISE
+  icon: square-github
+  color: purple

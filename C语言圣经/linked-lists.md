@@ -9,7 +9,7 @@ icon: code
 
 下面的示例在 WSL2 `/home/shanchuan/CStudy/book_examples/linked_list_demo.c` 中编译运行：
 
-![单链表插入与删除示例](assets/examples/linked_list_demo.png)
+![单链表插入与删除示例](.gitbook/assets/linked_list_demo.png)
 
 ```mermaid
 flowchart LR
@@ -103,12 +103,12 @@ flowchart LR
 
 ## 常见错误
 
-- 忘记初始化头指针为 `NULL`。
-- 释放节点后继续访问它的成员。
-- 删除头节点时没有更新 `head`。
-- 插入失败时丢失原链表。
-- 遍历过程中修改 `next` 导致链表断裂。
-- 只释放头节点而没有释放所有节点。
+* 忘记初始化头指针为 `NULL`。
+* 释放节点后继续访问它的成员。
+* 删除头节点时没有更新 `head`。
+* 插入失败时丢失原链表。
+* 遍历过程中修改 `next` 导致链表断裂。
+* 只释放头节点而没有释放所有节点。
 
 ## 可运行完整示例
 
@@ -181,7 +181,7 @@ gcc -std=c11 -Wall -Wextra -Wpedantic linked_list_demo.c -o linked_list_demo
 
 预期输出：
 
-```text
+```
 before remove: 1 2 3
 after remove:  1 3
 ```

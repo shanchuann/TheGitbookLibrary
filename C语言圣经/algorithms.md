@@ -9,7 +9,7 @@ icon: code
 
 下面的示例在 WSL2 `/home/shanchuan/CStudy/book_examples/algorithms_demo.c` 中编译运行：
 
-![排序与二分查找示例](assets/examples/algorithms_demo.png)
+![排序与二分查找示例](.gitbook/assets/algorithms_demo.png)
 
 ## 顺序查找与二分查找
 
@@ -66,11 +66,11 @@ flowchart TD
 
 ## 复杂度的直观比较
 
-| 方法 | 前提 | 平均复杂度 |
-| --- | --- | --- |
-| 顺序查找 | 无序也可 | O(n) |
-| 二分查找 | 已排序 | O(log n) |
-| 冒泡排序 | 任意 | O(n²) |
+| 方法      | 前提     | 平均复杂度                 |
+| ------- | ------ | --------------------- |
+| 顺序查找    | 无序也可   | O(n)                  |
+| 二分查找    | 已排序    | O(log n)              |
+| 冒泡排序    | 任意     | O(n²)                 |
 | `qsort` | 提供比较函数 | 实现相关，平均通常为 O(n log n) |
 
 复杂度分析不能代替实测；元素数量、缓存局部性和比较函数成本也会影响实际表现。

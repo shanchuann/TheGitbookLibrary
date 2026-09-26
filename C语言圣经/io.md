@@ -1,11 +1,9 @@
 ---
 description: 标准输入输出与格式化。
-icon: code
+icon: cloud-check
 ---
 
 # C语言输入输出
-
-> **学习路径**：输入输出是程序与外部世界的边界，也是检验类型、格式和错误处理的第一块试验场。掌握格式说明符与输入校验后，下一章将区分字面量、宏、`const` 和枚举这些不同层次的“常量”。
 
 ## `printf`：格式化输出
 
@@ -55,6 +53,8 @@ int main(void)
 ```
 
 ### 常用格式说明符
+
+_完整版见附件_
 
 | 格式说明符 | 作用         | 示例         |
 | ----- | ---------- | ---------- |
@@ -163,7 +163,7 @@ char name[32];
 scanf("%31s", name);
 ```
 
-这里的 `31` 用于限制最多读取的字符数，为字符串结尾的 `'\0'` 留出空间，避免写入越界。
+这里的 `31` 用于限制最多读取的字符数，并且为字符串结尾的 `'\0'` 留出空间，避免写入越界。
 
 ### 检查 `scanf` 的返回值
 
@@ -308,8 +308,113 @@ if (scanf("%d", &age) != 1) {
 }
 ```
 
-面向整行文本的交互通常更适合使用 `fgets`，再用 `strtol` 解析。这样可以控制最大读入长度，也能保留并检查多余字符。任何来自用户、文件或网络的数据都应视为不可信输入，不能只依赖格式字符串“碰巧匹配”。
+`scanf` 适合格式固定、输入边界已经明确的场景；交互式程序通常先用 `fgets` 读入一整行，再用 `strtol`、`strtod` 解析。这样才能区分空输入、非法字符和数值溢出，也能处理数字后多输入的内容。**读取和解析分开，**&#x5148;拿到一整行，再决定它是什么意思。
 
-## 输入函数的选择
+### `scanf` 的适用面
 
-`scanf` 适合格式固定、输入边界已经明确的场景；交互式程序通常先用 `fgets` 读入一整行，再使用 `strtol`、`strtod` 等函数解析。这样可以区分空输入、非法字符和数值溢出，也能处理用户在数字后多输入的内容。
+适合：格式严格的数据（日期 `2024-01-02`、判题输入、配置文件），格式由生成方保证的场合。
+
+不适合交互式输入，原因：
+
+* **返回值信息量不够**：只返回成功赋值的项数，无法区分"读到 0"、"读到字母"、"空行"、"EOF"。
+* **溢出是未定义行为**：`%d` 转换结果超出 `int` 范围时行为未定义且不报错；`strtol` 会置 `errno = ERANGE`。
+* **输入残留导致死循环**：`while (scanf("%d", &n) != 1)` 遇到字母后，垃圾一直留在缓冲区，无限循环。
+* **`%s` 没有宽度限制**，会缓冲区溢出（要写 `%31s`）。
+* **格式串末尾的 `\n` 会"卡住"**：它表示"跳过任意空白"，会一直等到下一个非空白字符。
+* **`%c` 会读到上一行留下的换行符**（用 `" %c"`，或先 `fgets`）。
+
+`fgets` 读整行（带容量，安全）、去掉换行、解析。用一个枚举把失败原因传出去：
+
+```c
+typedef enum {
+    READ_OK = 0,
+    READ_EOF,       /* 输入结束 */
+    READ_EMPTY,     /* 空行 */
+    READ_INVALID,   /* 非法字符，或数字后有多余内容 */
+    READ_RANGE,     /* 数值超出范围 */
+    READ_TOOLONG,   /* 行太长 */
+    READ_IO         /* 读取错误 */
+} ReadStatus;
+```
+
+```c
+/* 读一整行并去掉换行符 */
+ReadStatus read_line(char *buf, size_t cap, size_t *out_len)
+{
+    if (fgets(buf, (int)cap, stdin) == NULL) {
+        return ferror(stdin) ? READ_IO : READ_EOF;
+    }
+
+    size_t n = strlen(buf);
+    if (n > 0 && buf[n - 1] == '\n') {
+        buf[--n] = '\0';
+        if (out_len) *out_len = n;
+        return READ_OK;
+    }
+
+    /* 没有换行符：要么刚好读满，要么行太长被截断 */
+    int ch = getchar();
+    if (ch == '\n' || ch == EOF) {
+        if (ch == EOF && ferror(stdin)) return READ_IO;
+        if (out_len) *out_len = n;
+        return READ_OK;                 /* 最后一行没有换行符，也算完整 */
+    }
+    while (ch != '\n' && ch != EOF) ch = getchar();   /* 丢弃本行剩余部分 */
+    if (out_len) *out_len = n;
+    return READ_TOOLONG;
+}
+```
+
+```c
+ReadStatus read_int(int *out)
+{
+    char line[64];
+    size_t len = 0;
+
+    ReadStatus st = read_line(line, sizeof line, &len);
+    if (st != READ_OK) return st;
+    if (len == 0) return READ_EMPTY;
+
+    errno = 0;                                   /* errno 不会自动清零 */
+    char *end = NULL;
+    long value = strtol(line, &end, 10);
+
+    if (end == line) return READ_INVALID;        /* 一个字符都没解析出来 */
+    while (*end == ' ' || *end == '\t') ++end;
+    if (*end != '\0') return READ_INVALID;       /* 数字后面还有内容 */
+
+    if (errno == ERANGE || value < INT_MIN || value > INT_MAX) return READ_RANGE;
+
+    *out = (int)value;
+    return READ_OK;
+}
+```
+
+浮点数同理，`strtol` 换成 `strtod`（`errno == ERANGE` 覆盖上溢和下溢）。
+
+### 三种错误要分开
+
+| 情况   | 例子                 | 反应               |
+| ---- | ------------------ | ---------------- |
+| 空输入  | 回车、Ctrl+D / Ctrl+Z | 结束，或提示"不能为空"     |
+| 非法字符 | `abc`、`12abc`      | 提示"请输入数字"        |
+| 数值溢出 | `999999999999`     | 提示"超出范围"，不能当正常值用 |
+| 业务越界 | 年龄 `-5`            | 提示"年龄不能为负"       |
+
+`scanf` 把这几种全塌缩成"返回值不是 1"。另外注意：类型范围（`INT_MIN`\~`INT_MAX`）和业务范围是两回事，后者要自己校验。
+
+#### `strtol` / `strtod` 要点
+
+* `errno` 必须先清零，它只在出错时被**设置**。
+* `endptr == line` 表示没解析出任何字符。
+* 跳过尾部空白后必须 `*endptr == '\0'`，否则 `12abc` 会被当成 12。
+* `strtol` 返回 `long`，放进 `int` 前要再比一次 `INT_MIN` / `INT_MAX`。
+* `base = 0` 才会自动识别 `0x` / `0` 前缀。
+* `strtod` 还接受 `inf`、`nan`、`0x1p3`，不想要得自己拦。
+* 别用 `atoi`：`atoi("0")` 和 `atoi("abc")` 都返回 0，溢出还是未定义行为。
+
+### `scanf` 仍可用的场合
+
+格式严格时它很合适，但要检查返回值、`%s` 写宽度、别在格式串末尾写 `\n`。
+
+折中方案：`fgets` 读一行 + `sscanf` 解析，兼顾安全和便利（但溢出仍是未定义行为）。

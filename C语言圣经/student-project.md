@@ -9,7 +9,7 @@ icon: code
 
 下面的最小版本在 WSL2 `/home/shanchuan/CStudy/book_examples/student_manager_demo.c` 中编译运行：
 
-![学生成绩管理系统示例运行结果](assets/examples/student_manager_demo.png)
+![学生成绩管理系统示例运行结果](.gitbook/assets/student_manager_demo.png)
 
 ```mermaid
 flowchart LR
@@ -97,7 +97,7 @@ int student_list_reserve(StudentList *list, size_t capacity) {
 
 建议的多文件结构：
 
-```text
+```
 student-manager/
 ├── main.c
 ├── student.c
@@ -110,13 +110,13 @@ student-manager/
 
 核心功能包括：
 
-- 添加、删除、修改学生；
-- 按学号查找；
-- 按成绩排序；
-- 统计平均分、最高分和最低分；
-- 从文件加载；
-- 保存到文件；
-- 对输入和文件错误给出明确提示。
+* 添加、删除、修改学生；
+* 按学号查找；
+* 按成绩排序；
+* 统计平均分、最高分和最低分；
+* 从文件加载；
+* 保存到文件；
+* 对输入和文件错误给出明确提示。
 
 ## 项目边界
 
