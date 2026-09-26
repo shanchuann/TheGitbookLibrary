@@ -67,3 +67,55 @@ int copy_file(const char *source_name, const char *target_name) {
 ## `fflush` 的边界
 
 对输出流调用 `fflush` 是可移植的；`fflush(stdin)` 不是 ISO C 规定的清空输入缓冲区方法。需要丢弃当前输入行时，应读取字符直到换行或 `EOF`。
+
+## 可运行完整示例
+
+将下面内容保存为 `file_copy_demo.c`：
+
+```c
+#include <stdio.h>
+
+static int copy_file(const char *source_name, const char *target_name) {
+    FILE *source = fopen(source_name, "rb");
+    if (source == NULL) return -1;
+    FILE *target = fopen(target_name, "wb");
+    if (target == NULL) {
+        fclose(source);
+        return -1;
+    }
+
+    unsigned char buffer[128];
+    size_t read_count;
+    int result = 0;
+    while ((read_count = fread(buffer, 1, sizeof buffer, source)) > 0) {
+        if (fwrite(buffer, 1, read_count, target) != read_count) {
+            result = -1;
+            break;
+        }
+    }
+    if (ferror(source)) result = -1;
+    if (fclose(target) != 0 || fclose(source) != 0) result = -1;
+    return result;
+}
+
+int main(void) {
+    const char *source = "copy-source.txt";
+    const char *target = "copy-target.txt";
+    FILE *file = fopen(source, "wb");
+    if (file == NULL) return 1;
+    fputs("C file copy\n", file);
+    fclose(file);
+    if (copy_file(source, target) != 0) return 1;
+    printf("copied %s -> %s\n", source, target);
+    return 0;
+}
+```
+
+编译运行：
+
+```sh
+gcc -std=c11 -Wall -Wextra -Wpedantic file_copy_demo.c -o file_copy_demo
+./file_copy_demo
+```
+
+程序会在当前目录生成 `copy-source.txt` 和 `copy-target.txt`，并输出复制成功信息。

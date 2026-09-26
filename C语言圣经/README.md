@@ -18,3 +18,5 @@ gcc -std=c11 -Wall -Wextra -Wpedantic -g source.c -o program
 ```
 
 新增章节的完整示例和运行截图位于 `/home/shanchuan/CStudy/book_examples/`。调试内存问题时，可以额外使用 `-fsanitize=address,undefined`；Windows、Linux 和 macOS 的编译器扩展不属于 ISO C 的可移植保证。
+
+新增章节中的“可运行完整示例”可以直接复制到同名 `.c` 文件中编译；截图用于展示 WSL2 GCC 的一次验证结果，不代替本地编译。

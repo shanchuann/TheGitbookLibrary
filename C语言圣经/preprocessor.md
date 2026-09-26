@@ -141,6 +141,40 @@ static void print_double(double value) { printf("double: %.2f\n", value); }
 
 实际项目中应优先选择类型安全的普通函数、`static inline` 或函数指针；宏和 `_Generic` 适合减少重复接口，不适合隐藏复杂控制流。
 
+## 可运行完整示例
+
+将下面内容保存为 `preprocessor_demo.c`：
+
+```c
+#include <assert.h>
+#include <stdio.h>
+
+#define SQUARE(x) ((x) * (x))
+#define TRACE(message) fprintf(stderr, "%s:%d: %s\n", __FILE__, __LINE__, (message))
+
+static int square_int(int value) {
+    return value * value;
+}
+
+int main(void) {
+    int value = 4;
+    assert(value > 0);
+    printf("macro square: %d\n", SQUARE(value));
+    printf("function square: %d\n", square_int(value));
+    TRACE("preprocessor demo passed");
+    return 0;
+}
+```
+
+编译运行：
+
+```sh
+gcc -std=c11 -Wall -Wextra -Wpedantic preprocessor_demo.c -o preprocessor_demo
+./preprocessor_demo
+```
+
+预期输出包含 `macro square: 16`、`function square: 16` 和一行带文件名、行号的诊断信息。
+
 ## 练习方向
 
 - 使用 `gcc -E` 观察宏展开。

@@ -109,3 +109,79 @@ flowchart LR
 - 插入失败时丢失原链表。
 - 遍历过程中修改 `next` 导致链表断裂。
 - 只释放头节点而没有释放所有节点。
+
+## 可运行完整示例
+
+将下面内容保存为 `linked_list_demo.c`：
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Node {
+    int value;
+    struct Node *next;
+} Node;
+
+static Node *push_front(Node *head, int value) {
+    Node *node = malloc(sizeof *node);
+    if (node == NULL) return head;
+    node->value = value;
+    node->next = head;
+    return node;
+}
+
+static Node *remove_first(Node *head, int value) {
+    Node **link = &head;
+    while (*link != NULL && (*link)->value != value)
+        link = &(*link)->next;
+    if (*link != NULL) {
+        Node *removed = *link;
+        *link = removed->next;
+        free(removed);
+    }
+    return head;
+}
+
+static void print_list(const Node *head) {
+    for (; head != NULL; head = head->next)
+        printf("%d ", head->value);
+    putchar('\n');
+}
+
+static void destroy(Node *head) {
+    while (head != NULL) {
+        Node *next = head->next;
+        free(head);
+        head = next;
+    }
+}
+
+int main(void) {
+    Node *head = NULL;
+    head = push_front(head, 3);
+    head = push_front(head, 2);
+    head = push_front(head, 1);
+    printf("before remove: ");
+    print_list(head);
+    head = remove_first(head, 2);
+    printf("after remove:  ");
+    print_list(head);
+    destroy(head);
+    return 0;
+}
+```
+
+编译运行：
+
+```sh
+gcc -std=c11 -Wall -Wextra -Wpedantic linked_list_demo.c -o linked_list_demo
+./linked_list_demo
+```
+
+预期输出：
+
+```text
+before remove: 1 2 3
+after remove:  1 3
+```

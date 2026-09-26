@@ -74,3 +74,47 @@ flowchart TD
 | `qsort` | 提供比较函数 | 实现相关，平均通常为 O(n log n) |
 
 复杂度分析不能代替实测；元素数量、缓存局部性和比较函数成本也会影响实际表现。
+
+## 可运行完整示例
+
+将下面内容保存为 `algorithms_demo.c`：
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+static int compare_ints(const void *left, const void *right) {
+    int a = *(const int *)left;
+    int b = *(const int *)right;
+    return (a > b) - (a < b);
+}
+
+static int binary_search(const int values[], size_t count, int target) {
+    size_t left = 0;
+    size_t right = count;
+    while (left < right) {
+        size_t middle = left + (right - left) / 2;
+        if (values[middle] == target) return (int)middle;
+        if (values[middle] < target) left = middle + 1;
+        else right = middle;
+    }
+    return -1;
+}
+
+int main(void) {
+    int values[] = {7, 2, 9, 1, 5};
+    size_t count = sizeof values / sizeof values[0];
+    qsort(values, count, sizeof values[0], compare_ints);
+    printf("sorted:");
+    for (size_t i = 0; i < count; ++i) printf(" %d", values[i]);
+    printf("\nindex of 5: %d\n", binary_search(values, count, 5));
+    return 0;
+}
+```
+
+编译运行：
+
+```sh
+gcc -std=c11 -Wall -Wextra -Wpedantic algorithms_demo.c -o algorithms_demo
+./algorithms_demo
+```
