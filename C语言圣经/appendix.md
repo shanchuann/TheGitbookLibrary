@@ -252,3 +252,13 @@ icon: code
 | `LLONG_MIN`      | `long long` 类型的最小值              | -9223372036854775808LL  |
 | `LLONG_MAX`      | `long long` 类型的最大值              | 9223372036854775807LL   |
 | `ULLONG_MAX`     | `unsigned long long` 类型的最大值     | 18446744073709551615ULL |
+
+## 编译器速查
+
+示例默认使用 C11：
+
+```sh
+gcc -std=c11 -Wall -Wextra -Wpedantic -g source.c -o program
+```
+
+需要固定宽度整数时使用 `<stdint.h>`，打印 `uint32_t` 等类型时使用 `<inttypes.h>` 提供的格式宏。不要把某个平台上 `int`、`long` 或指针的大小写进可移植文件格式。

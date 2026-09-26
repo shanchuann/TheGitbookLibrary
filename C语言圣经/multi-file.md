@@ -259,4 +259,8 @@ sequenceDiagram
 
 ![本机 WSL2 终端运行结果](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/c-language/wsl-cstudy-run.png)
 
+## 工程边界
+
+头文件放声明、类型和宏，源文件放定义和内部实现。对外接口尽量少暴露全局变量，文件内部辅助函数使用 `static`。构建命令应明确列出所有源文件，否则“本地能编译”可能只是编辑器替你偷偷添加了文件。
+
 ## 原稿图示

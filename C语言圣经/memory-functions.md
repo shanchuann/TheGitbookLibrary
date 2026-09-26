@@ -25,6 +25,10 @@ void mymemset(void* ptr, int value, size_t num) {
 }
 ```
 
+## 重叠区域与对象生命周期
+
+`memcpy` 要求源区域和目标区域不重叠，重叠时使用 `memmove`。这些函数只搬运字节，不会调用构造、析构或进行类型转换；在 C 中复制结构体的字节表示也不等于复制其外部资源所有权。
+
 ```c
 int main() {
 	int iArr[5];
