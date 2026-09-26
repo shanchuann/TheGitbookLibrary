@@ -9,3 +9,12 @@ icon: code
 
 本书配套一个练习仓库 [CStudy](https://github.com/shanchuann/CStudy.git)。书里的示例尽量保持短小，练习仓库则负责把它们放进可以反复编译、调试和修改的环境里。代码会报错，这是正常现象；完全不报错的学习过程，通常只是还没按下编译键。
 
+## 示例编译约定
+
+书中 C 代码默认按 C11 编译，并开启常见警告：
+
+```sh
+gcc -std=c11 -Wall -Wextra -Wpedantic -g source.c -o program
+```
+
+新增章节的完整示例和运行截图位于 `/home/shanchuan/CStudy/book_examples/`。调试内存问题时，可以额外使用 `-fsanitize=address,undefined`；Windows、Linux 和 macOS 的编译器扩展不属于 ISO C 的可移植保证。
