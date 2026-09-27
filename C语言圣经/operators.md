@@ -1,13 +1,11 @@
 ---
 description: 算术、逻辑、关系和位运算。
-icon: code
+icon: tent
 ---
 
 # 运算符与表达式
 
-> **学习路径**：本章从操作数、左值和右值出发，建立表达式的类型、优先级、结合性和副作用模型。数组和函数参数中的地址运算会把这些规则推向更底层，因此下一章集中处理指针。
-
-### 操作数与运算符
+## 操作数与运算符
 
 操作数是参与运算的数据，可以是常量、变量、函数返回值或表达式。
 
@@ -27,9 +25,9 @@ a + 10
 
 C 语言只有一个三元运算符，即条件运算符 `?:` ，具体优先级见后文优先级表。
 
-### 左值与右值
+## 左值与右值
 
-“左值”和“右值”不能简单理解为等号的左边和右边。
+“左值” 和 “右值” 不能简单理解为等号的左边和右边。
 
 在赋值表达式中，左侧必须是一个可以被写入的对象，右侧通常是一个用于计算或传递的值。
 
@@ -46,23 +44,7 @@ array[0] = value;
 ```c
 int number = 10;
 int *pointer = &number;
-​
 *pointer = 20;
-```
-
-下面的写法是错误的：
-
-```c
-// 10 = number;
-// (number + 1) = 20;
-```
-
-`const` 对象虽然有存储位置，但不能通过当前标识符修改：
-
-```c
-const int limit = 10;
-​
-// limit = 20;  // 错误
 ```
 
 可以这样理解：
@@ -72,22 +54,28 @@ const int limit = 10;
 * 可修改左值可以作为赋值目标；
 * 右值通常表示参与运算或传递的值。
 
-```c
-int value = 10;
-int array[2] = {1, 2};
+但下面的写法是错误的：
 
-value = 20;
-array[0] = value;
+```c
+// 10 = number;
+// (number + 1) = 20;
 ```
 
-`const` 对象有存储位置，但不能通过当前标识符修改：
+`const` 对象仍然是左值，因为它对应一个具有存储位置的对象，也可以取地址；但它不是可修改左值，不能通过当前标识符修改其值：
 
 ```c
 const int limit = 10;
-// limit = 20;  // 错误
+
+const int *pointer = &limit;  // 可以取地址
+// limit = 20;                // 错误：limit 不是可修改左值
 ```
 
-<table><thead><tr><th width="69.800048828125">优先级</th><th width="92.800048828125">运算符</th><th width="155.2000732421875">名称或含义</th><th width="213.9998779296875">使用形式</th><th width="108">结合方向</th><th width="108.800048828125">说明</th></tr></thead><tbody><tr><td rowspan="4">1</td><td><code>[]</code></td><td>数组下标</td><td><code>数组名[常量表达式]</code></td><td rowspan="4">左到右</td><td rowspan="4">--</td></tr><tr><td><code>()</code></td><td>圆括号、函数调用</td><td><code>(表达式)</code> / <code>函数名(形参表)</code></td></tr><tr><td><code>.</code></td><td>成员选择（对象）</td><td><code>对象.成员名</code></td></tr><tr><td><code>-></code></td><td>成员选择（指针）</td><td><code>对象指针->成员名</code></td></tr><tr><td rowspan="9">2</td><td><code>-</code></td><td>负号运算符</td><td><code>-表达式</code></td><td rowspan="9">右到左</td><td rowspan="7">单目运算符</td></tr><tr><td><code>~</code></td><td>按位取反运算符</td><td><code>~表达式</code></td></tr><tr><td><code>++</code></td><td>自增运算符</td><td><code>++变量名</code> / <code>变量名++</code></td></tr><tr><td><code>--</code></td><td>自减运算符</td><td><code>--变量名</code> / <code>变量名--</code></td></tr><tr><td><code>*</code></td><td>取值运算符</td><td><code>*指针变量</code></td></tr><tr><td><code>&#x26;</code></td><td>取地址运算符</td><td><code>&#x26;变量名</code></td></tr><tr><td><code>!</code></td><td>逻辑非运算符</td><td><code>!表达式</code></td></tr><tr><td><code>(类型)</code></td><td>强制类型转换</td><td><code>(数据类型)表达式</code></td><td rowspan="2">--</td></tr><tr><td><code>sizeof</code></td><td>长度运算符</td><td><code>sizeof(表达式)</code></td></tr><tr><td rowspan="3">3</td><td><code>/</code></td><td>除</td><td><code>表达式 / 表达式</code></td><td rowspan="18">左到右</td><td rowspan="18">双目运算符</td></tr><tr><td><code>*</code></td><td>乘</td><td><code>表达式 * 表达式</code></td></tr><tr><td><code>%</code></td><td>余数（取模）</td><td><code>整型表达式 % 整型表达式</code></td></tr><tr><td rowspan="2">4</td><td><code>+</code></td><td>加</td><td><code>表达式 + 表达式</code></td></tr><tr><td><code>-</code></td><td>减</td><td><code>表达式 - 表达式</code></td></tr><tr><td rowspan="2">5</td><td><code>&#x3C;&#x3C;</code></td><td>左移</td><td><code>变量 &#x3C;&#x3C; 表达式</code></td></tr><tr><td><code>>></code></td><td>右移</td><td><code>变量 >> 表达式</code></td></tr><tr><td rowspan="4">6</td><td><code>></code></td><td>大于</td><td><code>表达式 > 表达式</code></td></tr><tr><td><code>>=</code></td><td>大于等于</td><td><code>表达式 >= 表达式</code></td></tr><tr><td><code>&#x3C;</code></td><td>小于</td><td><code>表达式 &#x3C; 表达式</code></td></tr><tr><td><code>&#x3C;=</code></td><td>小于等于</td><td><code>表达式 &#x3C;= 表达式</code></td></tr><tr><td rowspan="2">7</td><td><code>==</code></td><td>等于</td><td><code>表达式 == 表达式</code></td></tr><tr><td><code>!=</code></td><td>不等于</td><td><code>表达式 != 表达式</code></td></tr><tr><td>8</td><td><code>&#x26;</code></td><td>按位与</td><td><code>表达式 &#x26; 表达式</code></td></tr><tr><td>9</td><td><code>^</code></td><td>按位异或</td><td><code>表达式 ^ 表达式</code></td></tr><tr><td>10</td><td><code>|</code></td><td>按位或</td><td><code>表达式 | 表达式</code></td></tr><tr><td>11</td><td><code>&#x26;&#x26;</code></td><td>逻辑与</td><td><code>表达式 &#x26;&#x26; 表达式</code></td></tr><tr><td>12</td><td><code>||</code></td><td>逻辑或</td><td><code>表达式 || 表达式</code></td></tr><tr><td>13</td><td><code>?:</code></td><td>条件运算符</td><td><code>表达式1 ? 表达式2 : 表达式3</code></td><td rowspan="12">右到左</td><td>三目运算符</td></tr><tr><td rowspan="11">14</td><td><code>=</code></td><td>赋值运算符</td><td><code>变量 = 表达式</code></td><td rowspan="12">--</td></tr><tr><td><code>/=</code></td><td>除后赋值</td><td><code>变量 /= 表达式</code></td></tr><tr><td><code>*=</code></td><td>乘后赋值</td><td><code>变量 *= 表达式</code></td></tr><tr><td><code>%=</code></td><td>取模后赋值</td><td><code>变量 %= 表达式</code></td></tr><tr><td><code>+=</code></td><td>加后赋值</td><td><code>变量 += 表达式</code></td></tr><tr><td><code>-=</code></td><td>减后赋值</td><td><code>变量 -= 表达式</code></td></tr><tr><td><code>&#x3C;&#x3C;=</code></td><td>左移后赋值</td><td><code>变量 &#x3C;&#x3C;= 表达式</code></td></tr><tr><td><code>>>=</code></td><td>右移后赋值</td><td><code>变量 >>= 表达式</code></td></tr><tr><td><code>&#x26;=</code></td><td>按位与后赋值</td><td><code>变量 &#x26;= 表达式</code></td></tr><tr><td><code>^=</code></td><td>按位异或后赋值</td><td><code>变量 ^= 表达式</code></td></tr><tr><td><code>|=</code></td><td>按位或后赋值</td><td><code>变量 |= 表达式</code></td></tr><tr><td>15</td><td><code>,</code></td><td>逗号运算符</td><td><code>表达式, 表达式, ...</code></td><td>左到右</td></tr></tbody></table>
+因此，判断左值时要区分两个问题：
+
+* 它是否对应一个具有存储位置的对象？
+* 它是否允许通过当前表达式修改该对象？
+
+变量、数组元素和指针解引用通常是可修改左值；`const` 对象通常是不可修改左值；字面量和计算结果通常不能作为赋值目标。
 
 ## 算术运算符
 
@@ -221,7 +209,7 @@ value >>= 1;
 关系表达式的结果是 `int` 类型的 `0` 或 `1`：
 
 ```c
-int result = 10 > 3;  // result 为 1
+int result = 10 > 3;      // result 为 1
 ```
 
 关系运算符的优先级低于算术运算符，高于赋值运算符：
@@ -310,8 +298,6 @@ if (pointer != NULL && *pointer > 0)
 条件 ? 条件为真时的表达式 : 条件为假时的表达式
 ```
 
-示例：
-
 ```c
 #include <stdio.h>
 
@@ -329,20 +315,13 @@ int main(void)
 
 条件运算符适合表示简单的二选一结果。嵌套多个条件运算符会降低可读性，此时应改用 `if...else`。
 
-### 位运算符
+## 位运算符
 
 位运算直接处理整数的二进制位，常用于标志位、权限集合、协议字段和底层设备控制。
 
-| 运算符  | 名称   | 使用形式           | 说明                    |
-| ---- | ---- | -------------- | --------------------- |
-| `&`  | 按位与  | `表达式1 & 表达式2`  | 两个位都为 `1` 时结果位才为 `1`  |
-| `^`  | 按位异或 | `表达式1 ^ 表达式2`  | 两个位不同时结果位为 `1`        |
-| `\|` | 按位或  | `表达式1 \| 表达式2` | 只要有一个位为 `1`，结果位就是 `1` |
-| `~`  | 按位取反 | `~表达式`         | 将每一位的 `0` 和 `1` 互换    |
-| `<<` | 左移   | `表达式1 << 表达式2` | 向左移动指定的位数，右侧通常补 `0`   |
-| `>>` | 右移   | `表达式1 >> 表达式2` | 向右移动指定的位数；无符号数左侧补 `0` |
+<table><thead><tr><th width="85">运算符</th><th width="130.4000244140625">名称</th><th width="227">使用形式</th><th>说明</th></tr></thead><tbody><tr><td><code>&#x26;</code></td><td>按位与</td><td><code>表达式1 &#x26; 表达式2</code></td><td>两个位都为 <code>1</code> 时结果位才为 <code>1</code></td></tr><tr><td><code>^</code></td><td>按位异或</td><td><code>表达式1 ^ 表达式2</code></td><td>两个位不同时结果位为 <code>1</code></td></tr><tr><td><code>|</code></td><td>按位或</td><td><code>表达式1 | 表达式2</code></td><td>只要有一个位为 <code>1</code>，结果位就是 <code>1</code></td></tr><tr><td><code>~</code></td><td>按位取反</td><td><code>~表达式</code></td><td>将每一位的 <code>0</code> 和 <code>1</code> 互换</td></tr><tr><td><code>&#x3C;&#x3C;</code></td><td>左移</td><td><code>表达式1 &#x3C;&#x3C; 表达式2</code></td><td>向左移动指定的位数，右侧通常补 <code>0</code></td></tr><tr><td><code>>></code></td><td>右移</td><td><code>表达式1 >> 表达式2</code></td><td>向右移动指定的位数；无符号数左侧补 <code>0</code></td></tr></tbody></table>
 
-#### 位掩码
+### 位掩码
 
 可以为每个选项分配一个独立的二进制位，再使用位运算进行设置、清除、测试和翻转：
 
@@ -367,7 +346,7 @@ if ((flags & FLAG_WRITE) != 0)     // 测试标志
 flags ^= FLAG_READ;                // 翻转标志
 ```
 
-#### 移位运算
+### 移位运算
 
 移位量必须是非负值，并且小于左操作数提升后类型的位宽。
 
@@ -381,24 +360,20 @@ flags ^= FLAG_READ;                // 翻转标志
 
 ```c
 unsigned value = 8;
-​
 printf("%u\n", value << 2);  // 通常输出 32
 printf("%u\n", value >> 1);  // 输出 4
 ```
 
-### 逗号运算符
+## 逗号运算符
 
 逗号运算符 `,` 按从左到右的顺序计算多个表达式，整个逗号表达式的结果是最后一个表达式的值。
 
 ```c
 int number;
-​
 number = 100, 200;
 printf("%d\n", number);  // 100
-​
 number = (100, 200);
 printf("%d\n", number);  // 200
-​
 number = (100, 200, 300);
 printf("%d\n", number);  // 300
 ```
@@ -411,7 +386,7 @@ printf("%d\n", number);  // 300
 
 逗号运算符与函数参数列表中的逗号不是一回事。函数参数列表中的逗号只用于分隔参数。
 
-### 运算符优先级
+## 运算符优先级
 
 运算符优先级决定表达式如何分组，但不等于所有操作数的实际求值顺序。
 
@@ -419,14 +394,6 @@ printf("%d\n", number);  // 300
 
 下面保留原稿中的优先级参考图。它们用于辅助查阅，不替代 C 标准中的语法规则；实际代码中，遇到多个低优先级运算符时建议主动加括号。
 
-![运算符优先级参考图 1](https://i-blog.csdnimg.cn/blog_migrate/9634526c95050fd828b7cfa10e2f2afd.png)
-
-![运算符优先级参考图 2](https://i-blog.csdnimg.cn/blog_migrate/c3f78f827c2bc461efc1a812c44d7e62.png)
-
-![运算符优先级参考图 3](https://i-blog.csdnimg.cn/blog_migrate/dd568a9230a8e123aff039d0e45841a8.png)
-
-## 原稿图示
-
-## 表达式的可读性
+<table><thead><tr><th width="69.800048828125">优先级</th><th width="92.800048828125">运算符</th><th width="155.2000732421875">名称或含义</th><th width="213.9998779296875">使用形式</th><th width="108">结合方向</th><th width="108.800048828125">说明</th></tr></thead><tbody><tr><td rowspan="4">1</td><td><code>[]</code></td><td>数组下标</td><td><code>数组名[常量表达式]</code></td><td rowspan="4">左到右</td><td rowspan="4">--</td></tr><tr><td><code>()</code></td><td>圆括号、函数调用</td><td><code>(表达式)</code> / <code>函数名(形参表)</code></td></tr><tr><td><code>.</code></td><td>成员选择（对象）</td><td><code>对象.成员名</code></td></tr><tr><td><code>-></code></td><td>成员选择（指针）</td><td><code>对象指针->成员名</code></td></tr><tr><td rowspan="9">2</td><td><code>-</code></td><td>负号运算符</td><td><code>-表达式</code></td><td rowspan="9">右到左</td><td rowspan="7">单目运算符</td></tr><tr><td><code>~</code></td><td>按位取反运算符</td><td><code>~表达式</code></td></tr><tr><td><code>++</code></td><td>自增运算符</td><td><code>++变量名</code> / <code>变量名++</code></td></tr><tr><td><code>--</code></td><td>自减运算符</td><td><code>--变量名</code> / <code>变量名--</code></td></tr><tr><td><code>*</code></td><td>取值运算符</td><td><code>*指针变量</code></td></tr><tr><td><code>&#x26;</code></td><td>取地址运算符</td><td><code>&#x26;变量名</code></td></tr><tr><td><code>!</code></td><td>逻辑非运算符</td><td><code>!表达式</code></td></tr><tr><td><code>(类型)</code></td><td>强制类型转换</td><td><code>(数据类型)表达式</code></td><td rowspan="2">--</td></tr><tr><td><code>sizeof</code></td><td>长度运算符</td><td><code>sizeof(表达式)</code></td></tr><tr><td rowspan="3">3</td><td><code>/</code></td><td>除</td><td><code>表达式 / 表达式</code></td><td rowspan="18">左到右</td><td rowspan="18">双目运算符</td></tr><tr><td><code>*</code></td><td>乘</td><td><code>表达式 * 表达式</code></td></tr><tr><td><code>%</code></td><td>余数（取模）</td><td><code>整型表达式 % 整型表达式</code></td></tr><tr><td rowspan="2">4</td><td><code>+</code></td><td>加</td><td><code>表达式 + 表达式</code></td></tr><tr><td><code>-</code></td><td>减</td><td><code>表达式 - 表达式</code></td></tr><tr><td rowspan="2">5</td><td><code>&#x3C;&#x3C;</code></td><td>左移</td><td><code>变量 &#x3C;&#x3C; 表达式</code></td></tr><tr><td><code>>></code></td><td>右移</td><td><code>变量 >> 表达式</code></td></tr><tr><td rowspan="4">6</td><td><code>></code></td><td>大于</td><td><code>表达式 > 表达式</code></td></tr><tr><td><code>>=</code></td><td>大于等于</td><td><code>表达式 >= 表达式</code></td></tr><tr><td><code>&#x3C;</code></td><td>小于</td><td><code>表达式 &#x3C; 表达式</code></td></tr><tr><td><code>&#x3C;=</code></td><td>小于等于</td><td><code>表达式 &#x3C;= 表达式</code></td></tr><tr><td rowspan="2">7</td><td><code>==</code></td><td>等于</td><td><code>表达式 == 表达式</code></td></tr><tr><td><code>!=</code></td><td>不等于</td><td><code>表达式 != 表达式</code></td></tr><tr><td>8</td><td><code>&#x26;</code></td><td>按位与</td><td><code>表达式 &#x26; 表达式</code></td></tr><tr><td>9</td><td><code>^</code></td><td>按位异或</td><td><code>表达式 ^ 表达式</code></td></tr><tr><td>10</td><td><code>|</code></td><td>按位或</td><td><code>表达式 | 表达式</code></td></tr><tr><td>11</td><td><code>&#x26;&#x26;</code></td><td>逻辑与</td><td><code>表达式 &#x26;&#x26; 表达式</code></td></tr><tr><td>12</td><td><code>||</code></td><td>逻辑或</td><td><code>表达式 || 表达式</code></td></tr><tr><td>13</td><td><code>?:</code></td><td>条件运算符</td><td><code>表达式1 ? 表达式2 : 表达式3</code></td><td rowspan="12">右到左</td><td>三目运算符</td></tr><tr><td rowspan="11">14</td><td><code>=</code></td><td>赋值运算符</td><td><code>变量 = 表达式</code></td><td rowspan="12">--</td></tr><tr><td><code>/=</code></td><td>除后赋值</td><td><code>变量 /= 表达式</code></td></tr><tr><td><code>*=</code></td><td>乘后赋值</td><td><code>变量 *= 表达式</code></td></tr><tr><td><code>%=</code></td><td>取模后赋值</td><td><code>变量 %= 表达式</code></td></tr><tr><td><code>+=</code></td><td>加后赋值</td><td><code>变量 += 表达式</code></td></tr><tr><td><code>-=</code></td><td>减后赋值</td><td><code>变量 -= 表达式</code></td></tr><tr><td><code>&#x3C;&#x3C;=</code></td><td>左移后赋值</td><td><code>变量 &#x3C;&#x3C;= 表达式</code></td></tr><tr><td><code>>>=</code></td><td>右移后赋值</td><td><code>变量 >>= 表达式</code></td></tr><tr><td><code>&#x26;=</code></td><td>按位与后赋值</td><td><code>变量 &#x26;= 表达式</code></td></tr><tr><td><code>^=</code></td><td>按位异或后赋值</td><td><code>变量 ^= 表达式</code></td></tr><tr><td><code>|=</code></td><td>按位或后赋值</td><td><code>变量 |= 表达式</code></td></tr><tr><td>15</td><td><code>,</code></td><td>逗号运算符</td><td><code>表达式, 表达式, ...</code></td><td>左到右</td></tr></tbody></table>
 
 复杂表达式不应依赖读者记忆完整优先级表。对位运算、移位、条件运算符和混合算术表达式，主动加括号；对一个语句中多次修改同一对象的写法，拆成多个语句。括号不能修复未定义行为，但能让意图和编译器的解析结果一致。
