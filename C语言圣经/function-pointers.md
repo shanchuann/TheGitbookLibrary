@@ -7,7 +7,7 @@ icon: circle-7
 
 ## 什么是函数指针
 
-在程序中定义了一个函数，当编译链接成功，运行程序时系统就会为这个函数代码分配一段存储空间，这段存储空间的首地址称为这个函数的地址。而且函数名表示的就是这个地址。既然是地址，我们就可以定义一个指针变量来存放，这个指针变量就叫作函数指针变量，简称函数指针。
+函数编译后成为可执行程序中的代码，程序加载时由运行环境安排其代码地址。函数名在大多数表达式中会转换为指向该函数的指针。我们可以把这个指针保存到函数指针变量中，再通过它调用对应函数。函数指针不是对象指针，不能假定它与 `void *` 具有相同表示形式。
 
 函数指针的定义方式为：`函数返回值类型 (* 指针变量名)(函数参数列表);`
 
@@ -47,7 +47,7 @@ int inc(int a) {
 }
 ```
 
-在 C 语言的表达中，`add` 和 `&add` 表达的意思完全相同，表示函数的地址。
+在给函数指针赋值或传参时，`add` 会转换为函数指针，`&add` 则显式取得函数地址，两者在这里得到同一个函数指针值。但它们的原始表达式类型不同：`add` 是函数指示符，`&add` 是指向函数的指针，不应笼统地说两者“完全相同”。
 
 ![函数的地址](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/book-images/typora/image-20260225111430698.png)
 
@@ -134,6 +134,8 @@ void callFunction(PFUN func, int x, int y) {
 > `qsort` 是 C 标准库中提供的通用排序函数，在 `<stdlib.h>` 中声明。C 标准规定了接口和结果，但没有规定内部必须使用哪一种排序算法；具体实现可能使用快速排序、堆排序或其他策略，不能依赖某个特定算法。
 
 ```c
+#include <stdbool.h>
+
 void bubbleSort(int arr[], int n, bool (*compare)(int, int)) {
 	for (int i = 0; i < n - 1; i++) {
 		for (int j = 0; j < n - i - 1; j++) {
@@ -180,7 +182,9 @@ int main() {
 // qsort()中的比较函数
 int cmpfunc (const void * a, const void * b)
 {
-   return ( *(int*)a - *(int*)b );
+   int left = *(const int *)a;
+   int right = *(const int *)b;
+   return (left > right) - (left < right);
 }
 ```
 
@@ -192,12 +196,9 @@ int cmpfunc (const void * a, const void * b)
 int add(int a, int b) { return a + b; }
 int sub(int a, int b) { return a - b; }
 int mul(int a, int b) { return a * b; }
-int div(int a, int b) {
-	if (b != 0) return a / b;
-	else {
-		printf("Error: Division by zero!\n");
-		return 0; // Return 0 or handle as needed
-	}
+int divide_int(int a, int b) {
+	/* 调用方必须保证 b != 0，且 a / b 可由 int 表示。 */
+	return a / b;
 }
 ```
 
@@ -206,10 +207,10 @@ int div(int a, int b) {
 可以定义一个函数指针数组用于存放四个函数的地址：
 
 ```c
-int (*pfun[4])(int, int) = { add, sub, mul, div }; // 定义一个函数指针数组，存放四个函数的地址
+int (*pfun[4])(int, int) = { add, sub, mul, divide_int }; // 定义一个函数指针数组，存放四个函数的地址
 
 typedef int (*PFUN)(int,int);
-PFUN arr[4] = { add, sub, mul, div }; // 更为直观
+PFUN arr[4] = { add, sub, mul, divide_int }; // 更为直观
 ```
 
 这样只需要在主函数中传入索引，即可将函数指针指向对应的函数。
@@ -220,9 +221,9 @@ PFUN arr[4] = { add, sub, mul, div }; // 更为直观
 // typedef int (*PFUN)(int, int); // 定义一个函数指针类型，指向有两个int参数和一个int返回值的函数
 int main() {
 	int index = 0;
-	int (*pfun[4])(int, int) = { add, sub, mul, div }; // 定义一个函数指针数组，存放四个函数的地址
-	// PFUN arr[4] = { add, sub, mul, div }; // 也可以使用PFUN类型定义函数指针数组
-	scanf("%d", &index);
+	int (*pfun[4])(int, int) = { add, sub, mul, divide_int }; // 定义一个函数指针数组，存放四个函数的地址
+	// PFUN arr[4] = { add, sub, mul, divide_int }; // 也可以使用PFUN类型定义函数指针数组
+	if (scanf("%d", &index) != 1) return 1;
 	if (index >= 0 && index < 4) {
 		int a = 10, b = 5;
 		int result = pfun[index](a, b); // 通过函数指针调用函数
@@ -232,6 +233,8 @@ int main() {
 	return 0;
 }
 ```
+
+上例固定传入 `b = 5`，因此除数不为零。它用于说明函数指针数组，不是通用计算器；若参数来自用户，必须先检查除零以及整数溢出（尤其是 `INT_MIN / -1`）。需要报告错误时，可统一改成“返回是否成功、通过输出参数交付结果”的函数签名，不能用整数 `0` 假装错误码。
 
 ## 泛型编程
 

@@ -60,7 +60,10 @@ void showGrid(GridArray grid,struct LetterNode* px,int n) {
 	assert(px != NULL);
 	system("cls");
 	initGrid(grid);
-    for (int i = 0; i < n; i++) grid[px[i].row][px[i].col] = px[i].ch;
+    for (int i = 0; i < n; i++) {
+        if (px[i].row >= 0 && px[i].row < ROWSIZE && px[i].col >= 0 && px[i].col < COLSIZE)
+            grid[px[i].row][px[i].col] = px[i].ch;
+    }
     for (int i = 0; i < ROWSIZE; i++) printf("%s \n", grid[i]);
 }
 ```
@@ -100,7 +103,8 @@ void showGrid(GridArray grid, struct LetterNode* px, int n) {
 
     initGrid(grid);
     for (int i = 0; i < n; i++) {
-        grid[px[i].row][px[i].col] = px[i].ch;
+        if (px[i].row >= 0 && px[i].row < ROWSIZE && px[i].col >= 0 && px[i].col < COLSIZE)
+            grid[px[i].row][px[i].col] = px[i].ch;
     }
     for (int i = 0; i < ROWSIZE; i++) {
         printf("%s \n", grid[i]);
@@ -126,12 +130,11 @@ int main() {
 }
 ```
 
-另外我们还需要让字母在第一行的随即列生成随机字母，因此需要实现一个随机函数。
+另外我们还需要让字母在第一行的随机列生成随机字母，因此需要实现一个随机函数。随机种子应在程序启动时设置一次，不能每次生成字母都重新播种。
 
 ```c
 void RandLetter(struct LetterNode* px, int n) {
     assert(px != NULL);
-	srand((unsigned int)time(NULL));    // 设置随机种子
     for (int i = 0; i < n; i++) {
         px[i].ch = 'A' + rand() % 26;   // 随机生成一个大写字母
         px[i].row = 0;                  // 从第一行开始
@@ -155,7 +158,7 @@ while (1)
         {
             letter[0].ch = 'A' + rand() % 26;   // 重新生成一个随机字母
             letter[0].col = rand() % COLSIZE;   // 重新生成一个随机列位置
-            letter[0].row = -1;                 // 重置为第一行
+            letter[0].row = 0;                  // 重置为第一行
         }
     }
     letter[0].row++;
@@ -224,7 +227,10 @@ void showGrid(GridArray grid, struct LetterNode* px, int n) {
 
     initGrid(grid);
     for (int i = 0; i < n; i++) {
-        grid[px[i].row][px[i].col] = px[i].ch;
+        if (px[i].row >= 0 && px[i].row < ROWSIZE &&
+            px[i].col >= 0 && px[i].col < COLSIZE) {
+            grid[px[i].row][px[i].col] = px[i].ch;
+        }
     }
     for (int i = 0; i < ROWSIZE; i++) {
         printf("%s \n", grid[i]);
@@ -232,7 +238,6 @@ void showGrid(GridArray grid, struct LetterNode* px, int n) {
 }
 void RandLetter(struct LetterNode* px, int n) {
     assert(px != NULL);
-	srand((unsigned int)time(NULL));    // 设置随机种子
     for (int i = 0; i < n; i++) {
         px[i].ch = 'A' + rand() % 26;   // 随机生成一个大写字母
         px[i].row = 0;                  // 从第一行开始
@@ -244,6 +249,7 @@ int main() {
     GridArray grid;
 	char input;
     struct LetterNode letter[LETSIZE] = { 0 };
+	srand((unsigned int)time(NULL));    // 程序启动时只设置一次随机种子
 	RandLetter(letter, LETSIZE);
     while (1)
     {
@@ -257,7 +263,7 @@ int main() {
             {
                 letter[0].ch = 'A' + rand() % 26;   // 重新生成一个随机字母
                 letter[0].col = rand() % COLSIZE;   // 重新生成一个随机列位置
-                letter[0].row = -1;                 // 重置为第一行
+                letter[0].row = 0;                  // 重置为第一行
             }
         }
         letter[0].row++;
@@ -277,6 +283,7 @@ int main() {
 ### 打字母v2.0
 
 在 v1.0 的基础上，我们把目标数量从一个字母提高到 10 个。除了修改宏定义，还要同步调整打印和判定函数。
+下面的 `main` 不是独立程序：先复制 v1.0 的完整示例，再把 `LETSIZE` 改为 `10`，用本节的 `main` 替换原来的 `main`；其余结构体和函数沿用上一版，不要在同一个源文件中保留两个 `main`。
 
 ```c
 #define LETSIZE 10
@@ -285,6 +292,7 @@ int main() {
     GridArray grid;
     char input;
     struct LetterNode letter[LETSIZE] = { 0 };
+	srand((unsigned int)time(NULL));    // 程序启动时只设置一次随机种子
     RandLetter(letter, LETSIZE);
     while (1)
     {
@@ -298,14 +306,14 @@ int main() {
 				if (input == letter[i].ch) { // 如果输入的字符与某个字母匹配
                     letter[i].ch = 'A' + rand() % 26;   // 重新生成一个随机字母
                     letter[i].col = rand() % COLSIZE;   // 重新生成一个随机列位置
-                    letter[i].row = -1;
+                    letter[i].row = 0;
                 }
             }
         }
 		for (int i = 0; i < LETSIZE; i++) {
             letter[i].row++; // 字母下落一行
             if (letter[i].row >= ROWSIZE) { // 如果字母掉出屏幕底部
-                printf("Game Over!\n", letter[i].ch);
+                printf("Game Over! The letter was '%c'.\n", letter[i].ch);
                 return 0; // 结束游戏
             }
         }
@@ -322,4 +330,4 @@ int main() {
 
 ## 运行环境差异
 
-这个项目使用终端光标控制和随机输入，Windows、WSL 和 Linux 终端的行为可能不同。学习重点是输入循环、状态更新和资源释放；如果终端控制代码无法移植，应把平台相关部分隔离在少数函数中，不要让主循环到处散落条件编译。
+本章完整代码使用 Windows 控制台 API、`<windows.h>`、`<conio.h>` 和 `Sleep`，只能在提供这些接口的 Windows 工具链中编译；原样放到 WSL 或 Linux 不会通过编译。保存为 `typing_game.c` 后，可在 Windows 的 MinGW 环境执行 `gcc -std=c11 -Wall -Wextra -Wpedantic typing_game.c -o typing_game.exe`。运行时终端应至少能显示 70 列、20 行。学习重点是输入循环和状态更新；移植到其他终端时，应单独替换键盘读取、等待和光标控制函数。

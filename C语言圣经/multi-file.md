@@ -79,7 +79,7 @@ C 语言多文件项目的构建分为 “编译” 和 “链接” 两个阶�
     void func() { printf("Hello\n"); }
 
     // 文件A（a.c）：声明并调用该函数
-    extern void func();
+    extern void func(void);
     func();  // 输出Hello
     ```
 
@@ -104,7 +104,7 @@ C 语言多文件项目的构建分为 “编译” 和 “链接” 两个阶�
 int Add_Int(int a, int b);    // 加法
 int Sub_Int(int a, int b);    // 减法
 int Mul_Int(int a, int b);    // 乘法
-int Div_Int(int a, int b);    // 除法
+int Div_Int(int a, int b, int *result); // 除法，成功返回1
 void Show_Sum(int result);    // 显示结果
 void Counter(void);           // 处理输入和运算分发
 
@@ -148,13 +148,13 @@ int Mul_Int(int a, int b) {
 ```c
 #include "calculator.h"
 #include <stdio.h>
+#include <limits.h>
+#include <stddef.h>
 
-int Div_Int(int a, int b) {
-    if (b == 0) {
-        printf("错误：除数不能为0！\n");
-        return 0;
-    }
-    return a / b;
+int Div_Int(int a, int b, int *result) {
+    if (result == NULL || b == 0 || (a == INT_MIN && b == -1)) return 0;
+    *result = a / b;
+    return 1;
 }
 ```
 
@@ -180,13 +180,26 @@ void Counter(void) {
     char op;
 
     printf("请输入“操作数1 运算符 操作数2”（如：10 + 20）：");
-    scanf("%d %c %d", &a, &op, &b);
+    if (scanf("%d %c %d", &a, &op, &b) != 3) {
+        printf("错误：输入格式应为“整数 运算符 整数”。\n");
+        return;
+    }
+    /* 教学示例把输入限制在 [-100, 100]，使本例四则运算的结果都在 int 范围内。 */
+    if (a < -100 || a > 100 || b < -100 || b > 100) {
+        printf("错误：操作数必须在 -100 到 100 之间。\n");
+        return;
+    }
 
     switch (op) {
         case '+': result = Add_Int(a, b); break;
         case '-': result = Sub_Int(a, b); break;
         case '*': result = Mul_Int(a, b); break;
-        case '/': result = Div_Int(a, b); break;
+        case '/':
+            if (!Div_Int(a, b, &result)) {
+                printf("错误：除数为0或商超出 int 范围！\n");
+                return;
+            }
+            break;
         default:  printf("错误：不支持的运算符！\n"); return;
     }
 
@@ -207,7 +220,9 @@ int main() {
         Counter();  // 调用运算分发函数
 
         printf("是否继续？(Y/N)：");
-        scanf(" %c", &choice);  // 空格吸收输入缓冲区的换行
+        if (scanf(" %c", &choice) != 1) {  // 空格吸收输入缓冲区的换行
+            return 1;
+        }
     } while (choice == 'Y' || choice == 'y');
 
     printf("程序结束。\n");

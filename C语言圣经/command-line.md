@@ -100,3 +100,64 @@ file-copy source.bin target.bin
 这样就能把函数、错误处理和操作系统提供的命令行环境连接起来。实际实现还应检查源路径和目标路径是否相同，并在覆盖目标前明确记录覆盖策略。参数解析属于输入校验，不应使用 `atoi` 代替 `strtol`，因为 `atoi` 无法可靠报告范围错误。
 
 命令行程序还应记录终端行为：是否支持交互输入、遇到 `EOF` 是否正常结束、标准输入和标准输出是否可以重定向，以及输出中是否依赖颜色或光标控制。把这些约束写清楚，程序才能从“能在终端运行”变成“能被其他程序可靠调用”。
+
+## 完整练习：统计文件行数
+
+把下面的程序保存为 `line_count.c`。它要求恰好一个路径参数，只向标准输出写入结果，错误诊断写入标准错误。读取失败和关闭失败都不能误报为成功。
+
+```c
+#include <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        fprintf(stderr, "usage: %s file\n", argv[0]);
+        return EXIT_FAILURE;
+    }
+    FILE *file = fopen(argv[1], "rb");
+    if (file == NULL) {
+        perror(argv[1]);
+        return EXIT_FAILURE;
+    }
+    unsigned long long lines = 0;
+    int ch;
+    int last = '\n';
+    while ((ch = fgetc(file)) != EOF) {
+        if (ch == '\n') {
+            if (lines == ULLONG_MAX) {
+                fputs("too many lines\n", stderr);
+                fclose(file);
+                return EXIT_FAILURE;
+            }
+            ++lines;
+        }
+        last = ch;
+    }
+    int read_failed = ferror(file);
+    int close_failed = fclose(file) != 0;
+    if (read_failed || close_failed) {
+        fprintf(stderr, "cannot read or close %s\n", argv[1]);
+        return EXIT_FAILURE;
+    }
+    if (last != '\n') {
+        if (lines == ULLONG_MAX) {
+            fputs("too many lines\n", stderr);
+            return EXIT_FAILURE;
+        }
+        ++lines;
+    }
+    printf("%llu\n", lines);
+    return EXIT_SUCCESS;
+}
+```
+
+这里把“行”定义为换行符结束的一段内容，文件末尾没有换行符但仍有内容时也算一行。空文件是零行。计数器有上限，因此示例显式检查溢出；二进制模式避免 Windows 文本换行转换影响逐字节读取。程序不尝试判断文件是否为文本，嵌入零字节不会终止读取。
+
+```sh
+gcc -std=c11 -Wall -Wextra -Wpedantic line_count.c -o line_count
+./line_count line_count.c
+./line_count missing.txt
+```
+
+第二次调用应返回非零状态并在 `stderr` 打印错误。Windows 使用 `line_count.exe line_count.c`；PowerShell 可以查看 `$LASTEXITCODE`，POSIX shell 则查看 `$?`。试着输入无参数、两个参数、空文件和末尾无换行的文件，核对输出与退出码，而不是只看终端上的文字。

@@ -131,8 +131,11 @@ int main(void) {
     const char *target = "copy-target.txt";
     FILE *file = fopen(source, "wb");
     if (file == NULL) return 1;
-    fputs("C file copy\n", file);
-    fclose(file);
+    if (fputs("C file copy\n", file) == EOF) {
+        fclose(file);
+        return 1;
+    }
+    if (fclose(file) != 0) return 1;
     if (copy_file(source, target) != 0) return 1;
     printf("copied %s -> %s\n", source, target);
     return 0;

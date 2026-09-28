@@ -1,127 +1,190 @@
 ---
-description: 数据类型、格式字符串、ASCII 和 limits.h。
+description: C 语言学习中的类型、格式、标准库和工具速查。
 icon: envelope-dot
 ---
 
 # 附件
 
-### 数据类型
+本页用于查表，不替代正文解释。表中的“通常”表示常见实现，不表示 ISO C 的保证；需要可移植代码时，应以 `sizeof`、`<limits.h>`、`<stdint.h>` 和实现文档为准。
 
-#### 整数类型
+## 整数类型与范围
 
-| 类型             | 存储大小     | 值范围                                               |
-| -------------- | -------- | ------------------------------------------------- |
-| char           | 1 字节     | -128 到 127 或 0 到 255                              |
-| unsigned char  | 1 字节     | 0 到 255                                           |
-| signed char    | 1 字节     | -128 到 127                                        |
-| int            | 2 或 4 字节 | -32,768 到 32,767 或 -2,147,483,648 到 2,147,483,647 |
-| unsigned int   | 2 或 4 字节 | 0 到 65,535 或 0 到 4,294,967,295                    |
-| short          | 2 字节     | -32,768 到 32,767                                  |
-| unsigned short | 2 字节     | 0 到 65,535                                        |
-| long           | 4 字节     | -2,147,483,648 到 2,147,483,647                    |
-| unsigned long  | 4 字节     | 0 到 4,294,967,295                                 |
+| 类型 | 标准保证的关系 | 常见实现 | 适合表达 |
+| --- | --- | --- | --- |
+| `signed char` | 至少 8 位 | 1 字节 | 小范围有符号整数 |
+| `unsigned char` | 至少 8 位 | 1 字节 | 原始字节、非负小整数 |
+| `short` | 至少 16 位，且不大于 `int` | 2 字节 | 较小整数 |
+| `int` | 至少 16 位 | 4 字节 | 一般整数运算 |
+| `long` | 至少 32 位，且不小于 `int` | Windows 4 字节，LP64 Unix 8 字节 | 需要更大范围的实现相关整数 |
+| `long long` | 至少 64 位 | 8 字节 | 至少 64 位的整数 |
+| `size_t` | 能表示对象大小 | 32/64 位 | 数组长度、`sizeof` 结果 |
+| `ptrdiff_t` | 能表示同一数组内的指针差值 | 32/64 位 | 指针相减的结果 |
 
-#### 浮点类型
+有符号整数的精确范围由实现决定。若必须使用固定宽度，使用 `<stdint.h>` 中的 `int8_t`、`uint32_t` 等类型；如果某个平台没有这种宽度，对应类型可能根本不存在。打印固定宽度整数时使用 `<inttypes.h>` 的 `PRIu32`、`PRId64` 等宏。
 
-| 类型          | 存储大小  | 值范围                   | 精度      |
-| ----------- | ----- | --------------------- | ------- |
-| float       | 4 字节  | 1.2E-38 到 3.4E+38     | 6 位有效位  |
-| double      | 8 字节  | 2.3E-308 到 1.7E+308   | 15 位有效位 |
-| long double | 16 字节 | 3.4E-4932 到 1.1E+4932 | 19 位有效位 |
+```c
+#include <inttypes.h>
+#include <stdint.h>
+#include <stdio.h>
 
-#### void 类型
+uint32_t count = 100;
+printf("count=%" PRIu32 "\n", count);
+```
 
-<table><thead><tr><th width="118.199951171875">序号</th><th>类型与描述</th></tr></thead><tbody><tr><td>1</td><td><strong>函数返回为空</strong> C 中有各种函数都不返回值，或者您可以说它们返回空。不返回值的函数的返回类型为空。例如 <strong>void exit (int status);</strong></td></tr><tr><td>2</td><td><strong>函数参数为空</strong> C 中有各种函数不接受任何参数。不带参数的函数可以接受一个 void。例如 <strong>int rand(void);</strong></td></tr><tr><td>3</td><td><strong>指针指向 void</strong> 类型为 void * 的指针代表对象的地址，而不是类型。例如，内存分配函数 <strong>void *malloc( size_t size );</strong> 返回指向 void 的指针，可以转换为任何数据类型。</td></tr></tbody></table>
+## 浮点类型
 
-### 常用格式字符串
+| 类型 | 标准保证 | 常见实现 | 备注 |
+| --- | --- | --- | --- |
+| `float` | 至少 6 位有效数字 | IEEE 754 binary32，4 字节 | 适合节省空间的近似值 |
+| `double` | 至少 10 位有效数字 | IEEE 754 binary64，8 字节 | 一般浮点计算的默认选择 |
+| `long double` | 精度不低于 `double` | 可能是 8、10、16 字节 | 具体格式依实现而定 |
 
-#### 整数类
+浮点数不能用 `==` 判断一般计算结果是否相等。若业务允许误差，可比较 `fabs(a - b) < epsilon`，并根据数值规模选择绝对误差和相对误差。`NaN` 不等于任何值，包括它自己；检查浮点输入时可以使用 `<math.h>` 的 `isfinite`、`isnan`。
 
-| 格式说明符           | 对应数据类型                 | 说明/示例                              |
-| --------------- | ---------------------- | ---------------------------------- |
-| `%d` / `%i`     | `int`                  | 有符号十进制整数（`%i`在`scanf`中可识别八/十六进制）   |
-| `%u`            | `unsigned int`         | 无符号十进制整数                           |
-| `%o`            | `unsigned int`         | 无符号八进制整数（无前缀`0`）                   |
-| `%x` / `%X`     | `unsigned int`         | 无符号十六进制整数（`%x`小写`a-f`，`%X`大写`A-F`） |
-| `%hd`           | `short`                | 短整型有符号十进制                          |
-| `%hu`           | `unsigned short`       | 短整型无符号十进制                          |
-| `%ld` / `%li`   | `long`                 | 长整型有符号十进制                          |
-| `%lu`           | `unsigned long`        | 长整型无符号十进制                          |
-| `%lld` / `%lli` | `long long`            | 长长整型有符号十进制 (C99)                   |
-| `%llu`          | `unsigned long long`   | 长长整型无符号十进制 (C99)                   |
-| `%zd` / `%zi`   | `size_t` / `ptrdiff_t` | 指针大小类型/指针差值类型 (C99)                |
+## 常用格式说明符
 
-#### 浮点类
+### `printf` 输出
 
-| 格式说明符       | 对应数据类型             | 说明/示例                                  |
-| ----------- | ------------------ | -------------------------------------- |
-| `%f`        | `float` / `double` | 十进制小数形式（`printf`中`float`自动提升为`double`） |
-| `%lf`       | `double`           | 仅用于 **`scanf`** 读取 `double` 类型         |
-| `%e` / `%E` | `float` / `double` | 科学计数法（`%e`小写`e`，`%E`大写`E`）             |
-| `%g` / `%G` | `float` / `double` | 自动选`%f`或`%e`中更短形式（去掉尾部无效0）             |
-| `%a` / `%A` | `float` / `double` | 十六进制科学计数法 (C99)                        |
-| `%Lf`       | `long double`      | 长双精度浮点数                                |
+| 转换 | 参数类型 | 用途 |
+| --- | --- | --- |
+| `%d`、`%i` | `int` | 有符号十进制整数 |
+| `%u` | `unsigned int` | 无符号十进制整数 |
+| `%o` | `unsigned int` | 八进制 |
+| `%x`、`%X` | `unsigned int` | 十六进制 |
+| `%ld`、`%lu` | `long`、`unsigned long` | `long` 整数 |
+| `%lld`、`%llu` | `long long`、`unsigned long long` | C99 长整数 |
+| `%zu` | `size_t` | 数组长度、字节数 |
+| `%td` | `ptrdiff_t` | 指针差值 |
+| `%f` | `double` | 小数形式；`float` 会提升为 `double` |
+| `%e`、`%g` | `double` | 科学计数法或较短表示 |
+| `%Lf` | `long double` | 长双精度 |
+| `%c` | `int` | 输出一个字符 |
+| `%s` | `char *` 或 `const char *` | 输出以 `\0` 结尾的字符串 |
+| `%p` | `void *` | 输出对象地址 |
+| `%%` | 无参数 | 输出 `%` |
 
-#### 字符与字符串
+指针传给 `%p` 时，按规范转换为 `void *` 最清楚：`printf("%p", (void *)ptr);`。`%n` 会把已输出字符数写入指针，容易造成安全问题；除非明确需要并能控制格式字符串，否则不要使用它。
 
-| 格式说明符  | 对应数据类型                  | 说明/示例                                    |
-| ------ | ----------------------- | ---------------------------------------- |
-| `%c`   | `char` / `int`          | 单个字符（`printf`中`int`会转成`unsigned char`输出） |
-| `%s`   | `char*` / `const char*` | 字符串（必须以 `'\0'` 结尾）                       |
-| `%hhd` | `signed char`           | 有符号字符型整数 (C99)                           |
-| `%hhu` | `unsigned char`         | 无符号字符型整数 (C99)                           |
+### `scanf` 输入
 
-#### 指针与特殊
+`scanf` 的浮点转换和 `printf` 不同：`%f` 接收 `float *`，`%lf` 接收 `double *`，`%Lf` 接收 `long double *`。整数转换也必须传入与转换符匹配的指针。
 
-| 格式说明符 | 对应数据类型  | 说明/示例                       |
-| ----- | ------- | --------------------------- |
-| `%p`  | `void*` | 指针地址（通常以十六进制显示，建议强转`void*`） |
-| `%n`  | `int*`  | 不输出内容，将**已输出的字符数**写入对应指针变量  |
-| `%%`  | 无       | 输出一个字面百分号 `%`               |
+```c
+int number;
+double score;
+if (scanf("%d %lf", &number, &score) == 2) {
+    /* 输入有效 */
+}
+```
 
-#### 常用修饰符
+直接使用 `scanf("%s", buffer)` 没有长度上限，容易写越界。交互程序通常更适合先用 `fgets` 读取一整行，再用 `strtol`、`strtod` 解析并检查尾部字符。
 
-| 修饰符类型  | 示例     | 说明                             |
-| ------ | ------ | ------------------------------ |
-| **标志** | `%-5d` | `-`：左对齐（默认右对齐）                 |
-| **标志** | `%+d`  | `+`：强制显示正负号（正数也显示 `+`）         |
-| **标志** | `% d`  | 空格：正数前补空格，负数前显示 `-`            |
-| **标志** | `%#x`  | `#`：八进制加前缀 `0`，十六进制加 `0x`/`0X` |
-| **宽度** | `%5d`  | 最小宽度 5，不足则补空格                  |
-| **精度** | `%.2f` | 浮点数保留 2 位小数；字符串最多输出 2 个字符      |
-| **长度** | `%lld` | `ll`：修饰整型，对应 `long long`       |
+## 常用转义字符
 
-### ASCII表
+| 写法 | 含义 |
+| --- | --- |
+| `\n` | 换行 |
+| `\r` | 回车 |
+| `\t` | 水平制表 |
+| `\v` | 垂直制表 |
+| `\b` | 退格 |
+| `\f` | 换页 |
+| `\a` | 响铃 |
+| `\\` | 反斜杠 |
+| `\'` | 单引号 |
+| `\"` | 双引号 |
+| `\0` | 空字符，字符串结束标志 |
+| `\xhh` | 十六进制字符值，后续十六进制数字会继续被读取 |
+| `\ooo` | 一到三位八进制字符值 |
 
-<table><thead><tr><th width="105.5999755859375">二进制</th><th width="70">八进制</th><th width="70.599853515625">十进制</th><th width="78.800048828125">十六进制</th><th width="242.800048828125">字符/缩写</th><th>解释</th></tr></thead><tbody><tr><td>00000000</td><td>000</td><td>0</td><td>00</td><td>NUL (NULL)</td><td>空字符</td></tr><tr><td>00000001</td><td>001</td><td>1</td><td>01</td><td>SOH (Start Of Headling)</td><td>标题开始</td></tr><tr><td>00000010</td><td>002</td><td>2</td><td>02</td><td>STX (Start Of Text)</td><td>正文开始</td></tr><tr><td>00000011</td><td>003</td><td>3</td><td>03</td><td>ETX (End Of Text)</td><td>正文结束</td></tr><tr><td>00000100</td><td>004</td><td>4</td><td>04</td><td>EOT (End Of Transmission)</td><td>传输结束</td></tr><tr><td>00000101</td><td>005</td><td>5</td><td>05</td><td>ENQ (Enquiry)</td><td>请求</td></tr><tr><td>00000110</td><td>006</td><td>6</td><td>06</td><td>ACK (Acknowledge)</td><td>回应/响应/收到通知</td></tr><tr><td>00000111</td><td>007</td><td>7</td><td>07</td><td>BEL (Bell)</td><td>响铃</td></tr><tr><td>00001000</td><td>010</td><td>8</td><td>08</td><td>BS (Backspace)</td><td>退格</td></tr><tr><td>00001001</td><td>011</td><td>9</td><td>09</td><td>HT (Horizontal Tab)</td><td>水平制表符</td></tr><tr><td>00001010</td><td>012</td><td>10</td><td>0A</td><td>LF/NL(Line Feed/New Line)</td><td>换行键</td></tr><tr><td>00001011</td><td>013</td><td>11</td><td>0B</td><td>VT (Vertical Tab)</td><td>垂直制表符</td></tr><tr><td>00001100</td><td>014</td><td>12</td><td>0C</td><td>FF/NP (Form Feed/New Page)</td><td>换页键</td></tr><tr><td>00001101</td><td>015</td><td>13</td><td>0D</td><td>CR (Carriage Return)</td><td>回车键</td></tr><tr><td>00001110</td><td>016</td><td>14</td><td>0E</td><td>SO (Shift Out)</td><td>不用切换</td></tr><tr><td>00001111</td><td>017</td><td>15</td><td>0F</td><td>SI (Shift In)</td><td>启用切换</td></tr><tr><td>00010000</td><td>020</td><td>16</td><td>10</td><td>DLE (Data Link Escape)</td><td>数据链路转义</td></tr><tr><td>00010001</td><td>021</td><td>17</td><td>11</td><td>DC1/XON (Device Control 1/Transmission On)</td><td>设备控制1/传输开始</td></tr><tr><td>00010010</td><td>022</td><td>18</td><td>12</td><td>DC2 (Device Control 2)</td><td>设备控制2</td></tr><tr><td>00010011</td><td>023</td><td>19</td><td>13</td><td>DC3/XOFF (Device Control 3/Transmission Off)</td><td>设备控制3/传输中断</td></tr><tr><td>00010100</td><td>024</td><td>20</td><td>14</td><td>DC4 (Device Control 4)</td><td>设备控制4</td></tr><tr><td>00010101</td><td>025</td><td>21</td><td>15</td><td>NAK (Negative Acknowledge)</td><td>无响应/非正常响应/拒绝接收</td></tr><tr><td>00010110</td><td>026</td><td>22</td><td>16</td><td>SYN (Synchronous Idle)</td><td>同步空闲</td></tr><tr><td>00010111</td><td>027</td><td>23</td><td>17</td><td>ETB (End of Transmission Block)</td><td>传输块结束/块传输终止</td></tr><tr><td>00011000</td><td>030</td><td>24</td><td>18</td><td>CAN (Cancel)</td><td>取消</td></tr><tr><td>00011001</td><td>031</td><td>25</td><td>19</td><td>EM (End of Medium)</td><td>已到介质末端/介质存储已满/介质中断</td></tr><tr><td>00011010</td><td>032</td><td>26</td><td>1A</td><td>SUB (Substitute)</td><td>替补/替换</td></tr><tr><td>00011011</td><td>033</td><td>27</td><td>1B</td><td>ESC (Escape)</td><td>逃离/取消</td></tr><tr><td>00011100</td><td>034</td><td>28</td><td>1C</td><td>FS (File Separator)</td><td>文件分割符</td></tr><tr><td>00011101</td><td>035</td><td>29</td><td>1D</td><td>GS (Group Separator)</td><td>组分隔符/分组符</td></tr><tr><td>00011110</td><td>036</td><td>30</td><td>1E</td><td>RS (Record Separator)</td><td>记录分离符</td></tr><tr><td>00011111</td><td>037</td><td>31</td><td>1F</td><td>US (Unit Separator)</td><td>单元分隔符</td></tr><tr><td>00100000</td><td>040</td><td>32</td><td>20</td><td>(Space)</td><td>空格</td></tr><tr><td>00100001</td><td>041</td><td>33</td><td>21</td><td>!</td><td></td></tr><tr><td>00100010</td><td>042</td><td>34</td><td>22</td><td>"</td><td></td></tr><tr><td>00100011</td><td>043</td><td>35</td><td>23</td><td>#</td><td></td></tr><tr><td>00100100</td><td>044</td><td>36</td><td>24</td><td>$</td><td></td></tr><tr><td>00100101</td><td>045</td><td>37</td><td>25</td><td>%</td><td></td></tr><tr><td>00100110</td><td>046</td><td>38</td><td>26</td><td>&#x26;</td><td></td></tr><tr><td>00100111</td><td>047</td><td>39</td><td>27</td><td>'</td><td></td></tr><tr><td>00101000</td><td>050</td><td>40</td><td>28</td><td>(</td><td></td></tr><tr><td>00101001</td><td>051</td><td>41</td><td>29</td><td>)</td><td></td></tr><tr><td>00101010</td><td>052</td><td>42</td><td>2A</td><td>*</td><td></td></tr><tr><td>00101011</td><td>053</td><td>43</td><td>2B</td><td>+</td><td></td></tr><tr><td>00101100</td><td>054</td><td>44</td><td>2C</td><td>,</td><td></td></tr><tr><td>00101101</td><td>055</td><td>45</td><td>2D</td><td>-</td><td></td></tr><tr><td>00101110</td><td>056</td><td>46</td><td>2E</td><td>.</td><td></td></tr><tr><td>00101111</td><td>057</td><td>47</td><td>2F</td><td>/</td><td></td></tr><tr><td>00110000</td><td>060</td><td>48</td><td>30</td><td>0</td><td></td></tr><tr><td>00110001</td><td>061</td><td>49</td><td>31</td><td>1</td><td></td></tr><tr><td>00110010</td><td>062</td><td>50</td><td>32</td><td>2</td><td></td></tr><tr><td>00110011</td><td>063</td><td>51</td><td>33</td><td>3</td><td></td></tr><tr><td>00110100</td><td>064</td><td>52</td><td>34</td><td>4</td><td></td></tr><tr><td>00110101</td><td>065</td><td>53</td><td>35</td><td>5</td><td></td></tr><tr><td>00110110</td><td>066</td><td>54</td><td>36</td><td>6</td><td></td></tr><tr><td>00110111</td><td>067</td><td>55</td><td>37</td><td>7</td><td></td></tr><tr><td>00111000</td><td>070</td><td>56</td><td>38</td><td>8</td><td></td></tr><tr><td>00111001</td><td>071</td><td>57</td><td>39</td><td>9</td><td></td></tr><tr><td>00111010</td><td>072</td><td>58</td><td>3A</td><td>:</td><td></td></tr><tr><td>00111011</td><td>073</td><td>59</td><td>3B</td><td>;</td><td></td></tr><tr><td>00111100</td><td>074</td><td>60</td><td>3C</td><td>&#x3C;</td><td></td></tr><tr><td>00111101</td><td>075</td><td>61</td><td>3D</td><td>=</td><td></td></tr><tr><td>00111110</td><td>076</td><td>62</td><td>3E</td><td>></td><td></td></tr><tr><td>00111111</td><td>077</td><td>63</td><td>3F</td><td>?</td><td></td></tr><tr><td>01000000</td><td>100</td><td>64</td><td>40</td><td>@</td><td></td></tr><tr><td>01000001</td><td>101</td><td>65</td><td>41</td><td>A</td><td></td></tr><tr><td>01000010</td><td>102</td><td>66</td><td>42</td><td>B</td><td></td></tr><tr><td>01000011</td><td>103</td><td>67</td><td>43</td><td>C</td><td></td></tr><tr><td>01000100</td><td>104</td><td>68</td><td>44</td><td>D</td><td></td></tr><tr><td>01000101</td><td>105</td><td>69</td><td>45</td><td>E</td><td></td></tr><tr><td>01000110</td><td>106</td><td>70</td><td>46</td><td>F</td><td></td></tr><tr><td>01000111</td><td>107</td><td>71</td><td>47</td><td>G</td><td></td></tr><tr><td>01001000</td><td>110</td><td>72</td><td>48</td><td>H</td><td></td></tr><tr><td>01001001</td><td>111</td><td>73</td><td>49</td><td>I</td><td></td></tr><tr><td>01001010</td><td>112</td><td>74</td><td>4A</td><td>J</td><td></td></tr><tr><td>01001011</td><td>113</td><td>75</td><td>4B</td><td>K</td><td></td></tr><tr><td>01001100</td><td>114</td><td>76</td><td>4C</td><td>L</td><td></td></tr><tr><td>01001101</td><td>115</td><td>77</td><td>4D</td><td>M</td><td></td></tr><tr><td>01001110</td><td>116</td><td>78</td><td>4E</td><td>N</td><td></td></tr><tr><td>01001111</td><td>117</td><td>79</td><td>4F</td><td>O</td><td></td></tr><tr><td>01010000</td><td>120</td><td>80</td><td>50</td><td>P</td><td></td></tr><tr><td>01010001</td><td>121</td><td>81</td><td>51</td><td>Q</td><td></td></tr><tr><td>01010010</td><td>122</td><td>82</td><td>52</td><td>R</td><td></td></tr><tr><td>01010011</td><td>123</td><td>83</td><td>53</td><td>S</td><td></td></tr><tr><td>01010100</td><td>124</td><td>84</td><td>54</td><td>T</td><td></td></tr><tr><td>01010101</td><td>125</td><td>85</td><td>55</td><td>U</td><td></td></tr><tr><td>01010110</td><td>126</td><td>86</td><td>56</td><td>V</td><td></td></tr><tr><td>01010111</td><td>127</td><td>87</td><td>57</td><td>W</td><td></td></tr><tr><td>01011000</td><td>130</td><td>88</td><td>58</td><td>X</td><td></td></tr><tr><td>01011001</td><td>131</td><td>89</td><td>59</td><td>Y</td><td></td></tr><tr><td>01011010</td><td>132</td><td>90</td><td>5A</td><td>Z</td><td></td></tr><tr><td>01011011</td><td>133</td><td>91</td><td>5B</td><td>[</td><td></td></tr><tr><td>01011100</td><td>134</td><td>92</td><td>5C</td><td>\</td><td></td></tr><tr><td>01011101</td><td>135</td><td>93</td><td>5D</td><td>]</td><td></td></tr><tr><td>01011110</td><td>136</td><td>94</td><td>5E</td><td>^</td><td></td></tr><tr><td>01011111</td><td>137</td><td>95</td><td>5F</td><td>_</td><td></td></tr><tr><td>01100000</td><td>140</td><td>96</td><td>60</td><td>`</td><td></td></tr><tr><td>01100001</td><td>141</td><td>97</td><td>61</td><td>a</td><td></td></tr><tr><td>01100010</td><td>142</td><td>98</td><td>62</td><td>b</td><td></td></tr><tr><td>01100011</td><td>143</td><td>99</td><td>63</td><td>c</td><td></td></tr><tr><td>01100100</td><td>144</td><td>100</td><td>64</td><td>d</td><td></td></tr><tr><td>01100101</td><td>145</td><td>101</td><td>65</td><td>e</td><td></td></tr><tr><td>01100110</td><td>146</td><td>102</td><td>66</td><td>f</td><td></td></tr><tr><td>01100111</td><td>147</td><td>103</td><td>67</td><td>g</td><td></td></tr><tr><td>01101000</td><td>150</td><td>104</td><td>68</td><td>h</td><td></td></tr><tr><td>01101001</td><td>151</td><td>105</td><td>69</td><td>i</td><td></td></tr><tr><td>01101010</td><td>152</td><td>106</td><td>6A</td><td>j</td><td></td></tr><tr><td>01101011</td><td>153</td><td>107</td><td>6B</td><td>k</td><td></td></tr><tr><td>01101100</td><td>154</td><td>108</td><td>6C</td><td>l</td><td></td></tr><tr><td>01101101</td><td>155</td><td>109</td><td>6D</td><td>m</td><td></td></tr><tr><td>01101110</td><td>156</td><td>110</td><td>6E</td><td>n</td><td></td></tr><tr><td>01101111</td><td>157</td><td>111</td><td>6F</td><td>o</td><td></td></tr><tr><td>01110000</td><td>160</td><td>112</td><td>70</td><td>p</td><td></td></tr><tr><td>01110001</td><td>161</td><td>113</td><td>71</td><td>q</td><td></td></tr><tr><td>01110010</td><td>162</td><td>114</td><td>72</td><td>r</td><td></td></tr><tr><td>01110011</td><td>163</td><td>115</td><td>73</td><td>s</td><td></td></tr><tr><td>01110100</td><td>164</td><td>116</td><td>74</td><td>t</td><td></td></tr><tr><td>01110101</td><td>165</td><td>117</td><td>75</td><td>u</td><td></td></tr><tr><td>01110110</td><td>166</td><td>118</td><td>76</td><td>v</td><td></td></tr><tr><td>01110111</td><td>167</td><td>119</td><td>77</td><td>w</td><td></td></tr><tr><td>01111000</td><td>170</td><td>120</td><td>78</td><td>x</td><td></td></tr><tr><td>01111001</td><td>171</td><td>121</td><td>79</td><td>y</td><td></td></tr><tr><td>01111010</td><td>172</td><td>122</td><td>7A</td><td>z</td><td></td></tr><tr><td>01111011</td><td>173</td><td>123</td><td>7B</td><td>{</td><td></td></tr><tr><td>01111100</td><td>174</td><td>124</td><td>7C</td><td>|</td><td></td></tr><tr><td>01111101</td><td>175</td><td>125</td><td>7D</td><td>}</td><td></td></tr><tr><td>01111110</td><td>176</td><td>126</td><td>7E</td><td>~</td><td></td></tr><tr><td>01111111</td><td>177</td><td>127</td><td>7F</td><td>DEL (Delete)</td><td>删除</td></tr></tbody></table>
+`\0` 不是“数字零字符”的十进制写法，而是值为 0 的字符。字符串的终止符通常写作 `\0`，显示数字字符零则写作 `'0'`。
 
-### C 标准库 `<limits.h>`
+## ASCII 速查
 
-| **宏**        | **描述**                      | **值**                   |
-| ------------ | --------------------------- | ----------------------- |
-| **字符类型**     |                             |                         |
-| `CHAR_BIT`   | `char` 类型的位数                | 通常为 8                   |
-| `CHAR_MIN`   | `char` 类型的最小值（有符号或无符号）      | -128 或 0                |
-| `CHAR_MAX`   | `char` 类型的最大值（有符号或无符号）      | 127 或 255               |
-| `SCHAR_MIN`  | `signed char` 类型的最小值        | -128                    |
-| `SCHAR_MAX`  | `signed char` 类型的最大值        | 127                     |
-| `UCHAR_MAX`  | `unsigned char` 类型的最大值      | 255                     |
-| **短整数类型**    |                             |                         |
-| `SHRT_MIN`   | `short` 类型的最小值              | -32768                  |
-| `SHRT_MAX`   | `short` 类型的最大值              | 32767                   |
-| `USHRT_MAX`  | `unsigned short` 类型的最大值     | 65535                   |
-| **整数类型**     |                             |                         |
-| `INT_MIN`    | `int` 类型的最小值                | -2147483648             |
-| `INT_MAX`    | `int` 类型的最大值                | 2147483647              |
-| `UINT_MAX`   | `unsigned int` 类型的最大值       | 4294967295              |
-| **长整数类型**    |                             |                         |
-| `LONG_MIN`   | `long` 类型的最小值               | -9223372036854775808L   |
-| `LONG_MAX`   | `long` 类型的最大值               | 9223372036854775807L    |
-| `ULONG_MAX`  | `unsigned long` 类型的最大值      | 18446744073709551615UL  |
-| **长长整数类型**   |                             |                         |
-| `LLONG_MIN`  | `long long` 类型的最小值          | -9223372036854775808LL  |
-| `LLONG_MAX`  | `long long` 类型的最大值          | 9223372036854775807LL   |
-| `ULLONG_MAX` | `unsigned long long` 类型的最大值 | 18446744073709551615ULL |
+ASCII 使用 7 位，范围是 `0` 到 `127`。控制字符没有统一的可见图形：
+
+| 十进制 | 十六进制 | 缩写 | 含义 |
+| ---: | ---: | --- | --- |
+| 0 | 00 | NUL | 空字符 |
+| 7 | 07 | BEL | 响铃 |
+| 8 | 08 | BS | 退格 |
+| 9 | 09 | HT | 水平制表 |
+| 10 | 0A | LF | 换行 |
+| 13 | 0D | CR | 回车 |
+| 27 | 1B | ESC | 转义 |
+| 32 | 20 | SP | 空格 |
+| 127 | 7F | DEL | 删除 |
+
+可打印字符的连续范围便于记忆：数字 `'0'` 到 `'9'` 是 48 到 57，大写字母 `'A'` 到 `'Z'` 是 65 到 90，小写字母 `'a'` 到 `'z'` 是 97 到 122。ASCII 只覆盖英文基本字符；UTF-8 中文字符由多个字节组成，不能用“一个 `char` 等于一个汉字”的假设处理。
+
+## `<limits.h>` 和 `<float.h>`
+
+整数范围应从头文件读取，而不是抄写固定数字：
+
+```c
+#include <limits.h>
+#include <stdio.h>
+
+printf("char bits: %d\n", CHAR_BIT);
+printf("int: %d..%d\n", INT_MIN, INT_MAX);
+printf("unsigned long max: %lu\n", ULONG_MAX);
+```
+
+`<limits.h>` 常用宏包括 `CHAR_BIT`、`CHAR_MIN`、`CHAR_MAX`、`SHRT_MIN`、`SHRT_MAX`、`INT_MIN`、`INT_MAX`、`LONG_MIN`、`LONG_MAX`、`LLONG_MIN` 和对应的无符号最大值。浮点类型的精度和范围见 `<float.h>` 的 `FLT_DIG`、`DBL_DIG`、`LDBL_DIG`、`FLT_MAX`、`DBL_MAX` 等宏。
+
+## 常用标准头文件
+
+| 头文件 | 主要内容 |
+| --- | --- |
+| `<stdio.h>` | `printf`、`fgets`、`FILE`、文件读写 |
+| `<stdlib.h>` | `malloc`、`free`、`strtol`、`qsort`、程序退出 |
+| `<string.h>` | `strlen`、`memcpy`、`memmove`、字符串查找 |
+| `<stddef.h>` | `size_t`、`ptrdiff_t`、`NULL` |
+| `<stdint.h>` | 固定宽度整数和边界类型 |
+| `<inttypes.h>` | 固定宽度整数的格式宏 |
+| `<limits.h>` | 整数范围和 `CHAR_BIT` |
+| `<float.h>` | 浮点范围与精度 |
+| `<stdbool.h>` | C99 的 `bool`、`true`、`false` 宏 |
+| `<ctype.h>` | 字符分类和大小写转换，参数必须是 `EOF` 或 `unsigned char` 可表示值 |
+| `<errno.h>` | 标准库错误码 `errno` 和 `ERANGE` 等宏 |
+| `<assert.h>` | `assert` 断言 |
+| `<math.h>` | `fabs`、`sqrt`、`isfinite` 等数学函数 |
+| `<time.h>` | 时间类型和时间函数 |
+
+## 运算符优先级速查
+
+同一行从左到右优先级逐渐降低。复杂表达式应使用括号，不要依赖记忆：
+
+| 优先级 | 运算符 |
+| ---: | --- |
+| 1 | 后缀 `() [] -> . ++ --` |
+| 2 | 一元 `! ~ + - ++ -- * & sizeof _Alignof` |
+| 3 | `* / %` |
+| 4 | `+ -` |
+| 5 | `<< >>` |
+| 6 | `< <= > >=` |
+| 7 | `== !=` |
+| 8 | `&` |
+| 9 | `^` |
+| 10 | `|` |
+| 11 | `&&` |
+| 12 | `||` |
+| 13 | `?:` |
+| 14 | 赋值 `= += -= *= /= %= <<= >>= &= ^= |=` |
+| 15 | 逗号 `,` |
+
+函数调用、数组下标和成员访问优先级很高，但表达式的求值顺序是另一件事。不要在同一个表达式中多次修改同一个标量对象，也不要把优先级表当成求值顺序表。
+
+## 常见退出状态
+
+`main` 返回 `0` 或 `EXIT_SUCCESS` 表示成功，非零值或 `EXIT_FAILURE` 表示失败。具体数值由系统和调用环境解释，脚本只应依赖“零/非零”，除非程序自己定义了稳定的错误码。
+
+```c
+#include <stdlib.h>
+
+if (input_error) return EXIT_FAILURE;
+return EXIT_SUCCESS;
+```
 
 ## 编译器速查
 
@@ -129,6 +192,47 @@ icon: envelope-dot
 
 ```sh
 gcc -std=c11 -Wall -Wextra -Wpedantic -g source.c -o program
+clang -std=c11 -Wall -Wextra -Wpedantic -g source.c -o program
 ```
 
-需要固定宽度整数时使用 `<stdint.h>`，打印 `uint32_t` 等类型时使用 `<inttypes.h>` 提供的格式宏。不要把某个平台上 `int`、`long` 或指针的大小写进可移植文件格式。
+调试内存问题时，可以增加：
+
+```sh
+gcc -std=c11 -Wall -Wextra -Wpedantic -g \
+    -fsanitize=address,undefined source.c -o program
+```
+
+`-fsanitize` 是 GCC/Clang 的工具选项，不属于 ISO C；在 MSVC、Windows 原生工具链或嵌入式编译器中应查阅对应文档。发布程序前应分别验证警告构建、调试构建和目标平台构建。
+
+## 常用函数的返回值与所有权
+
+| 函数 | 成功时 | 失败或边界 | 使用者要做什么 |
+| --- | --- | --- | --- |
+| `malloc(n)` | 指向至少 `n` 字节的指针 | `NULL`；`n == 0` 的结果依实现而定 | 成功后最终调用 `free` |
+| `realloc(p, n)` | 新位置，旧指针失效 | `NULL` 时旧块仍有效（`n > 0`） | 先用临时指针接收结果 |
+| `fopen(path, mode)` | `FILE *` | `NULL` | 成功后检查 `fclose` |
+| `fgets(buf, cap, file)` | `buf` | `NULL` 表示 EOF 或错误 | 用 `ferror` 区分；检查是否读完整行 |
+| `fread(ptr, size, count, file)` | 已读元素数 | 少于 `count` 表示 EOF 或错误 | 用 `ferror`、`feof` 区分 |
+| `fwrite(ptr, size, count, file)` | 已写元素数 | 少于 `count` 表示写入失败 | 检查写入数及最终 `fclose` |
+| `strtol(text, &end, base)` | 解析出的 `long` | 没有数字或超范围 | 检查 `end`、`errno == ERANGE`、尾部和目标范围 |
+
+`realloc(p, 0)` 的行为不适合作为统一的释放写法；需要释放时明确调用 `free(p)`。不要用 `while (!feof(file))` 控制读取：EOF 标志只在一次读取尝试之后才会设置，循环应由读取函数的返回值控制。
+
+## 标准版本和平台边界
+
+本书完整示例默认按 C11 编译。C99 引入了 `//` 注释、复合字面量、变长数组以及 `<stdint.h>`；C11 增加了 `_Static_assert`、`_Generic` 等能力。变长数组在 C11 中属于可选特性，跨编译器代码不要假定一定可用。C23 又调整了部分语法和标准库定义，不能因为编译器默认使用了较新模式，就认为代码适合本书的 C11 命令。
+
+`<windows.h>`、`<conio.h>`、`Sleep`、`_getch`、POSIX `getopt` 与 `unistd.h` 都不是 ISO C 的组成部分。遇到这些接口应先看章节标出的运行平台；需要移植时，把终端、路径、文件替换等操作集中到平台层。编译器选项也属于工具链，不属于 C 语言语法。
+
+## 练习与核对清单
+
+抄写和修改示例时，先确认是否是“片段”还是包含 `main` 的“完整程序”。完整程序需要对应头文件、正确的编译命令与输入文件；多文件项目还要同时编译所有源文件。运行前逐项检查：
+
+1. 数组长度、索引和字符串终止符是否对应，边界值包括 0、1 和容量上限；
+2. `scanf`、`fgets`、`malloc`、`fread`、`fwrite` 的返回值是否检查；
+3. 每个资源的所有者、释放位置和失败路径是否明确；
+4. 数值转换是否检查尾部、范围和溢出，比较函数是否可能相减溢出；
+5. 输出、错误诊断与退出码是否一致，写文件是否检查关闭错误；
+6. 示例是否依赖 Windows、POSIX 或 GCC 扩展，是否与自己的环境匹配。
+
+遇到意外结果时，先保留最小复现和原始编译命令，再查对应正文中的类型、指针、输入输出或调试章节。不要通过关闭警告或删掉失败判断来让程序“看起来能运行”。

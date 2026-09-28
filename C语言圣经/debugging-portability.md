@@ -124,6 +124,39 @@ printf("count=%" PRIu32 "\n", count);
 
 一个实际的可移植性检查表包括：使用 `sizeof` 或 `<limits.h>` 检查类型范围；使用 `<inttypes.h>` 打印固定宽度整数；使用 `size_t` 表示对象大小；对 `ctype.h` 函数先转换为 `unsigned char`；避免依赖路径分隔符、换行符和编译器默认语言标准；至少在两种编译器或两个平台上构建一次。
 
+## 可复现案例：从边界错误到回归测试
+
+下面这段代码故意把循环条件写成 `i <= count`。当 `count == 3`，最后一次读取的是 `values[3]`，已经越过数组末尾。不要根据某次恰好输出的数字判断程序是否正确。
+
+```c
+/* bounds_bug.c：故意错误，仅用于调试练习 */
+#include <stddef.h>
+#include <stdio.h>
+
+static int sum(const int values[], size_t count) {
+    int result = 0;
+    for (size_t i = 0; i <= count; ++i) result += values[i];
+    return result;
+}
+
+int main(void) {
+    int values[] = {1, 2, 3};
+    printf("%d\n", sum(values, sizeof values / sizeof values[0]));
+    return 0;
+}
+```
+
+先在支持 AddressSanitizer 的 GCC/Clang 环境编译运行；它应指出越界读取，具体报告格式随工具链变化：
+
+```sh
+gcc -std=c11 -Wall -Wextra -Wpedantic -g -O0 -fsanitize=address,undefined bounds_bug.c -o bounds_bug
+./bounds_bug
+```
+
+把 `<=` 改为 `<` 后重新编译，预期输出 `6`。再测试空数组对应的调用 `sum(NULL, 0)`：修正后的循环不会解引用指针，结果为零。真实项目还需考虑求和溢出，这属于另一类错误；消毒器能帮助定位部分有符号溢出，却不能替代输入范围设计。Windows 的 MSVC 调试器、AddressSanitizer 选项和运行方式不同，应按实际工具链文档操作。
+
+排查时记录四项信息：最小输入、编译命令、实际诊断、修复后的回归结果。只有修复并复测，才算完成一次调试。
+
 ```mermaid
 flowchart TD
     A[源代码] --> B[编译警告]

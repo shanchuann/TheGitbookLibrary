@@ -80,13 +80,14 @@ double student_list_average(const StudentList *list);
 /* student.c */
 #include "student.h"
 
-#include <ctype.h>
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
 
 static int valid_id_char(unsigned char ch) {
-    return isalnum(ch) || ch == '_' || ch == '-';
+    return (ch >= 'A' && ch <= 'Z') ||
+           (ch >= 'a' && ch <= 'z') ||
+           (ch >= '0' && ch <= '9') || ch == '_' || ch == '-';
 }
 
 static int valid_id(const char *id) {
@@ -297,7 +298,9 @@ int students_load(const char *path, StudentList *list) {
             return -1;
         }
     }
-    if (ferror(file) || fclose(file) != 0) {
+    int read_failed = ferror(file);
+    int close_failed = fclose(file) != 0;
+    if (read_failed || close_failed) {
         student_list_destroy(&loaded);
         return -1;
     }
@@ -308,10 +311,20 @@ int students_load(const char *path, StudentList *list) {
 
 int students_save(const char *path, const StudentList *list) {
     char temporary[512];
+    char backup[512];
     FILE *file;
     if (path == NULL || list == NULL ||
         snprintf(temporary, sizeof temporary, "%s.tmp", path) >=
-            (int)sizeof temporary) return -1;
+            (int)sizeof temporary ||
+        snprintf(backup, sizeof backup, "%s.bak", path) >=
+            (int)sizeof backup) return -1;
+    errno = 0;
+    file = fopen(backup, "rb");
+    if (file != NULL) {
+        fclose(file);
+        return -1;
+    }
+    if (errno != ENOENT) return -1;
     file = fopen(temporary, "w");
     if (file == NULL) return -1;
     for (size_t i = 0; i < list->size; ++i) {
@@ -327,17 +340,35 @@ int students_save(const char *path, const StudentList *list) {
         remove(temporary);
         return -1;
     }
-    /* 简化的跨平台替换：生产程序还应处理 Windows 上目标文件已存在的情况。 */
-    remove(path);
-    if (rename(temporary, path) != 0) {
+    errno = 0;
+    file = fopen(path, "rb");
+    int had_original = file != NULL;
+    int open_error = errno;
+    if (file != NULL && fclose(file) != 0) {
         remove(temporary);
         return -1;
     }
+    if (!had_original && open_error != ENOENT) {
+        remove(temporary);
+        return -1;
+    }
+    if (had_original && rename(path, backup) != 0) {
+        remove(temporary);
+        return -1;
+    }
+    if (rename(temporary, path) != 0) {
+        if (had_original && rename(backup, path) != 0)
+            fprintf(stderr, "恢复旧文件失败，请保留备份：%s\n", backup);
+        remove(temporary);
+        return -1;
+    }
+    if (had_original && remove(backup) != 0)
+        fprintf(stderr, "旧文件备份未删除：%s\n", backup);
     return 0;
 }
 ```
 
-保存先写 `*.tmp`，写完并关闭后才替换旧文件，避免程序在中途退出时留下半个数据库。这里的 CSV 解析明确不支持带逗号的姓名；这是一个可测试的边界，而不是隐藏的限制。要支持完整 CSV，应加入引号、双引号转义和字段长度限制。
+保存先写 `*.tmp`，关闭成功后把旧文件移到 `*.bak`，再把临时文件改名为正式文件。第二次改名失败时尝试恢复旧文件；恢复也失败时保留备份并报告路径。已有备份会阻止新的保存，必须先检查它为何存在，不能直接覆盖。这个方案仍不是跨平台的原子替换：崩溃可能留下临时文件或备份，另一个进程也可能同时修改文件；生产程序要使用平台提供的替换、同步和锁机制，并测试故障恢复。这里的 CSV 解析明确不支持带逗号的姓名；要支持完整 CSV，应加入引号、双引号转义和字段长度限制。
 
 ## 菜单和完整主程序
 
@@ -469,6 +500,7 @@ int main(int argc, char **argv) {
     for (;;) {
         menu();
         read_line("请选择: ", choice, sizeof choice);
+        if (feof(stdin)) break;
         switch (choice[0]) {
             case '1': print_all(&list); break;
             case '2': add_student(&list); break;
@@ -476,18 +508,19 @@ int main(int argc, char **argv) {
             case '4': delete_student(&list); break;
             case '5': find_student(&list); break;
             case '6': student_list_sort_by_score(&list); puts("排序完成。"); break;
-            case '0':
-                if (students_save(path, &list) != 0) {
-                    fputs("保存失败，数据仍在内存中。\n", stderr);
-                    student_list_destroy(&list);
-                    return 1;
-                }
-                student_list_destroy(&list);
-                puts("已保存，程序结束。");
-                return 0;
+            case '0': goto finish;
             default: puts("无效选项。"); break;
         }
     }
+finish:
+    if (students_save(path, &list) != 0) {
+        fputs("保存失败，请检查临时文件和备份文件。\n", stderr);
+        student_list_destroy(&list);
+        return 1;
+    }
+    student_list_destroy(&list);
+    puts("已保存，程序结束。");
+    return 0;
 }
 ```
 
@@ -505,9 +538,11 @@ cc -std=c11 -Wall -Wextra -Wpedantic -O2 main.c student.c storage.c -o student-m
 Windows 下使用 MinGW：
 
 ```text
-gcc -std=c11 -Wall -Wextra -Wpedantic -O2 main.c student.c storage.c -o student-manager.exe
+gcc -std=c11 -Wall -Wextra -Wpedantic -O2 -D__USE_MINGW_ANSI_STDIO=1 main.c student.c storage.c -o student-manager.exe
 student-manager.exe students.csv
 ```
+
+旧版 MinGW-w64 可能默认调用不支持 `%zu` 的 Microsoft C 运行库；上面的定义启用 MinGW 的 ANSI 格式化实现。较新的工具链是否需要该选项，应以实际编译警告为准。MSVC 的编译参数与这里不同。
 
 第一次运行时文件不存在属于正常情况，程序会从空列表开始；退出选择 `0` 后会创建 CSV 文件。也可以不传参数，程序默认使用当前目录的 `students.csv`。路径来自命令行时不要用 `system` 拼接命令，文件操作应始终通过 `fopen`、`rename` 等库函数完成。
 
@@ -544,3 +579,15 @@ cc -std=c11 -Wall -Wextra -g -fsanitize=address,undefined \
 * 把 `StudentList` 隐藏在不透明结构体后，进一步减少模块耦合。
 
 完成这些扩展前，应先保持当前版本的接口契约和测试。一个能编译、能恢复、能报告错误的朴素程序，比功能很多但无法判断数据是否丢失的程序更适合作为后续工程的基础。
+
+## 下一步学习方向
+
+完成这个项目后，不建议马上把菜单继续堆大。可以按下面的顺序继续练习，每一步都保留上一阶段的测试：
+
+1. **先补测试**：把列表增删改查、CSV 解析和排序拆成不依赖终端的测试函数，学习断言、测试夹具和回归测试。
+2. **再改进数据模型**：把单个 `score` 改成课程数组，增加总评、缺考状态和按课程统计，练习嵌套结构体、动态数组和不变量设计。
+3. **再练习接口隔离**：把 `StudentList` 改成不透明结构体，让调用者只能通过头文件中的函数操作数据，理解封装和 ABI 边界。
+4. **再处理可靠存储**：为文件加入版本号、校验和、备份和恢复策略，学习二进制格式、字节序、临时文件替换与故障恢复。
+5. **最后做工程化构建**：使用 Make、CMake 或其他构建工具，加入 Debug/Release 配置、AddressSanitizer、静态分析和持续集成。
+
+如果想继续学习系统方向，可以把存储模块替换为 POSIX 文件描述符或 Windows 文件 API，比较标准 C 与操作系统接口的边界；如果想学习网络编程，可以先设计一个只读的成绩查询协议，再考虑并发、身份验证和输入限制。无论选择哪条路线，都先写清楚接口的所有权、失败返回值和资源清理责任。
