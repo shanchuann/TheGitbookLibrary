@@ -28,4 +28,5 @@
 * [调试与可移植性](debugging-portability.md)
 * [打字母游戏](typing-game.md)
 * [学生成绩管理系统](student-project.md)
+* [下一步学习方向](next-steps.md)
 * [附件](appendix.md)
