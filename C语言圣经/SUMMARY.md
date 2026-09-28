@@ -2,10 +2,10 @@
 
 * [书籍介绍](README.md)
 * [引言](yin-yan.md)
-* [C语言基础](c-language-basics.md)
+* [C 语言基础](c-language-basics.md)
 * [数据类型](data-types.md)
 * [标识符与变量](identifiers-variables.md)
-* [C语言输入输出](io.md)
+* [C 语言输入输出](io.md)
 * [常量](constants.md)
 * [控制语句，随机数](control-flow.md)
 * [数组](arrays.md)

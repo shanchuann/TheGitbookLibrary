@@ -26,8 +26,8 @@ C 语言通过 `#include` 指令包含头文件，有两种语法形式，作用
 
 ```c
 // 头文件 myheader.h
-#ifndef MYHEADER_H  // 如果MYHEADER_H未被定义
-#define MYHEADER_H  // 定义MYHEADER_H
+#ifndef MYHEADER_H  // 如果 MYHEADER_H 未被定义
+#define MYHEADER_H  // 定义 MYHEADER_H
 
 // 头文件的声明内容（变量、函数、结构体等）
 
@@ -65,22 +65,22 @@ C 语言多文件项目的构建分为 “编译” 和 “链接” 两个阶�
 *   **共享变量**：
 
     ```c
-    // 文件B（b.c）：定义全局变量
+    // 文件 B（b.c）：定义全局变量
     int globalVar = 10;
 
-    // 文件A（a.c）：声明并使用该变量
+    // 文件 A（a.c）：声明并使用该变量
     extern int globalVar;
-    printf("%d", globalVar);  // 输出10
+    printf("%d", globalVar);  // 输出 10
     ```
 *   **共享函数**：
 
     ```c
-    // 文件B（b.c）：定义函数
+    // 文件 B（b.c）：定义函数
     void func() { printf("Hello\n"); }
 
-    // 文件A（a.c）：声明并调用该函数
+    // 文件 A（a.c）：声明并调用该函数
     extern void func(void);
-    func();  // 输出Hello
+    func();  // 输出 Hello
     ```
 
 #### 限制作用域：`static` 关键字
@@ -104,7 +104,7 @@ C 语言多文件项目的构建分为 “编译” 和 “链接” 两个阶�
 int Add_Int(int a, int b);    // 加法
 int Sub_Int(int a, int b);    // 减法
 int Mul_Int(int a, int b);    // 乘法
-int Div_Int(int a, int b, int *result); // 除法，成功返回1
+int Div_Int(int a, int b, int *result); // 除法，成功返回 1
 void Show_Sum(int result);    // 显示结果
 void Counter(void);           // 处理输入和运算分发
 

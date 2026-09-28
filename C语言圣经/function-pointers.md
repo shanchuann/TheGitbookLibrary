@@ -74,13 +74,13 @@ int main() {
 int main() {
 	int a = 10, b = 20,c = 0;
 	c = add(a, b);
-	int (*funptr)(int, int) = add; // 存放有两个int参数和一个int返回值的函数地址
+	int (*funptr)(int, int) = add; // 存放有两个 int 参数和一个 int 返回值的函数地址
 	printf("add: %d\n", funptr(a, b)); // 通过函数指针调用函数
-	funptr = sub; // 将函数指针指向sub函数
+	funptr = sub; // 将函数指针指向 sub 函数
 	printf("sub: %d\n", funptr(a, b)); // 通过函数指针调用函数
 	//funptr = inc;
-	//funptr(a); // 错误：inc函数需要一个参数，而funptr期望两个参数
-	int (*incptr)(int) = inc; // 存放有一个int参数和一个int返回值的函数地址
+	//funptr(a); // 错误：inc 函数需要一个参数，而 funptr 期望两个参数
+	int (*incptr)(int) = inc; // 存放有一个 int 参数和一个 int 返回值的函数地址
 	printf("inc: %d\n", incptr(a)); // 通过函数指针调用函数
 
 	return 0;
@@ -176,7 +176,7 @@ int main() {
 }
 ```
 
-最终输出该函数的升序、降序排序后的结果。不过需要注意的是C语言并不能直接使用 **bool** 类型，需要引入 `#include <stdbool.h>` 头文件，这也是 `qsort()` 函数使用 **int** 作为返回类型的原因。
+最终输出该函数的升序、降序排序后的结果。不过需要注意的是 C 语言并不能直接使用 **bool** 类型，需要引入 `#include <stdbool.h>` 头文件，这也是 `qsort()` 函数使用 **int** 作为返回类型的原因。
 
 ```c
 // qsort()中的比较函数
@@ -218,11 +218,11 @@ PFUN arr[4] = { add, sub, mul, divide_int }; // 更为直观
 ![函数指针指向对应的函数](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/book-images/typora/image-20260303132149637.png)
 
 ```c
-// typedef int (*PFUN)(int, int); // 定义一个函数指针类型，指向有两个int参数和一个int返回值的函数
+// typedef int (*PFUN)(int, int); // 定义一个函数指针类型，指向有两个 int 参数和一个 int 返回值的函数
 int main() {
 	int index = 0;
 	int (*pfun[4])(int, int) = { add, sub, mul, divide_int }; // 定义一个函数指针数组，存放四个函数的地址
-	// PFUN arr[4] = { add, sub, mul, divide_int }; // 也可以使用PFUN类型定义函数指针数组
+	// PFUN arr[4] = { add, sub, mul, divide_int }; // 也可以使用 PFUN 类型定义函数指针数组
 	if (scanf("%d", &index) != 1) return 1;
 	if (index >= 0 && index < 4) {
 		int a = 10, b = 5;
@@ -246,7 +246,7 @@ int In = sizeof(Iarr) / sizeof(Iarr[0]);
 double Darr[5] = { 10.5, 21.3, 23.7, 54.2, 59.9 };
 int Dn = sizeof(Darr) / sizeof(Darr[0]);
 char Carr[5] = { 'a', 'b', 'c', 'd', 'e' };
-int Ci = sizeof(Carr) / sizeof(Carr[0]); // 也可以不除sizeof(Carr[0])，因为char类型的大小是1字节
+int Ci = sizeof(Carr) / sizeof(Carr[0]); // 也可以不除 sizeof(Carr[0])，因为 char 类型的大小是 1 字节
 ```
 
 如果要设计一个 `printnum` 函数用于打印所有类型的内容，该怎么做呢？
@@ -340,7 +340,7 @@ void (*get_pfun(void (*pfun)(void)))(void) {
 ```c
 // 定义无参无返回的函数指针类型
 typedef void (*PFUN_VOID)(void);
-// 此时get_pfun的声明可简化为：
+// 此时 get_pfun 的声明可简化为：
 PFUN_VOID get_pfun(PFUN_VOID pfun) { ... }
 ```
 
@@ -353,7 +353,7 @@ PFUN_VOID get_pfun(PFUN_VOID pfun) { ... }
 先定义一个基础的加法函数作为示例：
 
 ```c
-// 基础函数：接收两个int，返回int
+// 基础函数：接收两个 int，返回 int
 int Add(int a, int b) {
 	return a + b;
 }
@@ -363,26 +363,26 @@ int Add(int a, int b) {
 
 ```c
 int x = 10;
-// 打印变量x的内存地址、Add函数的入口地址
+// 打印变量 x 的内存地址、Add 函数的入口地址
 printf("x的地址 = %p \n", &x);
 printf("Add函数地址 = %p \n", Add); // 函数名等价于函数指针，直接打印地址
 
 // 1. 常规函数指针赋值与调用
 int (*pfun)(int, int) = Add; // 函数名赋值给函数指针
-x = (*pfun)(12, 23);         // 解引用函数指针调用（等价于pfun(12,23)）
+x = (*pfun)(12, 23);         // 解引用函数指针调用（等价于 pfun(12,23)）
 printf("常规调用结果：%d\n", x); // 输出 35
 
 // 2. 直接将内存地址强转为函数指针并调用
-// 注：0x00401005为示例地址，需替换为实际运行时Add函数的地址
+// 注：0x00401005 为示例地址，需替换为实际运行时 Add 函数的地址
 x = (*(int (*)(int, int))0x00401005)(10, 20); 
 printf("地址强转调用结果：%d\n", x); // 输出 30
 
-// 用typedef简化地址强转的写法
+// 用 typedef 简化地址强转的写法
 typedef int (*PFUN)(int, int);
 (*(PFUN)0x00401005)(10, 20); // 功能与上一行完全一致，无返回值接收
 
 // 【危险操作】调用空指针地址（会触发段错误）
-// (*(void (*)())0)(); // 地址0是系统保护区域，解引用会导致程序崩溃
+// (*(void (*)())0)(); // 地址 0 是系统保护区域，解引用会导致程序崩溃
 // typedef void (*VPF)();
 // (*(VPF)0)(); // 等价写法，同样触发崩溃
 ```

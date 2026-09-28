@@ -3,7 +3,7 @@ description: C 语言基础：编译、源程序结构与进制转换。
 icon: keyboard-brightness
 ---
 
-# C语言基础
+# C 语言基础
 
 在开始一切之前，还有些知识点是我们需要了解的。
 
@@ -230,7 +230,10 @@ gcc -std=c17 -Wall -Wextra -Wpedantic \
 
 在 `X` 进制中，每当某一位达到 `X`，就向更高位进一
 
-<p align="center">二进制：逢 2 进 1<br>八进制：逢 8 进 1<br>十进制：逢 10 进 1<br>十六进制：逢 16 进 1</p>
+<p align="center">二进制：逢 2 进 1
+<br>八进制：逢 8 进 1
+<br>十进制：逢 10 进 1
+<br>十六进制：逢 16 进 1</p>
 
 常见进制前缀：
 

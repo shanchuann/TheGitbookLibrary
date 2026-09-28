@@ -3,7 +3,7 @@ description: 标准输入输出与格式化。
 icon: cloud-check
 ---
 
-# C语言输入输出
+# C 语言输入输出
 
 ## `printf`：格式化输出
 
