@@ -1,6 +1,6 @@
 ---
 description: 静态链表、动态单链表、栈与队列。
-icon: code
+icon: medal
 ---
 
 # 链表、栈与队列
@@ -13,9 +13,9 @@ icon: code
 
 ```mermaid
 flowchart LR
-    H[head] --> N1[data | next]
-    N1 --> N2[data | next]
-    N2 --> N3[data | NULL]
+    H[head] --> N1["data | next"]
+    N1 --> N2["data | next"]
+    N2 --> N3["data | NULL"]
 ```
 
 ## 静态链表

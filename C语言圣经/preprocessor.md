@@ -7,8 +7,6 @@ icon: code
 
 预处理器在真正编译前处理源文件。它只做文本层面的变换，不理解变量类型，也不会替宏调用检查参数。理解这一点，才能解释宏的括号、重复求值和条件编译问题。
 
-下面的示例在 WSL2 `/home/shanchuan/CStudy/book_examples/preprocessor_demo.c` 中编译运行：
-
 ![预处理器示例运行结果](.gitbook/assets/preprocessor_demo.png)
 
 ```mermaid

@@ -1,13 +1,11 @@
 ---
 description: 使用结构体、动态内存、文件和多文件组织完成学生成绩管理系统。
-icon: code
+icon: rss
 ---
 
 # 学生成绩管理系统
 
 这是全书的综合项目。它把结构体、数组、指针、动态内存、文件、排序、函数指针、错误处理和多文件组织连接起来。
-
-下面的最小版本在 WSL2 `/home/shanchuan/CStudy/book_examples/student_manager_demo.c` 中编译运行：
 
 ![学生成绩管理系统示例运行结果](.gitbook/assets/student_manager_demo.png)
 

@@ -1,11 +1,9 @@
 ---
 description: 字符串函数、格式化和安全边界。
-icon: code
+icon: calculator-simple
 ---
 
 # 字符串
-
-> **学习路径**：字符串是“字符数组 + 终止符 + 容量约定”，因此同时考验数组、指针、输入输出和动态内存。掌握长度、容量、编码和所有权后，下一章再处理不带类型语义的原始内存字节。
 
 ## 字符串的本质
 
@@ -13,8 +11,8 @@ C 语言没有内置的 string 类型。C 字符串通常是以字符数组保�
 
 ```
 ['h']['e']['l']['l']['o']['\0']
-  <------ strlen = 5 ------>
-  <--------- sizeof = 6 --------->
+<------ strlen = 5 ----->
+<--------- sizeof = 6 -------->
 ```
 
 因此，字符串的长度和存储容量不是一回事：
@@ -284,7 +282,7 @@ return 0;
 
 #### 指针数组的排序
 
-> 兼容性说明：本节旧式示例使用 `gets_s`。它不是所有 GCC/Linux 环境都提供的 ISO C 通用接口；跨平台代码应使用带容量参数的 `fgets`，并处理读入行末的换行符。Windows/MSVC 项目可以使用 `gets_s`，但应明确标注其实现范围。
+本节旧式示例使用 `gets_s`。它不是所有 GCC/Linux 环境都提供的 ISO C 通用接口；跨平台代码应使用带容量参数的 `fgets`，并处理读入行末的换行符。Windows/MSVC 项目可以使用 `gets_s`，但应明确标注其实现范围。
 
 ```c
 #define LEN 3
@@ -301,11 +299,11 @@ int main() {
 }
 ```
 
-我们在定义一个指向包含3个字符指针的数组后，准备开始进行字符串排序。
+我们在定义一个指向包含 3 个字符指针的数组后，准备开始进行字符串排序。
 
 ![image-20260217171853169](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/book-images/typora/image-20260217171853169.png)
 
-在`printArr()`函数中，传参`const char* arr[]`会退化为二级指针的形式`const char** arr`，`arr[i]`变为`arr + i`，打印时对其解引用，将打印指针指向的内容。
+在 `printArr()` 函数中，传参 `const char* arr[]` 会退化为二级指针的形式 `const char** arr`，`arr[i]` 变为 `arr + i`，打印时对其解引用，将打印指针指向的内容。
 
 ```c
 void printArr(const char* arr[]) {
@@ -319,9 +317,9 @@ void printArr(const char* arr[]) {
 
 以上便是打印函数的相关内容，接下来开始编写最主要的排序部分。
 
-需要注意的是，我们并不能直接通过比较`arr[i]`与`arr[i+1]`，这是因为他们两个存放的为指针，我们要比较的应当为两个字符串的ASCII值。
+需要注意的是，我们并不能直接通过比较 `arr[i]` 与 `arr[i+1]`，这是因为他们两个存放的为指针，我们要比较的应当为两个字符串的 ASCII 值。
 
-在这里可以使用`strcmp`函数，该函数会对指针进行解引用操作，逐个比较字符串的ASCII 值并根据结果返回不同的值。那数据存储在只读数据区，又是如何进行数据的更换，让其按值的大小进行排列的呢？
+在这里可以使用 `strcmp` 函数，该函数会对指针进行解引用操作，逐个比较字符串的 ASCII 值并根据结果返回不同的值。那数据存储在只读数据区，又是如何进行数据的更换，让其按值的大小进行排列的呢？
 
 很简单，我们只需要交换二者的指针即可，让他们的指向发生交换，从而间接地对字符串数组进行排序：
 
@@ -368,9 +366,9 @@ str3 -> Math
 
 #### 二维数组的排序
 
-> 读入二维字符数组时，优先使用 `fgets(buffer, sizeof buffer, stdin)`，不要使用没有长度限制的 `gets`。
+读入二维字符数组时，优先使用 `fgets(buffer, sizeof buffer, stdin)`，不要使用没有长度限制的 `gets`。
 
-指针数组对于数据的存储并不友好，当我们想通过scanf来写入数据时，会因为指针并未初始化，指向的空间无效而导致失败。而二维数组则完全没有这类烦恼。因为当我们开辟空间之后地址已经确定，因此可以使用scanf等函数来进行数据的写入和修改。
+指针数组对于数据的存储并不友好，当我们想通过 `scanf` 来写入数据时，会因为指针并未初始化，指向的空间无效而导致失败。而二维数组则完全没有这类烦恼。因为当我们开辟空间之后地址已经确定，因此可以使用 `scanf` 等函数来进行数据的写入和修改。
 
 ```c
 #define LEN 128
@@ -407,7 +405,7 @@ void initArr(char (*arr)[LEN],int row,int cal){
 }
 ```
 
-在初始化时需要cal，让长度并不会超过cal，打印时则不需要：
+在初始化时需要 cal，让长度并不会超过 cal，打印时则不需要：
 
 ```c
 void printArr(char (*arr)[LEN], int row) {
@@ -472,7 +470,7 @@ thegathering
 
 ### 字符串函数与其的自定义
 
-#### 自定义`strlen`
+#### 自定义 `strlen`
 
 ```c
 int otherstrlen(const char* str) {
@@ -485,7 +483,7 @@ int otherstrlen(const char* str) {
 }
 ```
 
-替换`strlen`为`otherstrlen`后输出:
+替换 `strlen` 为 `otherstrlen` 后输出:
 
 ```
 Length: 2
@@ -494,7 +492,7 @@ Length: 3
 
 > 设计程序需要满足其基本原则,需要添加`const`并断言`char* str`不为空来提高程序健壮性
 
-上一个重写`strlen`的函数中我们定义了计数值`length`,如何在不定义计数值,甚至是任何值的情况下完成对`strlen`的重写呢?
+上一个重写 `strlen` 的函数中我们定义了计数值 `length`，如何在不定义计数值,甚至是任何值的情况下完成对 strlen 的重写呢?
 
 在不定义计数值的情况下，可以采用指针相减的方法：
 
@@ -589,11 +587,7 @@ printf("%d\n", mystrcmp(str1, str4));
 108
 ```
 
-> 用`const`修饰参数，明确不修改原字符串，符合 “只读” 逻辑；
->
-> 断言指针非空，避免传入`NULL`导致的访问越界；
->
-> 循环条件保证比较到第一个不同字符或结束符为止。
+用`const`修饰参数，明确不修改原字符串，符合 “只读” 逻辑；断言指针非空，避免传入`NULL`导致的访问越界；循环条件保证比较到第一个不同字符或结束符为止。
 
 #### `strncmp`
 
@@ -629,7 +623,7 @@ First 10 chars of [Hello World!] precede [Hello there]
 First 5 chars of [body!] equal [body!]
 ```
 
-#### 自定义`strncmp`
+#### 自定义 `strncmp`
 
 与之前自定义`strcmp`函数类似,仅仅加入了对于`n`的判断
 
@@ -687,7 +681,7 @@ int main() {
 // 'x' not found in the string.
 ```
 
-#### 自定义`strchr`
+#### 自定义 `strchr`
 
 ```c
 char* mystrchr(const char* str,char ch) {
@@ -740,7 +734,7 @@ int main() {
 // Found 'o' at position: 7
 ```
 
-#### 自定义`strrchr`
+#### 自定义 `strrchr`
 
 ```c
 char* mystrrchr(const char* str, char ch) {
@@ -785,7 +779,7 @@ int main() {
 // Found substring 'world' at position: 6
 ```
 
-#### 自定义`strstr`
+#### 自定义 `strstr`
 
 可以采用双指针的方法，对字符串进行比较，当不匹配时则主串指针后移，直至两两匹配并顺利读取完字串（读取到`'\0'`）。
 
@@ -807,45 +801,45 @@ char* mystrstr(const char* str, const char* substr) {
 }
 ```
 
-> 补充说明：
->
-> 当后续学习到算法部分时，会接触到KMP（Knuth-Morris-Pratt）算法，该算法是一种用于字符串匹配的高效算法，能够在时间复杂度为 O(n + m) 的情况下找到一个模式串（pattern）在文本串（text）中的所有出现位置。它通过预处理模式串生成部分匹配表（Partial Match Table，也称为前缀函数），避免了重复比较，从而提高效率。在此提供采用KMP算法的自定义`strstr`作为参考
->
-> ```c
-> char* mystrstrUseKMP(const char* str, const char* substr) {
-> 	assert(str != NULL && substr != NULL);				// 断言指针不为空
-> 	if (*substr == '\0') return (char*)str;				// 如果substr为空字符串，返回str
-> 	int m = strlen(str);
-> 	int n = strlen(substr);
-> 	if (n > m) return NULL;								// 如果substr比str长，直接返回NULL
-> 	// 构建KMP的部分匹配表
-> 	int* lps = (int*)malloc(n * sizeof(int));
-> 	lps[0] = 0;
-> 	for (int i = 1, len = 0; i < n; ) {
-> 		if (substr[i] == substr[len]) {
-> 			len++;
-> 			lps[i++] = len;
-> 		} 
-> 		else if (len > 0) len = lps[len - 1];
-> 		else lps[i++] = 0;
-> 	}
-> 	// 使用KMP算法进行匹配
-> 	for (int i = 0, j = 0; i < m; ) {
-> 		if (str[i] == substr[j]) {
-> 			i++;
-> 			j++;
-> 			if (j == n) { // 找到匹配
-> 				free(lps);
-> 				return (char*)(str + i - j);
-> 			}
-> 		} 
-> 		else if (j > 0) j = lps[j - 1];
-> 		else i++;
-> 	}
-> 	free(lps);
-> 	return NULL; // 未找到匹配
-> }
-> ```
+_补充说明_
+
+当后续学习到算法部分时，会接触到 KMP（Knuth-Morris-Pratt）算法，该算法是一种用于字符串匹配的高效算法，能够在时间复杂度为 O(n + m) 的情况下找到一个模式串（pattern）在文本串（text）中的所有出现位置。它通过预处理模式串生成部分匹配表（Partial Match Table，也称为前缀函数），避免了重复比较，从而提高效率。在此提供采用 **KMP** 算法的自定义 `strstr` 作为参考
+
+```c
+char* mystrstrUseKMP(const char* str, const char* substr) {
+	assert(str != NULL && substr != NULL);				// 断言指针不为空
+	if (*substr == '\0') return (char*)str;				// 如果substr为空字符串，返回str
+	int m = strlen(str);
+	int n = strlen(substr);
+	if (n > m) return NULL;								// 如果substr比str长，直接返回NULL
+	// 构建KMP的部分匹配表
+	int* lps = (int*)malloc(n * sizeof(int));
+	lps[0] = 0;
+	for (int i = 1, len = 0; i < n; ) {
+		if (substr[i] == substr[len]) {
+			len++;
+			lps[i++] = len;
+		} 
+		else if (len > 0) len = lps[len - 1];
+		else lps[i++] = 0;
+	}
+	// 使用KMP算法进行匹配
+	for (int i = 0, j = 0; i < m; ) {
+		if (str[i] == substr[j]) {
+			i++;
+			j++;
+			if (j == n) { // 找到匹配
+				free(lps);
+				return (char*)(str + i - j);
+			}
+		} 
+		else if (j > 0) j = lps[j - 1];
+		else i++;
+	}
+	free(lps);
+	return NULL; // 未找到匹配
+}
+```
 
 #### `strcpy`
 
@@ -870,18 +864,22 @@ int main() {
 // Copied string: Hello, World!
 ```
 
-> 在visual Studio中，直接使用`strcpy`会提示“ 'strcpy': This function or variable may be unsafe. Consider using strcpy\_s instead. To disable deprecation, use \_CRT\_SECURE\_NO\_WARNINGS. See online help for details. ”，通常可以使用 `#define _CRT_SECURE_NO_WARNINGS` 来保证程序正常运行，但更好的方法是使用`strcpy_s`来代替(`errno_t strcpy_s( char* restrict dest, rsize_t destsz, const char* restrict src );`) ，它与`strcpy`相同，但它可能会用未指定的值覆盖目标数组的其余部分，并且以下错误会在运行时检测到并调用当前安装的 [约束处理函数](https://cppreference.cn/w/c/error/set_constraint_handler_s):
->
-> * src 或 dest 是空指针
-> * destsz 为零或大于 RSIZE\_MAX
-> * destsz 小于或等于 strnlen\_s(src, destsz)；换句话说，将发生截断
-> * 源字符串和目标字符串之间会发生重叠
->
-> 如果 dest 指向的字符数组的大小 `<=` `strnlen_s(src, destsz)` `<` `destsz`，则行为未定义；换句话说，`destsz` 的错误值不会暴露即将发生的缓冲区溢出。
->
-> 在函数中，destsz代表要写入的最大字符数，通常是目标缓冲区的长度。
+在visual Studio中，直接使用 `strcpy` 会提示：
 
-#### 自定义`strcpy`
+_“ 'strcpy': This function or variable may be unsafe. Consider using strcpy\_s instead. To disable deprecation, use \_CRT\_SECURE\_NO\_WARNINGS. See online help for details. ”_
+
+通常可以使用 `#define _CRT_SECURE_NO_WARNINGS` 来保证程序正常运行，但更好的方法是使用`strcpy_s`来代替(`errno_t strcpy_s( char* restrict dest, rsize_t destsz, const char* restrict src );`) ，它与`strcpy`相同，但它可能会用未指定的值覆盖目标数组的其余部分，并且以下错误会在运行时检测到并调用当前安装的 [约束处理函数](https://cppreference.cn/w/c/error/set_constraint_handler_s):
+
+* src 或 dest 是空指针
+* destsz 为零或大于 RSIZE\_MAX
+* destsz 小于或等于 strnlen\_s(src, destsz)；换句话说，将发生截断
+* 源字符串和目标字符串之间会发生重叠
+
+如果 dest 指向的字符数组的大小 `<=` `strnlen_s(src, destsz)` `<` `destsz`，则行为未定义；换句话说，`destsz` 的错误值不会暴露即将发生的缓冲区溢出。
+
+在函数中，destsz代表要写入的最大字符数，通常是目标缓冲区的长度。
+
+#### 自定义 `strcpy`
 
 ```c
 char* mystrcpy(char* dest, const char* src) {
@@ -911,13 +909,15 @@ Copied string: Hello, World!
 
 函数将返回 `dest` 的副本。成功时返回零，错误时返回非零。还，在错误时，将零写入 dest\[0]（除非 `dest` 是空指针），并且可能会用未指定的值覆盖目标数组的其余部分。
 
-> 需要注意的是，根据 C11 后 DR 468 的修正，`strncpy_s`与 `strcpy_s`不同，只允许在发生错误时覆盖目标数组的其余部分。
->
-> 同样也与 `strncpy` 不同，`strncpy_s` 不会用零填充目标数组。这在将现有代码转换为边界检查版本时，是一个常见的错误来源。
->
-> 尽管截断以适应目标缓冲区是一种安全风险，因此对于 `strncpy_s` 而言是运行时约束违规，但通过将 `count` 指定为目标数组大小减一，可以获得截断行为：它将复制前 `count` 个字节并始终附加空终止符：`strncpy_s(dst, sizeof dst, src, (sizeof dst)-1);`
+根据 C11 后 DR 468 的修正，`strncpy_s` 与  `strcpy_s` 不同，只允许在发生错误时覆盖目标数组的其余部分。
+
+同样也与 `strncpy` 不同，`strncpy_s` 不会用零填充目标数组。这在将现有代码转换为边界检查版本时，是一个常见的错误来源。
+
+尽管截断以适应目标缓冲区是一种安全风险，因此对于 `strncpy_s` 而言是运行时约束违规，但通过将 `count` 指定为目标数组大小减一，可以获得截断行为：它将复制前 `count` 个字节并始终附加空终止符：`strncpy_s(dst, sizeof dst, src, (sizeof dst)-1);`
 
 ```c
+// 已经在文件首行添加#define _CRT_SECURE_NO_WARNINGS
+
 int main() {
 	char dest[20];
 	const char* src = "Hello, World!";
@@ -928,9 +928,7 @@ int main() {
 }
 ```
 
-> 已经在文件首行添加`#define _CRT_SECURE_NO_WARNINGS`
-
-#### 自定义`strncpy`
+#### 自定义 `strncpy`
 
 ```c
 char* mystrncpy(char* dest, const char* src, size_t n) {
@@ -973,7 +971,7 @@ int main() {
 Concatenated string: Hello, World!
 ```
 
-#### 自定义`strcat`
+#### 自定义 `strcat`
 
 ```c
 char* mystrcat(char* dest, const char* src) {
@@ -1014,7 +1012,7 @@ int main() {
 }
 ```
 
-#### 自定义`strncat`
+#### 自定义 `strncat`
 
 ```c
 char* mystrncat(char* dest, const char* src, size_t n) {
@@ -1052,7 +1050,7 @@ int main(void)
 // s2 = "Duplicate me!"
 ```
 
-#### 自定义`strdup`
+#### 自定义 `strdup`
 
 ```c
 char* mystrdup(const char* s) {
@@ -1096,7 +1094,7 @@ int main() {
 }
 ```
 
-#### 自定义`atoi`
+#### 自定义 `atoi`
 
 ```c
 int myatoi(const char* str) {
@@ -1429,7 +1427,7 @@ int main() {
 
 函数能做的事情通过`sprintf`均可实现，在这里只做提及，有兴趣的可以继续阅读。
 
-> `sprintf`可实现十进制 / 十六进制转换，缺点是不支持直接输出二进制，如果需要支持二进制等任意进制，可手动实现
+`sprintf`可实现十进制 / 十六进制转换，缺点是不支持直接输出二进制，如果需要支持二进制等任意进制，可手动实现
 
 #### 自定义itoa
 
@@ -1558,19 +1556,19 @@ int main() {
 }
 ```
 
-> **format** 字符串由以下部分组成：
->
-> 非空白多字节字符（除了 %）：格式字符串中的每个此类字符都从输入流中消耗一个完全相同的字符，如果流中的下一个字符不相等，则导致函数失败。
->
-> 空白字符：格式字符串中的任何单个空白字符都从输入中消耗所有可用的连续空白字符。格式字符串中的 **`"\n"`**、**`" "`**、**`"\t\t"`** 或其他空白没有区别。
->
-> 转换说明符。每个转换说明符具有以下格式：
->
-> * 开头的 `%` 字符。
-> * (可选) 赋值抑制字符 `*`。如果此选项存在，函数不会将转换结果赋值给任何接收参数。
-> * (可选) 整数（大于零），指定最大字段宽度，即函数在执行当前转换说明指定的转换时允许消耗的最大字符数。请注意，如果未提供宽度，`%s` 和 `%[` 可能会导致缓冲区溢出。
-> * (可选) 长度修饰符，指定接收参数的大小，即实际目标类型。这会影响转换精度和溢出规则。每个转换类型的默认目标类型不同,[见表格](https://cppreference.cn/w/c/io/fscanf)。
-> * 转换格式说明符。
+**format** 字符串由以下部分组成：
+
+非空白多字节字符（除了 %）：格式字符串中的每个此类字符都从输入流中消耗一个完全相同的字符，如果流中的下一个字符不相等，则导致函数失败。
+
+空白字符：格式字符串中的任何单个空白字符都从输入中消耗所有可用的连续空白字符。格式字符串中的 **`"\n"`**、**`" "`**、**`"\t\t"`** 或其他空白没有区别。
+
+转换说明符。每个转换说明符具有以下格式：
+
+* 开头的 `%` 字符。
+* (可选) 赋值抑制字符 `*`。如果此选项存在，函数不会将转换结果赋值给任何接收参数。
+* (可选) 整数（大于零），指定最大字段宽度，即函数在执行当前转换说明指定的转换时允许消耗的最大字符数。请注意，如果未提供宽度，`%s` 和 `%[` 可能会导致缓冲区溢出。
+* (可选) 长度修饰符，指定接收参数的大小，即实际目标类型。这会影响转换精度和溢出规则。每个转换类型的默认目标类型不同,[见表格](https://cppreference.cn/w/c/io/fscanf)。
+* 转换格式说明符。
 
 ## 用 `strtol` 安全解析整数
 
@@ -1604,9 +1602,5 @@ int parse_int(const char *text, int *out) {
 ```
 
 解析函数应同时检查是否读到数字、是否还有未处理字符以及是否发生范围错误。字符串函数只按字节工作；UTF-8 中一个人类字符可能由多个字节组成，因此 `strlen` 得到的是字节数，不是字符数。
-
-## 原稿图示
-
-## 字符串函数的前置条件
 
 标准字符串函数把输入当作以 `\0` 结尾的字节序列，不知道目标数组容量，也不负责替调用者分配空间。调用前应确认源字符串已终止、目标空间足够，并决定是否需要保留换行。涉及 UTF-8 时，长度函数返回字节数，不是用户感知的字符数。

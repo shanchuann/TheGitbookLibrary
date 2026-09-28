@@ -1,11 +1,9 @@
 ---
 description: C 语言关键字与存储类别。
-icon: code
+icon: scale-balanced
 ---
 
 # 关键字
-
-> **学习路径**：关键字不是孤立的词表，而是前面类型、控制流、函数和存储期知识的索引。读完分类与标准版本后，下一章把 `malloc`、`realloc` 和 `free` 放进动态生存期，解释程序如何管理运行时空间。
 
 ```mermaid
 flowchart LR
@@ -801,67 +799,14 @@ gcc -E source.c -o source.i
 | `struct`   | `switch`   | `typedef`  | `union`  |
 | `unsigned` | `void`     | `volatile` | `while`  |
 
-| 标准版本    | 关键字              | 分类    | 说明                      |
-| ------- | ---------------- | ----- | ----------------------- |
-| C89/C90 | `auto`           | 存储类别  | 声明自动存储期的局部变量            |
-| C89/C90 | `break`          | 控制流   | 结束当前循环或 `switch`        |
-| C89/C90 | `case`           | 控制流   | 定义 `switch` 的匹配分支       |
-| C89/C90 | `char`           | 基本类型  | 声明字符类型                  |
-| C89/C90 | `const`          | 类型限定符 | 限制通过当前访问路径修改对象          |
-| C89/C90 | `continue`       | 控制流   | 跳过本轮循环的剩余语句             |
-| C89/C90 | `default`        | 控制流   | `switch` 中没有匹配项时执行      |
-| C89/C90 | `do`             | 控制流   | 定义至少执行一次的循环             |
-| C89/C90 | `double`         | 基本类型  | 声明双精度浮点类型               |
-| C89/C90 | `else`           | 控制流   | `if` 条件不成立时执行的分支        |
-| C89/C90 | `enum`           | 构造类型  | 定义枚举类型                  |
-| C89/C90 | `extern`         | 存储类别  | 声明其他位置定义的对象或函数          |
-| C89/C90 | `float`          | 基本类型  | 声明单精度浮点类型               |
-| C89/C90 | `for`            | 控制流   | 定义 `for` 循环             |
-| C89/C90 | `goto`           | 控制流   | 跳转到当前函数中的指定标签           |
-| C89/C90 | `if`             | 控制流   | 根据条件选择是否执行语句            |
-| C89/C90 | `int`            | 基本类型  | 声明整型                    |
-| C89/C90 | `long`           | 类型修饰符 | 声明长整型或扩展其他整数类型          |
-| C89/C90 | `register`       | 存储类别  | 请求编译器优先使用寄存器保存对象        |
-| C89/C90 | `return`         | 控制流   | 结束函数并返回结果               |
-| C89/C90 | `short`          | 类型修饰符 | 声明短整型或修饰其他整数类型          |
-| C89/C90 | `signed`         | 类型修饰符 | 声明有符号整数类型               |
-| C89/C90 | `sizeof`         | 运算符   | 计算类型或表达式的大小             |
-| C89/C90 | `static`         | 存储类别  | 控制链接属性或延长局部对象的存储期       |
-| C89/C90 | `struct`         | 构造类型  | 定义结构体类型                 |
-| C89/C90 | `switch`         | 控制流   | 根据整数或枚举值选择分支            |
-| C89/C90 | `typedef`        | 类型定义  | 为已有类型创建别名               |
-| C89/C90 | `union`          | 构造类型  | 定义共享存储空间的联合体            |
-| C89/C90 | `unsigned`       | 类型修饰符 | 声明无符号整数类型               |
-| C89/C90 | `void`           | 基本类型  | 表示无类型、无参数或无返回值          |
-| C89/C90 | `volatile`       | 类型限定符 | 告知编译器对象的值可能被外部因素改变      |
-| C89/C90 | `while`          | 控制流   | 定义条件循环                  |
-| C99     | `inline`         | 函数说明  | 建议编译器考虑内联函数，编译器可以忽略     |
-| C99     | `restrict`       | 类型限定符 | 承诺指针是访问目标对象的主要途径，便于优化   |
-| C99     | `_Bool`          | 基本类型  | C 语言内置布尔类型，值为 `0` 或 `1` |
-| C99     | `_Complex`       | 基本类型  | 声明复数类型                  |
-| C99     | `_Imaginary`     | 基本类型  | 声明纯虚数类型，实际支持取决于实现       |
-| C11     | `_Alignas`       | 对齐控制  | 指定对象或类型的对齐要求            |
-| C11     | `_Alignof`       | 对齐查询  | 查询类型的对齐要求               |
-| C11     | `_Atomic`        | 原子类型  | 声明原子类型或原子类型限定符          |
-| C11     | `_Generic`       | 类型选择  | 根据表达式类型选择对应结果           |
-| C11     | `_Noreturn`      | 函数说明  | 声明函数不会返回到调用者            |
-| C11     | `_Static_assert` | 编译期检查 | 在编译阶段检查条件是否成立           |
-| C11     | `_Thread_local`  | 存储类别  | 声明线程局部存储期对象             |
+<table><thead><tr><th width="118.60009765625">标准版本</th><th width="149.2000732421875">关键字</th><th width="165.0001220703125">分类</th><th>说明</th></tr></thead><tbody><tr><td>C89/C90</td><td><code>auto</code></td><td>存储类别</td><td>声明自动存储期的局部变量</td></tr><tr><td>C89/C90</td><td><code>break</code></td><td>控制流</td><td>结束当前循环或 <code>switch</code></td></tr><tr><td>C89/C90</td><td><code>case</code></td><td>控制流</td><td>定义 <code>switch</code> 的匹配分支</td></tr><tr><td>C89/C90</td><td><code>char</code></td><td>基本类型</td><td>声明字符类型</td></tr><tr><td>C89/C90</td><td><code>const</code></td><td>类型限定符</td><td>限制通过当前访问路径修改对象</td></tr><tr><td>C89/C90</td><td><code>continue</code></td><td>控制流</td><td>跳过本轮循环的剩余语句</td></tr><tr><td>C89/C90</td><td><code>default</code></td><td>控制流</td><td><code>switch</code> 中没有匹配项时执行</td></tr><tr><td>C89/C90</td><td><code>do</code></td><td>控制流</td><td>定义至少执行一次的循环</td></tr><tr><td>C89/C90</td><td><code>double</code></td><td>基本类型</td><td>声明双精度浮点类型</td></tr><tr><td>C89/C90</td><td><code>else</code></td><td>控制流</td><td><code>if</code> 条件不成立时执行的分支</td></tr><tr><td>C89/C90</td><td><code>enum</code></td><td>构造类型</td><td>定义枚举类型</td></tr><tr><td>C89/C90</td><td><code>extern</code></td><td>存储类别</td><td>声明其他位置定义的对象或函数</td></tr><tr><td>C89/C90</td><td><code>float</code></td><td>基本类型</td><td>声明单精度浮点类型</td></tr><tr><td>C89/C90</td><td><code>for</code></td><td>控制流</td><td>定义 <code>for</code> 循环</td></tr><tr><td>C89/C90</td><td><code>goto</code></td><td>控制流</td><td>跳转到当前函数中的指定标签</td></tr><tr><td>C89/C90</td><td><code>if</code></td><td>控制流</td><td>根据条件选择是否执行语句</td></tr><tr><td>C89/C90</td><td><code>int</code></td><td>基本类型</td><td>声明整型</td></tr><tr><td>C89/C90</td><td><code>long</code></td><td>类型修饰符</td><td>声明长整型或扩展其他整数类型</td></tr><tr><td>C89/C90</td><td><code>register</code></td><td>存储类别</td><td>请求编译器优先使用寄存器保存对象</td></tr><tr><td>C89/C90</td><td><code>return</code></td><td>控制流</td><td>结束函数并返回结果</td></tr><tr><td>C89/C90</td><td><code>short</code></td><td>类型修饰符</td><td>声明短整型或修饰其他整数类型</td></tr><tr><td>C89/C90</td><td><code>signed</code></td><td>类型修饰符</td><td>声明有符号整数类型</td></tr><tr><td>C89/C90</td><td><code>sizeof</code></td><td>运算符</td><td>计算类型或表达式的大小</td></tr><tr><td>C89/C90</td><td><code>static</code></td><td>存储类别</td><td>控制链接属性或延长局部对象的存储期</td></tr><tr><td>C89/C90</td><td><code>struct</code></td><td>构造类型</td><td>定义结构体类型</td></tr><tr><td>C89/C90</td><td><code>switch</code></td><td>控制流</td><td>根据整数或枚举值选择分支</td></tr><tr><td>C89/C90</td><td><code>typedef</code></td><td>类型定义</td><td>为已有类型创建别名</td></tr><tr><td>C89/C90</td><td><code>union</code></td><td>构造类型</td><td>定义共享存储空间的联合体</td></tr><tr><td>C89/C90</td><td><code>unsigned</code></td><td>类型修饰符</td><td>声明无符号整数类型</td></tr><tr><td>C89/C90</td><td><code>void</code></td><td>基本类型</td><td>表示无类型、无参数或无返回值</td></tr><tr><td>C89/C90</td><td><code>volatile</code></td><td>类型限定符</td><td>告知编译器对象的值可能被外部因素改变</td></tr><tr><td>C89/C90</td><td><code>while</code></td><td>控制流</td><td>定义条件循环</td></tr><tr><td>C99</td><td><code>inline</code></td><td>函数说明</td><td>建议编译器考虑内联函数，编译器可以忽略</td></tr><tr><td>C99</td><td><code>restrict</code></td><td>类型限定符</td><td>承诺指针是访问目标对象的主要途径，便于优化</td></tr><tr><td>C99</td><td><code>_Bool</code></td><td>基本类型</td><td>C 语言内置布尔类型，值为 <code>0</code> 或 <code>1</code></td></tr><tr><td>C99</td><td><code>_Complex</code></td><td>基本类型</td><td>声明复数类型</td></tr><tr><td>C99</td><td><code>_Imaginary</code></td><td>基本类型</td><td>声明纯虚数类型，实际支持取决于实现</td></tr><tr><td>C11</td><td><code>_Alignas</code></td><td>对齐控制</td><td>指定对象或类型的对齐要求</td></tr><tr><td>C11</td><td><code>_Alignof</code></td><td>对齐查询</td><td>查询类型的对齐要求</td></tr><tr><td>C11</td><td><code>_Atomic</code></td><td>原子类型</td><td>声明原子类型或原子类型限定符</td></tr><tr><td>C11</td><td><code>_Generic</code></td><td>类型选择</td><td>根据表达式类型选择对应结果</td></tr><tr><td>C11</td><td><code>_Noreturn</code></td><td>函数说明</td><td>声明函数不会返回到调用者</td></tr><tr><td>C11</td><td><code>_Static_assert</code></td><td>编译期检查</td><td>在编译阶段检查条件是否成立</td></tr><tr><td>C11</td><td><code>_Thread_local</code></td><td>存储类别</td><td>声明线程局部存储期对象</td></tr></tbody></table>
 
 ## C90 到 C17 关键字总表
 
 下表按标准版本列出常用的 44 个关键字。编译器是否默认启用某个版本，取决于编译选项；阅读代码时应先确认 `-std=` 设置。
 
-| 标准      | 关键字                                                                                                                                                                                                                                                                   |
-| ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| C90/C89 | `auto`、`break`、`case`、`char`、`const`、`continue`、`default`、`do`、`double`、`else`、`enum`、`extern`、`float`、`for`、`goto`、`if`、`int`、`long`、`register`、`return`、`short`、`signed`、`sizeof`、`static`、`struct`、`switch`、`typedef`、`union`、`unsigned`、`void`、`volatile`、`while` |
-| C99 新增  | `_Bool`、`_Complex`、`_Imaginary`、`inline`、`restrict`                                                                                                                                                                                                                   |
-| C11 新增  | `_Alignas`、`_Alignof`、`_Atomic`、`_Generic`、`_Noreturn`、`_Static_assert`、`_Thread_local`                                                                                                                                                                               |
+<table><thead><tr><th width="171">标准</th><th>关键字</th></tr></thead><tbody><tr><td>C90/C89</td><td><code>auto</code>、<code>break</code>、<code>case</code>、<code>char</code>、<code>const</code>、<code>continue</code>、<code>default</code>、<code>do</code>、<code>double</code>、<code>else</code>、<code>enum</code>、<code>extern</code>、<code>float</code>、<code>for</code>、<code>goto</code>、<code>if</code>、<code>int</code>、<code>long</code>、<code>register</code>、<code>return</code>、<code>short</code>、<code>signed</code>、<code>sizeof</code>、<code>static</code>、<code>struct</code>、<code>switch</code>、<code>typedef</code>、<code>union</code>、<code>unsigned</code>、<code>void</code>、<code>volatile</code>、<code>while</code></td></tr><tr><td>C99 新增</td><td><code>_Bool</code>、<code>_Complex</code>、<code>_Imaginary</code>、<code>inline</code>、<code>restrict</code></td></tr><tr><td>C11 新增</td><td><code>_Alignas</code>、<code>_Alignof</code>、<code>_Atomic</code>、<code>_Generic</code>、<code>_Noreturn</code>、<code>_Static_assert</code>、<code>_Thread_local</code></td></tr></tbody></table>
 
 `_Imaginary` 在不同编译器上的支持程度并不一致；使用复数和虚数类型时，应查阅目标编译器文档。C23 又引入了新的语法和关键字，不能把 C17 的 44 个关键字表当成所有标准版本的最终列表。
-
-## 原稿图示
-
-## 关键字的版本边界
 
 关键字表必须和编译标准一起阅读。`restrict`、`_Atomic`、`_Generic` 和 `_Static_assert` 不是“高级变量类型”，而是分别影响别名承诺、并发访问、类型选择和编译期检查的语言设施。编译时使用 `-std=c11` 或 `-std=c17`，不要让编译器默认模式替你决定可用语法。

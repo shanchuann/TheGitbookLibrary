@@ -1,13 +1,11 @@
 ---
 description: 文件拷贝、二进制格式、序列化与可靠文件错误处理。
-icon: code
+icon: chart-simple-horizontal
 ---
 
 # 文件工程
 
 文件程序的基本顺序是：打开、检查、读写、检查结果、关闭。任何一步失败，都应该保留可诊断的错误信息。
-
-下面的示例在 WSL2 `/home/shanchuan/CStudy/book_examples/file_copy_demo.c` 中编译运行：
 
 ![二进制文件拷贝示例](.gitbook/assets/file_copy_demo.png)
 

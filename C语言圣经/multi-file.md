@@ -1,11 +1,9 @@
 ---
 description: 头文件、链接和模块边界。
-icon: code
+icon: bezier-curve
 ---
 
 # 多文件结构
-
-> **学习路径**：当单个源文件开始承载多个职责，声明、定义、链接和模块边界就必须明确。本章把前面学过的函数、`extern`、`static` 和头文件组织成工程结构，随后进入字符串与库函数的复用。
 
 在 C 语言中，多文件结构是模块化开发的重要手段
 
@@ -255,12 +253,8 @@ sequenceDiagram
     P->>F: fclose(stream)
 ```
 
-下面的截图来自本机 WSL2 的 `/home/shanchuan/CStudy`，命令和输出均为实际运行结果：
+命令和输出均为实际运行结果：
 
 ![本机 WSL2 终端运行结果](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/c-language/wsl-cstudy-run.png)
 
-## 工程边界
-
 头文件放声明、类型和宏，源文件放定义和内部实现。对外接口尽量少暴露全局变量，文件内部辅助函数使用 `static`。构建命令应明确列出所有源文件，否则“本地能编译”可能只是编辑器替你偷偷添加了文件。
-
-## 原稿图示

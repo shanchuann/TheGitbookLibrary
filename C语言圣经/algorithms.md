@@ -1,13 +1,11 @@
 ---
 description: 查找、排序、函数指针与递归分治。
-icon: code
+icon: person-ski-lift
 ---
 
 # 查找与排序
 
 算法不是孤立的代码技巧，而是数据结构、边界条件和复杂度之间的取舍。
-
-下面的示例在 WSL2 `/home/shanchuan/CStudy/book_examples/algorithms_demo.c` 中编译运行：
 
 ![排序与二分查找示例](.gitbook/assets/algorithms_demo.png)
 

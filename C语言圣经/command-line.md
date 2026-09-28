@@ -1,6 +1,6 @@
 ---
 description: argc、argv、参数校验与命令行文件程序。
-icon: code
+icon: chess-clock
 ---
 
 # 命令行参数
@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
 
 文件拷贝程序可以把 `file-engineering.md` 中的 `copy_file` 包装成：
 
-```text
+```
 file-copy source.bin target.bin
 ```
 
