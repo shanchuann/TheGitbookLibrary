@@ -31,6 +31,29 @@ int binary_search(const int values[], size_t count, int target) {
 
 示例返回 `int` 下标，因此只适用于下标不超过 `INT_MAX` 的数组；如果接口需要支持任意 `size_t` 范围，应返回 `size_t` 并额外用布尔值表示是否找到，或使用输出参数承载结果。
 
+### 返回位置还是返回结果
+
+查找接口首先要确定“找不到”如何表达。用 `-1` 表示失败很直观，但它迫使下标使用有符号类型；用 `size_t` 表示位置时，不能把 `SIZE_MAX` 当作普通下标继续使用。另一种接口把结果写入输出参数，把函数返回值留给成功/失败：
+
+```c
+#include <stddef.h>
+
+int find_int(const int values[], size_t count, int target, size_t *index) {
+    if (index == NULL) return 0;
+    for (size_t i = 0; i < count; ++i) {
+        if (values[i] == target) {
+            *index = i;
+            return 1;
+        }
+    }
+    return 0;
+}
+```
+
+二分查找最容易出错的地方不是“取中间值”，而是区间定义。上面的实现使用半开区间 `[left, right)`：`right` 指向范围之外的位置，因此空数组自然满足 `left == right`。更新边界时必须保证区间缩小，否则目标不存在时会死循环。
+
+如果数组中有重复元素，普通二分查找只保证返回某一个匹配位置。需要第一个或最后一个匹配位置时，应分别实现 `lower_bound` 和 `upper_bound`，并在返回结果后再次检查是否真的等于目标值。
+
 ## 排序与比较函数
 
 函数指针可以把“如何比较”传给通用排序函数。标准库的 `qsort` 采用这一模式：
@@ -69,6 +92,25 @@ static void insertion_sort(int values[], size_t count) {
 
 `qsort` 的具体算法和复杂度由实现决定，不能把它当作稳定排序；如果需要稳定性，应在接口中明确规定，或使用带原始下标的记录自行实现。
 
+### 归并排序的接口
+
+归并排序把数组分成两半，分别排序后再合并。合并时两个子区间都已经有序，所以只需要比较当前首元素：
+
+```c
+static void merge(const int source[], int target[], size_t left,
+                  size_t middle, size_t right) {
+    size_t i = left;
+    size_t j = middle;
+    size_t out = left;
+    while (i < middle && j < right)
+        target[out++] = source[i] <= source[j] ? source[i++] : source[j++];
+    while (i < middle) target[out++] = source[i++];
+    while (j < right) target[out++] = source[j++];
+}
+```
+
+这里把区间写成 `[left, middle)` 和 `[middle, right)`，与二分查找使用相同的边界约定。真正的递归实现还需要临时数组以及“把合并结果复制回源数组”的步骤。辅助空间、稳定性和递归深度都是接口设计的一部分，不能只给出一个 `sort` 函数名而不说明约束。
+
 ## 递归与分治
 
 递归函数必须有停止条件，并且每次调用都要更接近停止条件：
@@ -96,6 +138,12 @@ flowchart TD
 | `qsort` | 提供比较函数 | 实现相关，平均通常为 O(n log n) |
 
 复杂度分析不能代替实测；元素数量、缓存局部性和比较函数成本也会影响实际表现。
+
+复杂度还要结合输入分布理解：插入排序在已经有序的输入上可以接近 `O(n)`，但逆序输入会达到 `O(n²)`；哈希表平均查找接近 `O(1)`，却需要额外内存并处理冲突；链表插入可以是 `O(1)`，但定位插入点仍然需要 `O(n)`。写算法说明时，应同时说明前提、最坏情况、额外空间和是否保持稳定顺序。
+
+### 测试算法
+
+算法测试不能只用一个普通样例。至少应覆盖空数组、一个元素、重复值、已经有序、完全逆序、极大和极小整数，以及目标不存在的查找。排序后可以检查相邻元素是否满足顺序关系；查找则应验证“返回位置有效时元素等于目标，返回失败时数组中确实没有目标”。
 
 ## 可运行完整示例
 

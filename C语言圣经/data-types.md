@@ -216,8 +216,8 @@ int main() {
     int a = 10;
     char* cp = &ch;
     int* ip = &a;
-    cp = ip; // waring “=”: 从“int *”到“char *”的类型不兼容
-    ip = cp; // waring “=”: 从“char *”到“int *”的类型不兼容
+    cp = ip; // warning: 从“int *”到“char *”的类型不兼容
+    ip = cp; // warning: 从“char *”到“int *”的类型不兼容
     // 指针需通过强制类型转换显式转换
     cp = (char*)ip;
     ip = (int*)cp;

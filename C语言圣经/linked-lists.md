@@ -86,6 +86,31 @@ Node *list_remove_first(Node *head, int value) {
 }
 ```
 
+### 链表不变量
+
+实现链表时，可以把以下规则当作不变量：空链表的头指针为 `NULL`；每个节点的 `next` 要么指向仍然存活的节点，要么为 `NULL`；从头指针出发不能重复访问同一节点；删除一个节点后，链表中其他节点的相对顺序保持不变。调试时逐条检查这些规则，比盯着某一次输出更有效。
+
+插入和删除都应先画出指针变化，再写代码。以 `Node **link` 作为“指向当前链接的指针”，可以统一处理删除头节点和删除中间节点；如果直接特殊处理头节点和普通节点，两个分支很容易出现不一致。
+
+### 双向链表与循环链表
+
+双向链表的节点同时保存 `prev` 和 `next`，已知节点地址时可以在 `O(1)` 时间删除它，但每次插入和删除都要同时维护两条反向链接：
+
+```c
+typedef struct DNode {
+    int value;
+    struct DNode *prev;
+    struct DNode *next;
+} DNode;
+
+static void detach(DNode *node) {
+    if (node->prev != NULL) node->prev->next = node->next;
+    if (node->next != NULL) node->next->prev = node->prev;
+}
+```
+
+循环链表没有 `NULL` 终点，遍历必须以“回到起点”为停止条件，不能继续使用 `current != NULL`。这类结构适合轮转调度，但空表、单节点表和删除当前节点都需要单独测试。
+
 ## 栈与队列
 
 栈遵循后进先出，队列遵循先进先出：
@@ -135,6 +160,37 @@ static int queue_pop(Queue *queue, int *out) {
 
 这里用返回值报告分配失败或空队列，避免把失败静默地伪装成一次成功操作。双向链表、循环链表和哨兵节点可以作为下一步练习，但每种变体都应先说明额外指针和不变量。
 
+### 数组栈与循环队列
+
+链表不是所有场景的最佳选择。数组栈具有更好的缓存局部性，只需保存当前 `size` 和容量；循环队列则使用 `front` 和 `size`，通过取模让尾部回到数组开头：
+
+```c
+typedef struct {
+    int *values;
+    size_t capacity;
+    size_t size;
+    size_t front;
+} RingQueue;
+
+static int ring_push(RingQueue *queue, int value) {
+    if (queue->size == queue->capacity) return 0;
+    size_t back = (queue->front + queue->size) % queue->capacity;
+    queue->values[back] = value;
+    ++queue->size;
+    return 1;
+}
+
+static int ring_pop(RingQueue *queue, int *value) {
+    if (queue->size == 0) return 0;
+    *value = queue->values[queue->front];
+    queue->front = (queue->front + 1) % queue->capacity;
+    --queue->size;
+    return 1;
+}
+```
+
+这里要求 `capacity` 非零；如果队列支持动态扩容，扩容时不能直接按旧数组下标复制，必须先按逻辑顺序重新排列元素，再更新 `front`。
+
 ## 常见错误
 
 * 忘记初始化头指针为 `NULL`。
@@ -143,6 +199,8 @@ static int queue_pop(Queue *queue, int *out) {
 * 插入失败时丢失原链表。
 * 遍历过程中修改 `next` 导致链表断裂。
 * 只释放头节点而没有释放所有节点。
+
+还要注意复杂度：单链表按值查找是 `O(n)`，头部插入和删除是 `O(1)`，尾部操作只有在保存尾指针时才可能是 `O(1)`。链表节点分散在堆上，遍历时缓存局部性通常不如连续数组；“插入快”并不意味着整体性能一定更好。
 
 ## 可运行完整示例
 
