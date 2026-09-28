@@ -903,4 +903,4 @@ s + 1; // s + (sizeof typename*) * 1;
 
 <figure><img src=".gitbook/assets/book-images/typora/image-20260215121901977.png" alt=""><figcaption></figcaption></figure>
 
-对于 `int *p[4];` 和 `int (*s)[4];`，z这是两个不同的概念，`int (*s)[4];` 表示可以存放由 4 个存储空间构成的数组的地址，`int *p[4];` 表示将开辟一个 4 个存储空间，用于存放指针变量的数组。
+对于 `int *p[4];` 和 `int (*s)[4];`，这是两个不同的概念：`int (*s)[4];` 表示指向一个包含 4 个 `int` 元素的数组，`int *p[4];` 表示包含 4 个 `int *` 元素的指针数组。

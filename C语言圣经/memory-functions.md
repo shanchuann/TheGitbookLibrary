@@ -15,11 +15,12 @@ struct Student {
 	int age;
 };
 
-void mymemset(void* ptr, int value, size_t num) {
+void *mymemset(void *ptr, int value, size_t num) {
 	unsigned char* p = (unsigned char*)ptr;
 	for (size_t i = 0; i < num; i++) {
 		p[i] = (unsigned char)value;
 	}
+	return ptr;
 }
 ```
 
@@ -58,7 +59,7 @@ Student Name: '', Age: 0
 
 使用无类型指针的好处在于我们仅仅编写一个函数，就可以处理大部分的内存初始化。
 
-`memset` 应用于字符数组的操作(`void *memset( void *dest, int ch, size_t count );`)，将值 `(unsigned char)ch` 复制到 `dest` 指向的对象的第一个 `count` 个字符中的每个字符。如果访问超出目标数组的末尾，则行为是未定义的。如果 `dest` 是空指针，则行为是未定义的。我们通过在这里类比字符串数组操作函数来编写内存初始化函数，显而易见的是，`value`仅仅能设置为0，若设置为其他值，将会导致不可预估的输出。
+`memset` 将 `(unsigned char)ch` 写入目标对象的前 `count` 个 byte。如果访问超出目标数组的末尾，或在 `count` 非零时传入无效指针，行为未定义。将整数数组或浮点数组按 byte 填充为非零值，通常不会得到“每个元素等于该值”的结果；只有全零 byte 在常见实现中适合表示整数 0，其他值必须根据对象类型验证。
 
 ### `memcmp`
 
@@ -170,7 +171,7 @@ struct Student {
 
 其中dest指向要复制到的对象的指针，src指向要从中复制的对象的指针，count表示要复制的字节数。
 
-函数返回 `dest` 的副本。成功时返回零，错误时返回非零值。
+函数返回 `dest` 的副本；它没有单独的成功/失败返回码，调用者必须在调用前保证两个区域有效且不重叠。
 
 ```c
 int main() {
@@ -208,9 +209,9 @@ void* mymemcpy(void* destination, const void* source, size_t num) {
 
 函数从 `src` 指向的对象复制 `count` 个字符到 `dest` 指向的对象。两个对象都被解释为 `unsigned char` 数组。对象可以重叠：复制发生的方式，就好像字符被复制到一个临时字符数组，然后字符从该数组复制到 `dest`。如果访问超出 `dest` 数组的末尾，则行为未定义。如果 `dest` 或 `src` 是无效指针或空指针，则行为未定义。
 
-形参dest指向要复制到的对象的指针，src 指向要从中复制的对象的指针，count表示要复制的字节数。函数返回 dest 的副本。成功时返回零，错误时返回非零值。
+形参 `dest` 指向要复制到的对象，`src` 指向源对象，`count` 表示要复制的 byte 数。函数返回 `dest` 的副本；当区域重叠时应使用 `memmove`，而不是依赖 `memcpy` 的结果。
 
-相比于memcpy，menmove具有自拷贝的能力，例如：
+相比于 `memcpy`，`memmove` 能正确处理重叠区域，例如：
 
 假设有一个数组 `int arr[] = {1,2,3,4,5}`，我们想把前 3 个元素（1,2,3）拷贝到从第 2 个位置开始的区域（原本的 2,3,4 位置），期望得到 `{1,1,2,3,5}`：
 

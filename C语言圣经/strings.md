@@ -841,7 +841,7 @@ char* mystrstrUseKMP(const char* str, const char* substr) {
 }
 ```
 
-#### `strcpy`
+#### `strcpy` 与 `strcpy_s`
 
 `strcpy_s` 属于 C11 Annex K 的可选边界检查接口，并非所有编译器都实现。Linux/GCC 示例应优先使用容量明确的复制逻辑或 `snprintf`；如果展示 `strcpy_s`，请注明它主要用于支持该扩展的实现（例如部分 MSVC 环境）。
 
@@ -851,13 +851,16 @@ char* mystrstrUseKMP(const char* str, const char* substr) {
 
 其中dest指向要写入的字符数组的指针，src指向要复制的以空字符结尾的字节字符串的指针。
 
-函数将返回 dest 的副本。成功时返回零，错误时返回非零。还，在错误时，将零写入 dest\[0]（除非 dest 是空指针）。
+`strcpy` 返回 `dest` 的副本，不提供独立的成功/失败返回码；调用者必须先保证目标容量足够、源字符串以空字符结尾且两个区域不重叠。
 
 ```c
-int main() {
+#include <stdio.h>
+#include <string.h>
+
+int main(void) {
 	char dest[20];
 	const char* src = "Hello, World!";
-	strcpy_s(dest, 20, src);
+	strcpy(dest, src);
 	printf("Copied string: %s\n", dest);
 	return 0;
 }
@@ -907,7 +910,7 @@ Copied string: Hello, World!
 
 其中，dest指向要复制到的字符数组的指针，src指向要复制来源的字符数组的指针，count表示要复制的最大字符数。
 
-函数将返回 `dest` 的副本。成功时返回零，错误时返回非零。还，在错误时，将零写入 dest\[0]（除非 `dest` 是空指针），并且可能会用未指定的值覆盖目标数组的其余部分。
+`strncpy` 返回 `dest` 的副本，也不提供独立的错误码。若源字符串长度达到 `count`，结果可能没有空终止符；需要边界检查接口时，应单独介绍可选的 `strncpy_s`，不能把两者的语义混在一起。
 
 根据 C11 后 DR 468 的修正，`strncpy_s` 与  `strcpy_s` 不同，只允许在发生错误时覆盖目标数组的其余部分。
 
@@ -955,7 +958,7 @@ char* mystrncpy(char* dest, const char* src, size_t n) {
 
 其中，dest指向要追加的以空字符结尾的字节字符串的指针，src 指向要复制的以空字符结尾的字节字符串的指针。
 
-函数返回 `dest` 的副本。成功时返回零，错误时返回非零。还，在错误时，将零写入 dest\[0]（除非 `dest` 是空指针）。
+`strcat` 返回 `dest` 的副本，不提供独立的成功/失败返回码；目标数组必须容纳原字符串、追加内容和终止空字符。
 
 ```c
 int main() {
@@ -1000,7 +1003,7 @@ char* mystrcat(char* dest, const char* src) {
 
 dest指向要追加的以空字符结尾的字节字符串的指针，src 指向要复制的字符数组的指针，count表示要复制的最大字符数
 
-函数将返回 `dest` 的副本。成功时返回零，错误时返回非零。还，在错误时，将零写入 dest\[0]（除非 `dest` 是空指针）。
+`strncat` 返回 `dest` 的副本，不提供独立的成功/失败返回码；调用者仍需保证目标容量足够，并注意它总会尝试追加终止空字符。
 
 ```c
 int main() {

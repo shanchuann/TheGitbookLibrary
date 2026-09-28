@@ -7,7 +7,7 @@ icon: person-ski-lift
 
 算法不是孤立的代码技巧，而是数据结构、边界条件和复杂度之间的取舍。
 
-![排序与二分查找示例](.gitbook/assets/algorithms_demo.png)
+![排序与二分查找示例](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/algorithms_demo.png)
 
 ## 顺序查找与二分查找
 
@@ -29,6 +29,8 @@ int binary_search(const int values[], size_t count, int target) {
 }
 ```
 
+示例返回 `int` 下标，因此只适用于下标不超过 `INT_MAX` 的数组；如果接口需要支持任意 `size_t` 范围，应返回 `size_t` 并额外用布尔值表示是否找到，或使用输出参数承载结果。
+
 ## 排序与比较函数
 
 函数指针可以把“如何比较”传给通用排序函数。标准库的 `qsort` 采用这一模式：
@@ -47,6 +49,26 @@ qsort(values, count, sizeof values[0], ascending_int);
 
 不要直接写 `return a - b` 作为比较结果，因为整数相减可能溢出。
 
+### 三种基础排序
+
+冒泡排序容易观察交换过程，但复杂度为 `O(n²)`；插入排序在数据接近有序时通常更实用；归并排序把复杂度稳定在 `O(n log n)`，代价是需要额外的辅助空间。学习时应同时记录循环不变量、空数组和重复元素等边界条件，而不是只记住代码模板。
+
+```c
+static void insertion_sort(int values[], size_t count) {
+    for (size_t i = 1; i < count; ++i) {
+        int value = values[i];
+        size_t j = i;
+        while (j > 0 && values[j - 1] > value) {
+            values[j] = values[j - 1];
+            --j;
+        }
+        values[j] = value;
+    }
+}
+```
+
+`qsort` 的具体算法和复杂度由实现决定，不能把它当作稳定排序；如果需要稳定性，应在接口中明确规定，或使用带原始下标的记录自行实现。
+
 ## 递归与分治
 
 递归函数必须有停止条件，并且每次调用都要更接近停止条件：
@@ -61,6 +83,8 @@ flowchart TD
 ```
 
 朴素递归斐波那契会重复计算同一子问题。可以使用记忆化或自底向上的循环降低复杂度。
+
+分治算法通常包含“拆分、递归、合并”三个步骤。递归函数应明确输入规模如何缩小、停止条件是什么，以及合并阶段的额外空间；否则很容易写出正确性不明或栈深度不可控的实现。
 
 ## 复杂度的直观比较
 

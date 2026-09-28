@@ -17,6 +17,21 @@ gcc -std=c11 -Wall -Wextra -Wpedantic -g source.c -o program
 
 警告不应全部关闭。类型不匹配、未使用变量、隐式声明和格式字符串错误往往是运行时故障的前兆。
 
+## 一个最小调试循环
+
+先用最小输入复现问题，再记录实际输出、预期输出和编译器版本。GDB 的基本流程是：
+
+```sh
+gdb ./program
+(gdb) break main
+(gdb) run
+(gdb) next
+(gdb) print value
+(gdb) backtrace
+```
+
+断点、单步和调用栈适合定位控制流错误；AddressSanitizer 适合发现越界和释放后使用；它们解决的是不同问题，不能互相替代。修复后应把最小复现输入加入回归测试。
+
 调试版本可以增加 AddressSanitizer 和 UndefinedBehaviorSanitizer：
 
 ```sh
@@ -61,6 +76,8 @@ printf("count=%" PRIu32 "\n", count);
 ```
 
 数组下标和对象大小优先使用 `size_t`。不要假定 `int`、指针或枚举在所有平台上具有相同宽度。
+
+可移植性还包括字节序、路径分隔符、文本换行、字符编码和编译器扩展。把平台相关代码集中在少数接口中，并用 `#if defined(_WIN32)` 等条件编译隔离；不要在业务代码中到处散落平台宏。
 
 ```mermaid
 flowchart TD

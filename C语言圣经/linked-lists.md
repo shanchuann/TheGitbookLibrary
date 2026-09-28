@@ -9,7 +9,7 @@ icon: medal
 
 下面的示例在 WSL2 `/home/shanchuan/CStudy/book_examples/linked_list_demo.c` 中编译运行：
 
-![单链表插入与删除示例](.gitbook/assets/linked_list_demo.png)
+![单链表插入与删除示例](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/linked_list_demo.png)
 
 ```mermaid
 flowchart LR
@@ -68,6 +68,8 @@ void list_destroy(Node *head) {
 }
 ```
 
+这个简化接口在分配失败时返回原来的 `head`，调用者无法区分“插入成功但头节点没变”和“插入失败”。正式接口应返回状态码，并通过输出参数返回新的头指针，或把失败设计成调用者必须处理的错误。
+
 删除节点时必须先保存后继节点，再释放当前节点：
 
 ```c
@@ -100,6 +102,38 @@ flowchart LR
 ```
 
 数组栈需要维护 `size` 和容量；循环队列需要维护 `front`、`size` 和容量。无论使用数组还是链表，都应明确谁负责释放动态节点。
+
+链表实现栈时，可以把表头作为栈顶，`push` 和 `pop` 都是 `O(1)`。链表实现队列时，应同时保存 `front` 和 `back` 指针，否则从尾部入队可能退化为 `O(n)`：
+
+```c
+typedef struct {
+    Node *front;
+    Node *back;
+} Queue;
+
+static int queue_push(Queue *queue, int value) {
+    Node *node = malloc(sizeof *node);
+    if (node == NULL) return 0;
+    node->value = value;
+    node->next = NULL;
+    if (queue->back != NULL) queue->back->next = node;
+    else queue->front = node;
+    queue->back = node;
+    return 1;
+}
+
+static int queue_pop(Queue *queue, int *out) {
+    if (queue->front == NULL) return 0;
+    Node *node = queue->front;
+    *out = node->value;
+    queue->front = node->next;
+    if (queue->front == NULL) queue->back = NULL;
+    free(node);
+    return 1;
+}
+```
+
+这里用返回值报告分配失败或空队列，避免把失败静默地伪装成一次成功操作。双向链表、循环链表和哨兵节点可以作为下一步练习，但每种变体都应先说明额外指针和不变量。
 
 ## 常见错误
 

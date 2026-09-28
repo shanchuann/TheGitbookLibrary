@@ -7,7 +7,7 @@ icon: code
 
 预处理器在真正编译前处理源文件。它只做文本层面的变换，不理解变量类型，也不会替宏调用检查参数。理解这一点，才能解释宏的括号、重复求值和条件编译问题。
 
-![预处理器示例运行结果](.gitbook/assets/preprocessor_demo.png)
+![预处理器示例运行结果](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/preprocessor_demo.png)
 
 ```mermaid
 flowchart LR
@@ -96,6 +96,15 @@ void stack_destroy(Stack *stack);
 #endif
 ```
 
+`#include "project.h"` 通常先搜索当前源文件所在目录，再搜索编译器配置的目录；`#include <stdio.h>` 则面向系统头文件搜索路径。实际搜索顺序由编译器和 `-I` 选项共同决定，可以用下面的命令检查预处理结果：
+
+```sh
+gcc -E -dM source.c > macros.txt
+gcc -H -c source.c
+```
+
+头文件保护只能避免同一个翻译单元重复展开，不能解决两个 `.c` 文件都定义同名外部函数的问题；后者是链接阶段的符号冲突。
+
 ## 预定义宏与断言
 
 常用预定义宏包括 `__FILE__`、`__LINE__`、`__func__`、`__DATE__` 和 `__TIME__`。它们适合生成诊断信息：
@@ -138,6 +147,8 @@ static void print_double(double value) { printf("double: %.2f\n", value); }
 ```
 
 实际项目中应优先选择类型安全的普通函数、`static inline` 或函数指针；宏和 `_Generic` 适合减少重复接口，不适合隐藏复杂控制流。
+
+`_Generic` 的选择发生在编译期，关联项仍必须是类型兼容的表达式。它不会自动完成运行时类型检查，也不会让宏获得真正的泛型容器能力。接口应为不支持的类型提供明确的默认分支，或在文档中限定允许的类型集合。
 
 ## 可运行完整示例
 

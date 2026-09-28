@@ -7,7 +7,7 @@ icon: chart-simple-horizontal
 
 文件程序的基本顺序是：打开、检查、读写、检查结果、关闭。任何一步失败，都应该保留可诊断的错误信息。
 
-![二进制文件拷贝示例](.gitbook/assets/file_copy_demo.png)
+![二进制文件拷贝示例](https://raw.githubusercontent.com/shanchuann/TheGitbookLibrary/main/C%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F/.gitbook/assets/file_copy_demo.png)
 
 ```mermaid
 flowchart LR
@@ -58,9 +58,28 @@ int copy_file(const char *source_name, const char *target_name) {
 
 `fseek` 移动位置，`ftell` 查询位置，`rewind` 回到文件开头并清除错误标志。需要按字节精确定位时，应使用二进制模式。
 
+随机访问前必须先确认偏移量不会超出文件格式允许的范围：
+
+```c
+if (fseek(file, 0, SEEK_END) != 0) {
+    perror("fseek");
+    return -1;
+}
+long length = ftell(file);
+if (length < 0) {
+    perror("ftell");
+    return -1;
+}
+rewind(file);
+```
+
+`ftell` 返回 `long`，不适合无条件表示超大文件；需要处理大文件时，应使用目标平台提供的接口，并在章节开头明确平台范围。
+
 ## 结构体序列化
 
 直接执行 `fwrite(&object, sizeof object, 1, file)` 只适合同一编译器、同一 ABI 和同一字节序的受控场景。跨平台格式应逐字段写入，并明确整数宽度、字节序和文本编码。
+
+可靠的文件格式还应包含版本号、记录数量和长度边界。写入时先写临时文件，成功关闭后再替换目标文件，可以避免程序中途退出留下半个文件；读取时必须检查文件是否完整，不能相信文件中的数量字段一定合理。
 
 ## `fflush` 的边界
 
@@ -92,7 +111,8 @@ static int copy_file(const char *source_name, const char *target_name) {
         }
     }
     if (ferror(source)) result = -1;
-    if (fclose(target) != 0 || fclose(source) != 0) result = -1;
+    if (fclose(target) != 0) result = -1;
+    if (fclose(source) != 0) result = -1;
     return result;
 }
 
