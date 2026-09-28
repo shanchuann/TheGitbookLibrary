@@ -26,6 +26,6 @@
 * [链表、栈与队列](linked-lists.md)
 * [查找与排序](algorithms.md)
 * [调试与可移植性](debugging-portability.md)
-* [学生成绩管理系统](student-project.md)
 * [打字母游戏](typing-game.md)
+* [学生成绩管理系统](student-project.md)
 * [附件](appendix.md)
