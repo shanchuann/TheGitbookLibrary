@@ -9,8 +9,3 @@
 这是一个存放**Gitbook**书籍的仓库，主要用于对在线书籍的存档,2025/9/22 目前正在更新《C语言圣经》
 
 ## [C语言圣经](https://shanchuan-1.gitbook.io/clanguagebook/)
-
-> 书籍介绍
->
-> C语言基础
-
