@@ -31,10 +31,10 @@ flowchart LR
 
 预处理是编译器正式分析 C 代码之前的阶段。它处理以 `#` 开头的预处理指令，主要包括：
 
-* 展开头文件；
-* 展开宏；
-* 处理条件编译；
-* 删除注释。
+* 展开头文件
+* 展开宏
+* 处理条件编译
+* 删除注释
 
 执行预处理：
 
@@ -43,49 +43,6 @@ gcc -E main.c -o main.i
 ```
 
 预处理器主要进行文本处理，不进行完整的类型检查。宏展开成功，并不代表展开后的代码一定正确。
-
-### 宏展开
-
-宏使用 `#define` 定义：
-
-```c
-#define PI 3.1415926
-#define SQUARE(x) ((x) * (x))
-```
-
-使用宏时：
-
-```c
-double area = PI * SQUARE(2.0);
-// double area = 3.1415926 * ((2.0) * (2.0));
-```
-
-预处理器会把宏名替换为宏体。宏没有类型，也不会像函数一样只保证参数求值一次：
-
-```c
-#define SQUARE(x) ((x) * (x))
-
-int i = 3;
-int value = SQUARE(i++);  // i++ 可能被执行两次
-```
-
-因此，简单常量可以使用宏；带参数的计算通常优先使用 `static inline` 函数：
-
-```c
-static inline int square_int(int x) {
-    return x * x;
-}
-```
-
-宏展开可以理解为下面的过程：
-
-```mermaid
-flowchart LR
-    A["C 源文件"] --> B["预处理器"]
-    B --> C["展开宏"]
-    C --> D["得到预处理后的 C 源码"]
-    D --> E["交给编译器"]
-```
 
 ### 头文件展开
 
@@ -120,6 +77,66 @@ flowchart LR
 #endif
 ```
 
+`#ifndef CONFIG_H`
+
+* `#ifndef` 即为 “if not defined”，如果宏 `CONFIG_H` **没有定义**，则继续执行下面的代码。
+* 第一次包含这个头文件时，`CONFIG_H` 还没有定义，所以条件成立。
+
+`#define CONFIG_H`
+
+* 定义一个名为 `CONFIG_H` 的宏，通常不赋值。
+* 这样下次再包含这个头文件时，`CONFIG_H` 已经存在，`#ifndef` 条件就不成立，头文件内容会被跳过。
+
+### 宏展开
+
+宏展开可以理解为下面的过程：
+
+```mermaid
+flowchart LR
+    A["C 源文件"] --> B["预处理器"]
+    B --> C["展开宏"]
+    C --> D["得到预处理后的 C 源码"]
+    D --> E["交给编译器"]
+```
+
+宏使用 `#define` 定义：
+
+```c
+#define PI 3.1415926
+#define SQUARE(x) ((x) * (x))
+```
+
+使用宏时：
+
+```c
+double area = PI * SQUARE(2.0);
+// double area = 3.1415926 * ((2.0) * (2.0));
+```
+
+预处理器会把宏名替换为宏体。宏没有类型，也不会像函数一样只保证参数求值一次：
+
+```c
+#define SQUARE(x) ((x) * (x))
+
+int i = 3;
+int value = SQUARE(i++);  // i++ 可能被执行两次
+```
+
+因此，简单常量可以使用宏；带参数的计算通常优先使用 `static inline` 函数：
+
+```c
+static inline int square_int(int x) {
+    return x * x;
+}
+```
+
+`static inline` 函数是一种结合了 `inline` 和 `static` 特性的优化工具。他们的定义如下：
+
+* **`inline`** 提示编译器将函数体直接嵌入到调用处，减少函数调用的开销。
+* **`static`** 限制函数的作用域为当前源文件，避免与其他文件中的同名函数发生冲突。
+
+通过这种方式，编译器可以将 `square_int` 函数的代码直接嵌入到调用它的位置，从而提高性能。
+
 ## C 源程序
 
 一个最小的 C 程序如下：
@@ -145,12 +162,9 @@ gcc -std=c17 -Wall -Wextra -Wpedantic main.c -o main
 <strong>
 </strong></code></pre>
 
-> 当有 `\n` 时，光标会跳到下一行行首
+> 我去，怎么多了一行出来？只是因为当有 `\n` 时，光标会跳到下一行行首。
 
-| 程序                       | 输出字节（十六进制）                         | 字节数 |
-| ------------------------ | ---------------------------------- | --- |
-| `printf("Hello, C!\n");` | `48 65 6C 6C 6F 2C 20 43 21 0D 0A` | 11  |
-| `printf("Hello, C!");`   | `48 65 6C 6C 6F 2C 20 43 21`       | 9   |
+<table><thead><tr><th width="251.39990234375">程序</th><th width="386.4000244140625">输出字节（十六进制）</th><th>字节数</th></tr></thead><tbody><tr><td><code>printf("Hello, C!\n");</code></td><td><code>48 65 6C 6C 6F 2C 20 43 21 0D 0A</code></td><td>11</td></tr><tr><td><code>printf("Hello, C!");</code></td><td><code>48 65 6C 6C 6F 2C 20 43 21</code></td><td>9</td></tr></tbody></table>
 
 所以：
 
@@ -230,10 +244,7 @@ gcc -std=c17 -Wall -Wextra -Wpedantic \
 
 在 `X` 进制中，每当某一位达到 `X`，就向更高位进一
 
-<p align="center">二进制：逢 2 进 1
-<br>八进制：逢 8 进 1
-<br>十进制：逢 10 进 1
-<br>十六进制：逢 16 进 1</p>
+<p align="center">二进制：逢 2 进 1<br>八进制：逢 8 进 1<br>十进制：逢 10 进 1<br>十六进制：逢 16 进 1</p>
 
 常见进制前缀：
 
