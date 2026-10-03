@@ -48,7 +48,7 @@ K\&R C 已经包含结构体、长整数和复合赋值运算符等熟悉的特�
 
 下表清晰地梳理了 C 语言主要标准的发展脉络：
 
-<table><thead><tr><th width="133.5999755859375">标准版本</th><th width="140">发布年份</th><th>主要特点和意义</th></tr></thead><tbody><tr><td><strong>K&#x26;R C</strong></td><td>1978</td><td>非正式标准，由 <em><strong>The C Programming Language</strong></em> 一书定义，奠定了 C 语言的基础。</td></tr><tr><td><strong>C89 / C90</strong></td><td>1989 / 1990</td><td>第一个官方标准（ANSI C / ISO C），确立了 C 语言的基本形态和标准库。</td></tr><tr><td><strong>C99</strong></td><td>1999</td><td>引入了内联函数、变长数组、复数类型、单行注释等现代化特性。</td></tr><tr><td><strong>C11</strong></td><td>2011</td><td>增加了对多线程、原子操作、 Unicode 的支持，适应并发编程的需求。</td></tr><tr><td><strong>C17 / C18</strong></td><td>2018</td><td>缺陷修复版本，对 C11 标准进行澄清和修正，未引入新功能。</td></tr><tr><td><strong>C23</strong></td><td>2024</td><td>最新的 C 语言标准，引入了 <code>typeof</code>、<code>#elifdef</code> 等新特性。</td></tr></tbody></table>
+<table><thead><tr><th width="133.5999755859375">标准版本</th><th width="125.60003662109375">发布年份</th><th>主要特点和意义</th></tr></thead><tbody><tr><td><strong>K&#x26;R C</strong></td><td>1978</td><td>非正式标准，由 <em><strong>The C Programming Language</strong></em> 一书定义，奠定了 C 语言的基础。</td></tr><tr><td><strong>C89 / C90</strong></td><td>1989 / 1990</td><td>第一个官方标准（ANSI C / ISO C），确立了 C 语言的基本形态和标准库。</td></tr><tr><td><strong>C99</strong></td><td>1999</td><td>引入了内联函数、变长数组、复数类型、单行注释等现代化特性。</td></tr><tr><td><strong>C11</strong></td><td>2011</td><td>增加了对多线程、原子操作、 Unicode 的支持，适应并发编程的需求。</td></tr><tr><td><strong>C17 / C18</strong></td><td>2018</td><td>缺陷修复版本，对 C11 标准进行澄清和修正，未引入新功能。</td></tr><tr><td><strong>C23</strong></td><td>2024</td><td>最新的 C 语言标准，引入了 <code>typeof</code>、<code>#elifdef</code> 等新特性。</td></tr></tbody></table>
 
 ## 设计哲学与特性
 

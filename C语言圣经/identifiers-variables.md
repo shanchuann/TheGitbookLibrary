@@ -15,11 +15,37 @@ icon: sensor-cloud
 * 第一个字符不能是数字。
 * 不能使用 C 语言关键字，例如 `int`、`return`、`static`。
 * C 区分大小写：`count`、`Count` 和 `COUNT` 是三个不同的标识符。
-* 标准只规定实现必须识别一定长度的标识符，现代 GCC、Clang 和 MSVC 通常允许远超过 8 个字符。因此，“C89 只能使用 8 个字符” 是早期编译器的历史限制，不是今天的通用规则。
 
-命名时优先选择能表达用途的名字。`student_count` 比 `n` 更容易维护；循环下标使用 `i`、`j` 则是约定俗成的例外。
+关于长度，标准规定的是实现必须识别的**有效字符数**，超出部分可以被忽略：
 
-> 有的说为了纪念杰出的计算机科学家 **Dijkstra**，取其中 **ijk** 作为循环变量。真正原因是 1957 年 FORTRAN 规定 I–N 开头默认是整数，循环变量又必须是整数，于是 i、j、k 成了最顺手的选择。又或许是因为 **j** 是 jndex，而 **k** 是 kndex \~\~\~
+| 标准版本      | 内部标识符（含宏名） | 外部标识符 |
+| --------- | ---------- | ----- |
+| C89 / C90 | 31 个       | 6 个   |
+| C99 及以后   | 63 个       | 31 个  |
+
+现代编译器支持的字符数远超这个下限，但"只有前 N 个字符有效"这条规则在跨编译器协作时仍值得留意。
+
+### 保留标识符
+
+以下几类名字不属于使用者，写代码时应避开：
+
+* 以两个下划线开头，或以下划线加一个大写字母开头的标识符，保留给实现用于任何用途，例如 `__FILE__`、`_Bool`。
+* 以下划线开头的标识符，在文件作用域保留。因此 `_local` 作为局部变量可以，作为文件作用域的变量名或函数名不可以。
+* 标准库中的名字（`printf`、`size_t`、`NULL` 等）在包含对应头文件后保留，不应另作他用。
+
+```c
+int __count = 0;    // 保留给实现，不应使用
+int _Count  = 0;    // 保留给实现，不应使用
+int _count  = 0;    // 文件作用域保留，块作用域可用
+```
+
+### 命名建议
+
+名字应当说明数据的含义，而不只是类型。`count` 表示元素数量，`capacity` 表示容量，`length` 表示字符串或序列的长度，三者不宜混用。`data1`、`tmp`、`flag` 这类名字只适合作用域很小、含义一目了然的场合。
+
+循环下标使用 `i`、`j`、`k` 是约定俗成的例外。这个习惯可以追溯到 FORTRAN：它的隐式类型规则规定以 I 到 N 开头的变量名默认为整型，而循环变量必须是整数，于是 `i`、`j`、`k` 成了最顺手的选择。
+
+> 至于 "为了纪念 Dijkstra，取 D**ijk**stra 中的 `ijk`" 这个说法，是流传已久的程序员笑话。
 
 ```c
 int student_count = 30;     // 合法，含义清楚
@@ -43,12 +69,13 @@ float pi = 3.14f;
 char  ch = 'a';
 ```
 
-_声明_ 和 _定义_ 经常一起出现，但不是同一个概念：
+### 声明与定义
 
-* **声明（declaration）**&#x544A;诉编译器某个名字及其类型，让后续代码能够使用它。
-* **定义（definition）**    是会创建对象或函数实体的声明。定义变量通常需要为对象保留存储空间，定义函数则提供函数体。
+声明告诉编译器某个名字及其类型，让后续代码可以使用它。定义是会创建对象或函数实体的声明：定义变量需要为对象保留存储空间，定义函数需要提供函数体。
 
-例如，下面的 `extern` 声明不创建变量，变量实体在另一个源文件中定义：
+两者的区别不在于 "有没有内存"，而在于是否创建了实体。函数声明通常没有函数体，但它依然是声明；变量的定义同时也是声明。判断标准是这条语句有没有产生一个实体。
+
+跨文件共享变量时，声明与定义分开写。例如，下面的 `extern` 声明不创建变量，变量实体在另一个源文件中定义：
 
 {% code title="counter.h" %}
 ```c
@@ -64,13 +91,59 @@ int counter = 0;          // 定义，创建变量
 
 注意：声明不一定&#x90FD;_&#x4E0D;分配内存_。函数声明通常没有函数体，但变量的定义也是一种声明；判断关键在于它是否创建了实体，而不是死&#x8BB0;_&#x58F0;明无内存、定义有内存_。
 
+### 一个定义规则
+
+具有外部链接的对象和函数，在整个程序中只能有一个定义，但可以有任意多个声明。
+
+```c
+int total = 10;    // 定义
+int total = 20;    // 错误：重复定义，链接阶段报错
+```
+
+文件作用域下不带初始化器的 `int total;` 是**试探性定义**：它同时具有声明和定义的性质，同一个翻译单元内允许出现多次，最终合并为一个定义。
+
+```c
+int total;         // 试探性定义
+int total;         // 允许，与上一条合并
+```
+
+函数同理：
+
+```c
+int add(int a, int b);            // 声明，可以出现多次
+int add(int a, int b) { return a + b; }   // 定义，只能出现一次
+```
+
+### 初始化
+
+初始化规则取决于对象的存储期，这一点容易被忽略。
+
+静态存储期的对象（文件作用域变量、`static` 局部变量）在程序启动前完成初始化。未显式初始化时被置零：整数为 `0`，浮点数为 `0.0`，指针为空指针常量。初始化器必须是常量表达式，因此不能在文件作用域写 `int x = f();`。
+
+自动存储期的对象（普通局部变量、函数参数）每次进入代码块时创建。未显式初始化时，它的值是**不确定的**，读取这种值是未定义行为：
+
+```c
+#include <stdio.h>
+​
+int main(void)
+{
+    int value;              // 未初始化，值不确定
+    printf("%d\n", value);  // 未定义行为
+    return 0;
+}
+```
+
+编译器通常不会为此报错，`-Wall -Wextra` 也不一定提示。局部变量应当在使用前显式赋值。
+
 ## 作用域、链接与存储期
 
-这三个词描述的是不同问题：
+这三个概念回答的是不同问题，遇到一个标识符时可以依次对照：
 
-<table><thead><tr><th width="99.99993896484375">概念</th><th width="389">回答的问题</th><th>例子</th></tr></thead><tbody><tr><td>作用域</td><td>在源代码的哪一段可以直接写出这个名字？</td><td>块作用域、文件作用域</td></tr><tr><td>链接</td><td>不同源文件中的同名标识符是否指向同一个实体？</td><td>外部链接、内部链接、无链接</td></tr><tr><td>存储期</td><td>对象从什么时候存在到什么时候消失？</td><td>自动、静态、动态</td></tr></tbody></table>
+<table><thead><tr><th width="99.20001220703125">概念</th><th>回答的问题</th><th>取值</th></tr></thead><tbody><tr><td>作用域</td><td>在源代码的哪一段可以直接写出这个名字？</td><td>块作用域、文件作用域、函数原型作用域、函数作用域</td></tr><tr><td>链接</td><td>不同源文件中的同名标识符是否指向同一个实体？</td><td>外部链接、内部链接、无链接</td></tr><tr><td>存储期</td><td>对象从什么时候存在到什么时候消失？</td><td>自动、静态、动态、线程</td></tr></tbody></table>
 
-可以把它们理解成三张不同的地图：作用域管“看不看得见”，链接管“是不是同一个人”，存储期管“住多久”。
+三者相互独立。函数内部的 `static` 变量具有块作用域和静态存储期；`malloc` 返回的对象没有可以直接书写的标识符，但具有动态存储期。
+
+每个作用域的定义与示例、四种存储期的对照、以及程序加载后的内存区域划分，见[**可见性和生存期**](scope-lifetime.md)一章。
 
 ```mermaid
 flowchart LR
@@ -98,7 +171,7 @@ flowchart LR
 int total = 500;  // 文件作用域；默认具有外部链接
 int main(void)
 {
-    printf("%d\\n", total);
+    printf("%d\n", total);
     return 0;
 }
 ```
@@ -116,9 +189,9 @@ int main(void)
     int value = 100;
     {
         int value = 0;       // 遮蔽外层 value
-        printf("inner: %d\\n", value);
+        printf("inner: %d\n", value);
     }
-    printf("outer: %d\\n", value);
+    printf("outer: %d\n", value);
     return 0;
 }
 ```
@@ -132,7 +205,13 @@ outer: 100
 
 这里的 `value` 是两个不同的对象。C 语言没有 C++ 的 `::` 作用域解析运算符，遇到同名变量时，应通过重命名或缩小作用域来减少混淆。
 
-## `static` 关键字
+### 存储类说明符
+
+存储类说明符写在声明的开头，用来指定对象的存储期或链接属性。
+
+<table><thead><tr><th width="141.5999755859375">说明符</th><th width="165.5999755859375">作用</th><th>说明</th></tr></thead><tbody><tr><td><code>auto</code></td><td>自动存储期</td><td>块作用域对象的默认属性，C 中几乎不写</td></tr><tr><td><code>register</code></td><td>建议放入寄存器</td><td>不能对该对象取地址；现代编译器通常忽略这个建议</td></tr><tr><td><code>static</code></td><td>见下节</td><td>文件作用域改变链接，块作用域改变存储期</td></tr><tr><td><code>extern</code></td><td>声明而非定义</td><td>用于引用其他翻译单元的对象或函数</td></tr><tr><td><code>_Thread_local</code></td><td>线程存储期（C11）</td><td>可与 <code>static</code> 或 <code>extern</code> 组合</td></tr><tr><td><code>typedef</code></td><td>定义类型别名</td><td>语法上位于存储类说明符的位置，但不是存储类</td></tr></tbody></table>
+
+## static
 
 `static` 的含义取决于它出现的位置。它主要影响链接或存储期，不是一个“让变量永远不变”的关键字；需要只读语义时，应使用 `const`。
 
@@ -170,6 +249,8 @@ extern int visible;     // 可以访问
 
 编译链接时，`visible` 可以被其他源文件使用，而 `hidden` 只能在 `module.c` 中使用。
 
+`extern int hidden;` 这条声明本身是合法的，问题出现在链接阶段：`hidden` 在定义它的翻译单元里具有内部链接，不会进入外部符号表，其他翻译单元找不到它。这属于链接错误，不是编译错误。
+
 ### 块作用域的 `static`：延长存储期
 
 在函数内部定义局部变量时，如果使用 `static`，变量仍然具有块作用域，但存储期会延长到整个程序运行期间。
@@ -206,273 +287,35 @@ call 3
 
 从 C 语言标准的角度看，`static` 改变的是存储期；至于变量具体放在栈、数据段还是其他内存区域，属于编译器和目标平台的实现细节。通常情况下，局部静态变量会被放在静态存储区域中。
 
-### 多文件示例
+需要留意两点。一是初始化发生在第一次执行到该声明之前，C11 之前的标准不保证多线程下的初始化是原子的；需要线程私有的状态应使用 `_Thread_local`。二是 `static` 改变的是语言层面的存储期，至于对象具体落在哪个内存区域，属于编译器与目标平台的实现细节。
 
-{% code title="module.c" %}
-```c
-static int hidden = 1;
-int visible = 2;
-```
-{% endcode %}
+<table><thead><tr><th width="287">使用位置</th><th>主要作用</th></tr></thead><tbody><tr><td>文件作用域变量前</td><td>限制为当前源文件可见，获得内部链接</td></tr><tr><td>文件作用域函数前</td><td>限制函数只能在当前源文件中调用</td></tr><tr><td>函数内部变量前</td><td>保持变量值，存储期延长到程序结束</td></tr><tr><td>未初始化的静态存储期变量</td><td>自动初始化为零</td></tr></tbody></table>
 
-{% code title="main.c" %}
-```c
-extern int visible;
-// extern int hidden;  // 错误：hidden 具有内部链接
-```
-{% endcode %}
+## extern
 
-编译链接时，`visible` 可以被 `main.c` 使用，`hidden` 则只存在于 `module.c` 的命名范围内。
-
-### `static` 的作用总结
-
-| 使用位置         | 主要作用              |
-| ------------ | ----------------- |
-| 文件作用域变量前     | 限制为当前源文件可见，获得内部链接 |
-| 文件作用域函数前     | 限制函数只能在当前源文件中调用   |
-| 函数内部变量前      | 保持变量值，存储期延长到程序结束  |
-| 未初始化的静态存储期变量 | 自动初始化为零           |
-
-> 文件外的 `static` 负责“隐藏”，函数内的 `static` 负责“记住”。
-
-## 命名、接口契约与所有权
-
-_以下内容做了解即可_
-
-在定义变量名时应说明数据的含义，而不是只说明它的类型。`count` 表示元素数量，`capacity` 表示容量，`length` 表示字符串或序列的长度；三者不能混用。`data1`、`tmp`、`flag` 这类名称只有在作用域很小、含义非常明确时才适合使用。
-
-指针变量除了类型，还应说明它指向什么、是否允许为空以及由谁负责释放。建议在接口注释中明确写出这些约定：
+`extern` 表示这是一条声明而不是定义，用于引用其他翻译单元中定义的对象或函数。
 
 ```c
-/*
- * buffer:
- *   借用的可写数组，不能为 NULL。
- * count:
- *   buffer 中可写入的元素数量。
- *
- * 函数不会释放 buffer，也不会保存它的地址。
- * 返回 0 表示成功，返回 -1 表示参数无效。
- */
-int fill_values(int *buffer, size_t count);
+extern int counter;              // 引用别处定义的 counter
+int read_counter(void);          // 函数声明默认具有外部链接
 ```
 
-这里的 `buffer` 是借用指针。调用者仍然拥有这块内存，函数只能在调用期间使用它，不能对它调用 `free`，也不能在函数返回后继续保存这个地址。
-
-如果函数申请内存并把结果交给调用者，就应明确说明所有权已经转移：
+在块作用域内使用 `extern`，可以引用文件作用域的对象：
 
 ```c
-/*
- * 返回一份新分配的字符串。
- * 成功后调用者拥有返回值，使用完毕后必须调用 free。
- * 申请失败时返回 NULL。
- */
-char *duplicate_text(const char *source);
-```
-
-一种简单的实现如下：
-
-```c
-#include <stdlib.h>
-#include <string.h>
-​
-char *duplicate_text(const char *source) {
-    if (source == NULL) {
-        return NULL;
-    }
-​
-    size_t length = strlen(source);
-    char *copy = malloc(length + 1);
-    if (copy == NULL) {
-        return NULL;
-    }
-​
-    memcpy(copy, source, length + 1);
-    return copy;
+void print_global(void)
+{
+    extern int total;    // 引用文件作用域的 total
+    printf("%d\n", total);
 }
 ```
 
-调用者负责释放返回的内存：
+## 其余说明符
+
+`auto` 是块作用域对象的默认存储期，显式写出没有任何额外效果，实际代码中基本不用。`register` 只是对编译器的建议，同时禁止对该对象取地址；现代优化器自行决定是否放入寄存器，这个关键字已经失去实际意义。
+
+`_Thread_local` 是 C11 引入的线程存储期说明符。每个线程拥有该对象的一份独立副本，适合线程私有的计数器或缓存：
 
 ```c
-char *copy = duplicate_text("hello");
-if (copy != NULL) {
-    puts(copy);
-    free(copy);
-}
+_Thread_local int thread_counter;
 ```
-
-### 常见的三种指针关系
-
-#### **借用指针**
-
-函数暂时使用调用者提供的对象，不负责释放：
-
-```c
-void print_text(const char *text);
-```
-
-`text` 可以是字符串字面量、字符数组或动态字符串。函数不会修改它，也不会释放它。
-
-#### **拥有指针**
-
-指针指向的对象由当前代码负责释放：
-
-```c
-void destroy_buffer(int *buffer) {
-    free(buffer);
-}
-```
-
-调用 `destroy_buffer` 后，调用者不能再使用原来的指针。
-
-#### **所有权转移**
-
-函数把对象的管理责任交给另一个函数或调用者。转移之后，原来的所有者不能再次释放同一对象：
-
-```c
-int *create_value(int value) {
-    int *result = malloc(sizeof *result);
-    if (result != NULL) {
-        *result = value;
-    }
-    return result;
-}
-int *value = create_value(42);
-if (value != NULL) {
-    printf("%d\n", *value);
-    free(value);
-}
-```
-
-#### 数组参数必须配合长度
-
-数组传给函数时通常会退化为指向首元素的指针，函数无法通过指针本身知道数组有多少个元素。因此，数组参数应同时传入长度：
-
-```c
-#include <stddef.h>
-​
-int sum_values(const int values[], size_t count) {
-    int total = 0;
-​
-    for (size_t i = 0; i < count; ++i) {
-        total += values[i];
-    }
-​
-    return total;
-}
-```
-
-调用时：
-
-```c
-int values[] = {1, 2, 3, 4};
-size_t count = sizeof values / sizeof values[0];
-
-printf("%d\n", sum_values(values, count));
-```
-
-如果函数需要修改数组内容，可以使用 `int values[]` 或 `int *values`；如果只读取数据，应加上 `const`：
-
-```c
-void sort_values(int values[], size_t count);
-int sum_values(const int values[], size_t count);
-```
-
-`const` 表示函数不能通过这个参数修改数组元素，但不表示数组一定不能被其他代码修改。
-
-#### `NULL` 参数约定
-
-接口应明确说明参数是否允许为 `NULL`。如果不允许，函数应尽早检查：
-
-```c
-int first_value(const int *values, size_t count, int *result) {
-    if (values == NULL || result == NULL || count == 0) {
-        return -1;
-    }
-
-    *result = values[0];
-    return 0;
-}
-```
-
-如果 `NULL` 表示“没有结果”或“使用默认配置”，则应在注释中写明，而不是让调用者猜测：
-
-```c
-/*
- * options 可以为 NULL。
- * 为 NULL 时使用默认配置。
- */
-int run_task(const char *input, const Options *options);
-```
-
-#### 资源释放和错误路径
-
-一个函数申请多块资源时，失败路径必须释放已经成功申请的部分：
-
-```c
-#include <stdlib.h>
-
-int create_pair(int **first, int **second) {
-    if (first == NULL || second == NULL) {
-        return -1;
-    }
-
-    *first = malloc(sizeof **first);
-    if (*first == NULL) {
-        return -1;
-    }
-
-    *second = malloc(sizeof **second);
-    if (*second == NULL) {
-        free(*first);
-        *first = NULL;
-        return -1;
-    }
-
-    return 0;
-}
-```
-
-调用者获得成功结果后，也必须释放两块内存：
-
-```c
-int *first = NULL;
-int *second = NULL;
-
-if (create_pair(&first, &second) == 0) {
-    *first = 10;
-    *second = 20;
-
-    free(first);
-    free(second);
-}
-```
-
-#### 作用域与共享状态
-
-作用域越小，代码越容易检查。局部变量应优先放在函数内部；只有确实需要被多个函数共享的状态，才考虑文件作用域。文件作用域的变量应尽量使用 `static`，避免污染其他源文件：
-
-{% code title="counter.c" %}
-```c
-static int request_count;
-
-void record_request(void) {
-    ++request_count;
-}
-
-int request_total(void) {
-    return request_count;
-}
-```
-{% endcode %}
-
-这里的 `request_count` 只能在 `counter.c` 中访问。其他源文件只能通过公开函数使用它，不能直接修改内部状态。
-
-综上所述，本节描述的规则可以概括为：
-
-* 名称说明含义，类型说明表示方式；
-* 指针接口说明有效范围、可否为 `NULL` 和释放责任；
-* 数组参数同时传入元素数量；
-* 返回新内存时明确所有权；
-* 失败路径释放已经获得的资源；
-* 共享状态尽量隐藏在源文件内部。
